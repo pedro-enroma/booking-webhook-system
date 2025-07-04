@@ -15,14 +15,18 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
     // Salva TUTTO quello che arriva
     lastReceivedData = req.body;
     
-    // Log per capire la struttura
-    console.log('📊 Tipo di dato ricevuto:', Array.isArray(req.body) ? 'ARRAY' : 'OBJECT');
-    console.log('📊 Lunghezza/chiavi:', Array.isArray(req.body) ? req.body.length : Object.keys(req.body).length);
+    // Log dettagliato della struttura
+    console.log('📊 Struttura dati principale:');
+    console.log('- bookingId:', req.body.bookingId);
+    console.log('- parentBookingId:', req.body.parentBookingId);
+    console.log('- action:', req.body.action);
+    console.log('- customer esiste?', !!req.body.customer);
+    console.log('- parentBooking esiste?', !!req.body.parentBooking);
     
-    // Se è un array, mostra il primo elemento
-    if (Array.isArray(req.body) && req.body.length > 0) {
-      console.log('📊 Primo elemento ha questi campi:', Object.keys(req.body[0]));
-      console.log('📊 Action:', req.body[0].action);
+    if (req.body.parentBooking) {
+      console.log('📊 Dati in parentBooking:');
+      console.log('- parentBooking.customer esiste?', !!req.body.parentBooking.customer);
+      console.log('- parentBooking.bookingId:', req.body.parentBooking.bookingId);
     }
     
     res.status(200).json({ 
@@ -39,17 +43,42 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
   }
 });
 
-// Endpoint migliorato per vedere i dati
-router.get('/last-data', (req: Request, res: Response) => {
-  if (lastReceivedData) {
-    res.json({
-      dataType: Array.isArray(lastReceivedData) ? 'ARRAY' : 'OBJECT',
-      arrayLength: Array.isArray(lastReceivedData) ? lastReceivedData.length : null,
-      data: lastReceivedData
-    });
-  } else {
+// Endpoint per vedere la struttura dei dati
+router.get('/last-data-structure', (req: Request, res: Response) => {
+  if (!lastReceivedData) {
     res.json({ message: 'Nessun dato ricevuto ancora' });
+    return;
   }
+  
+  // Mostra solo la struttura, non tutti i dati
+  const structure = {
+    topLevelKeys: Object.keys(lastReceivedData),
+    bookingId: lastReceivedData.bookingId,
+    parentBookingId: lastReceivedData.parentBookingId,
+    action: lastReceivedData.action,
+    hasCustomer: !!lastReceivedData.customer,
+    hasParentBooking: !!lastReceivedData.parentBooking,
+    parentBookingKeys: lastReceivedData.parentBooking ? Object.keys(lastReceivedData.parentBooking) : null,
+    parentBookingHasCustomer: lastReceivedData.parentBooking ? !!lastReceivedData.parentBooking.customer : null,
+    activityBookingsCount: lastReceivedData.activityBookings ? lastReceivedData.activityBookings.length : 0
+  };
+  
+  res.json(structure);
+});
+
+// Endpoint per vedere solo i dati del cliente
+router.get('/last-data-customer', (req: Request, res: Response) => {
+  if (!lastReceivedData) {
+    res.json({ message: 'Nessun dato ricevuto ancora' });
+    return;
+  }
+  
+  const customerData = {
+    directCustomer: lastReceivedData.customer || null,
+    parentBookingCustomer: lastReceivedData.parentBooking?.customer || null
+  };
+  
+  res.json(customerData);
 });
 
 router.get('/health', (req: Request, res: Response) => {
