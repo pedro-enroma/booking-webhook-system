@@ -10,7 +10,7 @@ dotenv.config();
 // Crea l'applicazione Express
 const app = express();
 
-// Porta su cui il server ascolterà (default 3000)
+// IMPORTANTE: Railway fornisce la porta tramite la variabile PORT
 const PORT = process.env.PORT || 3000;
 
 // Middleware per permettere richieste da altri domini
@@ -42,8 +42,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Avvia il server
-app.listen(PORT, () => {
+// Avvia il server - IMPORTANTE: usa 0.0.0.0 per Railway
+app.listen(PORT, '0.0.0.0', () => {
   console.log('================================');
   console.log(`🚀 Server avviato con successo!`);
   console.log(`📡 In ascolto sulla porta ${PORT}`);
