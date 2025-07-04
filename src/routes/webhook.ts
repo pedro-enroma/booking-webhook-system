@@ -1,54 +1,34 @@
 import { Router, Request, Response } from 'express';
 import { BookingService } from '../services/bookingService';
 import { BookingData } from '../types/booking.types';
+import fs from 'fs';
 
-// Crea un router per gestire le route del webhook
 const router = Router();
-
-// Crea un'istanza del servizio
 const bookingService = new BookingService();
 
-// Route per ricevere i webhook da Bokun
 router.post('/webhook/booking', async (req: Request, res: Response) => {
   console.log('🔔 Webhook ricevuto da Bokun');
   
-  // AGGIUNGIAMO QUESTO LOG PER VEDERE I DATI
-  console.log('📦 Dati ricevuti:', JSON.stringify(req.body, null, 2));
-  
   try {
-    // Bokun potrebbe mandare un array di prenotazioni o una singola prenotazione
-    const bookings: BookingData[] = Array.isArray(req.body) ? req.body : [req.body];
+    // Salva i dati in un file per analisi
+    fs.writeFileSync('bokun-data.json', JSON.stringify(req.body, null, 2));
+    console.log('📁 Dati salvati in bokun-data.json');
     
-    console.log(`📊 Numero di prenotazioni ricevute: ${bookings.length}`);
-    
-    // Logghiamo anche la prima prenotazione per vedere la struttura
-    if (bookings.length > 0) {
-      console.log('🔍 Prima prenotazione:', JSON.stringify(bookings[0], null, 2));
-    }
-    
-    // Processa ogni prenotazione
-    for (const booking of bookings) {
-      await bookingService.saveBooking(booking);
-    }
-    
-    // Rispondi a Bokun che tutto è andato bene
+    // Per ora, rispondiamo solo con successo
     res.status(200).json({ 
       success: true, 
-      message: `${bookings.length} prenotazioni elaborate con successo` 
+      message: 'Dati ricevuti e salvati per analisi' 
     });
     
   } catch (error) {
-    console.error('❌ Errore nel processare il webhook:', error);
-    
-    // Rispondi a Bokun che c'è stato un errore
+    console.error('❌ Errore:', error);
     res.status(500).json({ 
       success: false, 
-      error: 'Errore nel processare la prenotazione' 
+      error: 'Errore nel processare il webhook' 
     });
   }
 });
 
-// Route di test per verificare che il server funzioni
 router.get('/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'ok', 
