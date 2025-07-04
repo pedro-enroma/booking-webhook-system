@@ -12,11 +12,19 @@ const bookingService = new BookingService();
 router.post('/webhook/booking', async (req: Request, res: Response) => {
   console.log('🔔 Webhook ricevuto da Bokun');
   
+  // AGGIUNGIAMO QUESTO LOG PER VEDERE I DATI
+  console.log('📦 Dati ricevuti:', JSON.stringify(req.body, null, 2));
+  
   try {
     // Bokun potrebbe mandare un array di prenotazioni o una singola prenotazione
     const bookings: BookingData[] = Array.isArray(req.body) ? req.body : [req.body];
     
     console.log(`📊 Numero di prenotazioni ricevute: ${bookings.length}`);
+    
+    // Logghiamo anche la prima prenotazione per vedere la struttura
+    if (bookings.length > 0) {
+      console.log('🔍 Prima prenotazione:', JSON.stringify(bookings[0], null, 2));
+    }
     
     // Processa ogni prenotazione
     for (const booking of bookings) {
