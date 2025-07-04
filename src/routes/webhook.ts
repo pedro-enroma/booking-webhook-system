@@ -12,14 +12,19 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
   console.log('🔔 Webhook ricevuto da Bokun');
   
   try {
-    // Salva i dati nella variabile
+    // Salva TUTTO quello che arriva
     lastReceivedData = req.body;
-    console.log('💾 Dati salvati in memoria');
     
-    // Log parziale per vedere la struttura
-    console.log('📊 Struttura dati:', JSON.stringify(req.body, null, 2).substring(0, 1000) + '...');
+    // Log per capire la struttura
+    console.log('📊 Tipo di dato ricevuto:', Array.isArray(req.body) ? 'ARRAY' : 'OBJECT');
+    console.log('📊 Lunghezza/chiavi:', Array.isArray(req.body) ? req.body.length : Object.keys(req.body).length);
     
-    // Per ora, rispondiamo solo con successo
+    // Se è un array, mostra il primo elemento
+    if (Array.isArray(req.body) && req.body.length > 0) {
+      console.log('📊 Primo elemento ha questi campi:', Object.keys(req.body[0]));
+      console.log('📊 Action:', req.body[0].action);
+    }
+    
     res.status(200).json({ 
       success: true, 
       message: 'Dati ricevuti e salvati per analisi' 
@@ -34,10 +39,14 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
   }
 });
 
-// Nuovo endpoint per vedere gli ultimi dati ricevuti
+// Endpoint migliorato per vedere i dati
 router.get('/last-data', (req: Request, res: Response) => {
   if (lastReceivedData) {
-    res.json(lastReceivedData);
+    res.json({
+      dataType: Array.isArray(lastReceivedData) ? 'ARRAY' : 'OBJECT',
+      arrayLength: Array.isArray(lastReceivedData) ? lastReceivedData.length : null,
+      data: lastReceivedData
+    });
   } else {
     res.json({ message: 'Nessun dato ricevuto ancora' });
   }
