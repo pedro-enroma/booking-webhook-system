@@ -11,7 +11,8 @@ dotenv.config();
 const app = express();
 
 // IMPORTANTE: Railway fornisce la porta tramite la variabile PORT
-const PORT = process.env.PORT || 3000;
+// Convertiamo in numero con parseInt
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // Middleware per permettere richieste da altri domini
 app.use(cors());
