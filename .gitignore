@@ -1,0 +1,26 @@
+# Dipendenze
+node_modules/
+
+# File di build
+dist/
+build/
+
+# File di ambiente (IMPORTANTE: non condividere mai le credenziali!)
+.env
+.env.local
+.env.production
+
+# Log
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
