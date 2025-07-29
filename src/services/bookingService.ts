@@ -1,6 +1,12 @@
 import { supabase } from '../config/supabase';
+import { OctoService } from './octoService';
 
 export class BookingService {
+  private octoService: OctoService;
+
+  constructor() {
+    this.octoService = new OctoService();
+  }
   
   // Funzione principale che decide cosa fare in base all'action
   async processWebhook(data: any): Promise<void> {
@@ -68,6 +74,9 @@ export class BookingService {
         console.log('✅ Partecipanti salvati:', bookingData.pricingCategoryBookings.length);
       }
       
+      // 7. NUOVO: Sincronizza disponibilità
+      await this.syncAvailabilityForBooking(bookingData);
+      
       console.log('🎉 BOOKING_CONFIRMED completato!');
       
     } catch (error) {
@@ -116,6 +125,9 @@ export class BookingService {
         console.log('✅ Partecipanti aggiornati');
       }
       
+      // 5. NUOVO: Sincronizza disponibilità
+      await this.syncAvailabilityForBooking(bookingData);
+      
       console.log('🎉 BOOKING_UPDATED completato!');
       
     } catch (error) {
@@ -139,9 +151,163 @@ export class BookingService {
       
       console.log('✅ Attività cancellata:', bookingData.bookingId);
       
+      // NUOVO: Sincronizza disponibilità dopo cancellazione
+      await this.syncAvailabilityForBooking(bookingData);
+      
     } catch (error) {
       console.error('❌ Errore in BOOKING_ITEM_CANCELLED:', error);
       throw error;
+    }
+  }
+
+  // NUOVO METODO: Sincronizza disponibilità per una prenotazione
+  private async syncAvailabilityForBooking(bookingData: any): Promise<void> {
+    try {
+      console.log('🔄 Sincronizzazione disponibilità per prenotazione:', bookingData.confirmationCode);
+      
+      // LOG DEBUG
+      console.log('📊 Dati ricevuti per sync:', {
+        productId: bookingData.productId,
+        product: bookingData.product,
+        dateString: bookingData.dateString,
+        startDateTime: bookingData.startDateTime
+      });
+      
+      // Recupera productId
+      const productId = bookingData.productId?.toString() || bookingData.product?.id?.toString();
+      
+      // NUOVO: Verifica se è un prodotto Channel Manager
+      if (productId) {
+        const { data: product } = await supabase
+          .from('activities')
+          .select('description')
+          .eq('activity_id', productId)
+          .single();
+        
+        if (product && product.description && product.description.includes('[CHANNEL MANAGER]')) {
+          console.log('⚠️ Prodotto Channel Manager rilevato, skip sincronizzazione disponibilità');
+          return;
+        }
+      }
+      
+      // Prova a ottenere la data da varie fonti
+      let dateToSync = null;
+      
+      // Prima prova con startDateTime (timestamp)
+      if (bookingData.startDateTime) {
+        dateToSync = new Date(bookingData.startDateTime).toISOString().split('T')[0];
+      }
+      // Altrimenti usa dateString ma convertilo
+      else if (bookingData.dateString) {
+        // Se dateString è già in formato YYYY-MM-DD, usalo
+        if (/^\d{4}-\d{2}-\d{2}$/.test(bookingData.dateString)) {
+          dateToSync = bookingData.dateString;
+        } else {
+          // Altrimenti prova a parsare date tipo "jue, julio 31 2025 - 11:45"
+          try {
+            // Estrai solo la parte della data
+            const dateMatch = bookingData.dateString.match(/\b(\w+)\s+(\d{1,2})\s+(\d{4})\b/);
+            if (dateMatch) {
+              const monthsES: { [key: string]: string } = {
+                'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
+                'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
+                'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
+              };
+              // Aggiungi anche i mesi in inglese
+              const monthsEN: { [key: string]: string } = {
+                'january': '01', 'february': '02', 'march': '03', 'april': '04',
+                'may': '05', 'june': '06', 'july': '07', 'august': '08',
+                'september': '09', 'october': '10', 'november': '11', 'december': '12'
+              };
+              const monthName = dateMatch[1].toLowerCase();
+              const month = monthsES[monthName] || monthsEN[monthName] || '01';
+              const day = dateMatch[2].padStart(2, '0');
+              const year = dateMatch[3];
+              dateToSync = `${year}-${month}-${day}`;
+            }
+          } catch (e) {
+            console.error('Errore parsing data:', e);
+          }
+        }
+      }
+      
+      if (productId && dateToSync) {
+        console.log(`📅 Aggiornamento disponibilità per prodotto ${productId} - data ${dateToSync}`);
+        
+        try {
+          await this.octoService.syncAvailability(productId, dateToSync);
+          console.log(`✅ Disponibilità aggiornata per ${productId} - ${dateToSync}`);
+        } catch (error: any) {
+          // Se è un 404, probabilmente è un prodotto Channel Manager non ancora marcato
+          if (error.response && error.response.status === 404) {
+            console.log('⚠️ Prodotto non trovato su OCTO API, probabilmente Channel Manager');
+          } else {
+            console.error(`❌ Errore sincronizzando disponibilità per ${productId}:`, error);
+          }
+        }
+      } else {
+        console.log('⚠️ Dati mancanti per sincronizzazione disponibilità:', { 
+          productId, 
+          dateToSync,
+          originalDateString: bookingData.dateString,
+          startDateTime: bookingData.startDateTime
+        });
+      }
+    } catch (error) {
+      console.error('❌ Errore nella sincronizzazione disponibilità post-webhook:', error);
+    }
+  }
+
+  // NUOVO METODO: Crea prodotto placeholder per Channel Manager
+  private async ensureProductExistsForChannelManager(productId: string, activityData: any): Promise<void> {
+    try {
+      // Verifica se il prodotto esiste già
+      const { data: existingProduct } = await supabase
+        .from('activities')
+        .select('activity_id')
+        .eq('activity_id', productId)
+        .single();
+      
+      if (existingProduct) {
+        return; // Il prodotto esiste già
+      }
+      
+      console.log(`📦 Creazione prodotto Channel Manager ${productId}: ${activityData.title}`);
+      
+      // Crea il prodotto con i dati disponibili dal webhook
+      // Marcalo come "Channel Manager" così sai che non è sincronizzato via OCTO
+      const { error } = await supabase
+        .from('activities')
+        .insert({
+          activity_id: productId,
+          title: activityData.title || `Prodotto Channel Manager ${productId}`,
+          description: `[CHANNEL MANAGER] ${activityData.product?.description || 'Prodotto gestito tramite Channel Manager API'}`,
+          duration_amount: null,
+          duration_unit: null,
+          price_currency: 'EUR',
+          price_amount: activityData.totalPrice || 0,
+          available_currencies: ['EUR'],
+          instant_confirmation: true,
+          instant_delivery: false,
+          requires_date: true,
+          requires_time: true,
+          default_option_id: null,
+          max_capacity: null,
+          last_sync: new Date().toISOString()
+        });
+      
+      if (error) {
+        console.error(`❌ Errore creando prodotto Channel Manager ${productId}:`, error);
+        throw error;
+      } else {
+        console.log(`✅ Prodotto Channel Manager ${productId} creato`);
+      }
+    } catch (error) {
+      console.error('Errore in ensureProductExistsForChannelManager:', error);
+      // Non propagare l'errore se è solo il check di esistenza
+      if ((error as any).code !== 'PGRST116') {
+        throw error;
+      }
     }
   }
 
@@ -254,12 +420,19 @@ export class BookingService {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
     
+    // Verifica se il prodotto esiste, altrimenti crealo (per prodotti Channel Manager)
+    const productId = activityData.productId?.toString() || activityData.product?.id?.toString();
+    if (productId) {
+      await this.ensureProductExistsForChannelManager(productId, activityData);
+    }
+    
     const { error } = await supabase
       .from('activity_bookings')
       .upsert({
         booking_id: parentBookingId,
         activity_booking_id: activityData.bookingId,
         product_id: activityData.productId || activityData.product?.id,
+        activity_id: productId,
         product_title: activityData.title,
         product_confirmation_code: activityData.productConfirmationCode,
         start_date_time: startDateTime.toISOString(),
@@ -282,6 +455,12 @@ export class BookingService {
   private async updateActivityBooking(activityData: any, parentBookingId: number): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
+    
+    // Assicurati che il prodotto esista anche per gli update
+    const productId = activityData.productId?.toString() || activityData.product?.id?.toString();
+    if (productId) {
+      await this.ensureProductExistsForChannelManager(productId, activityData);
+    }
     
     const { error } = await supabase
       .from('activity_bookings')

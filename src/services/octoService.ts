@@ -32,6 +32,15 @@ export class OctoService {
     };
   }
 
+  // Funzione helper per convertire UTC in ora di Roma (UTC+2)
+  private convertToRomeTime(utcDateString: string): Date {
+    const utcDate = new Date(utcDateString);
+    // Aggiungi 2 ore per Roma (UTC+2 in estate)
+    // TODO: Gestire automaticamente ora legale/solare con una libreria come date-fns-tz
+    const romeDate = new Date(utcDate.getTime() + (2 * 60 * 60 * 1000));
+    return romeDate;
+  }
+
   // Sincronizza tutti i prodotti
   async syncProducts(): Promise<void> {
     try {
@@ -186,7 +195,10 @@ export class OctoService {
 
   // Salva singola disponibilità
   private async saveAvailability(productId: string, availability: OctoAvailability): Promise<void> {
-    const startDate = new Date(availability.localDateTimeStart);
+    // Converti da UTC a ora di Roma (UTC+2)
+    const romeDateTime = this.convertToRomeTime(availability.localDateTimeStart);
+    const romeDate = romeDateTime.toISOString().split('T')[0];
+    const romeTime = romeDateTime.toTimeString().substring(0, 5); // HH:MM
     
     // Calcola i posti venduti
     const vacancySold = (availability.capacity || 0) - (availability.vacancies || 0);
@@ -196,9 +208,9 @@ export class OctoService {
       .upsert({
         activity_id: productId,
         availability_id: availability.id,
-        local_date_time: startDate.toISOString(),
-        local_date: startDate.toISOString().split('T')[0],
-        local_time: startDate.toTimeString().split(' ')[0],
+        local_date_time: romeDateTime.toISOString(), // Ora di Roma
+        local_date: romeDate, // Data di Roma
+        local_time: romeTime, // Ora di Roma (HH:MM)
         available: availability.available,
         status: availability.status,
         vacancy_opening: availability.capacity || 0,  // Capacità totale
@@ -213,7 +225,7 @@ export class OctoService {
 
     if (error) throw error;
     
-    console.log(`💾 Salvata disponibilità: ${availability.localTime} - Posti: ${availability.vacancies}/${availability.capacity}`);
+    console.log(`💾 Salvata disponibilità: ${romeTime} (Roma) - Posti: ${availability.vacancies}/${availability.capacity}`);
   }
 
   // Sincronizza disponibilità per tutti i prodotti per i prossimi N giorni
@@ -232,6 +244,44 @@ export class OctoService {
       }
 
       console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti`);
+
+      for (const activity of activities) {
+        for (let i = 0; i < days; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          await this.syncAvailability(activity.activity_id, dateStr);
+          
+          // Pausa per non sovraccaricare l'API
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      console.log('✅ Sincronizzazione disponibilità completata');
+    } catch (error) {
+      console.error('❌ Errore sincronizzazione disponibilità:', error);
+      throw error;
+    }
+  }
+
+  // Sincronizza disponibilità per tutti i prodotti ECCETTO alcuni, per i prossimi N giorni
+  async syncAllAvailabilityExcept(days: number = 30, excludedProducts: string[] = []): Promise<void> {
+    try {
+      console.log(`🔄 Inizio sincronizzazione disponibilità per ${days} giorni (con esclusioni)`);
+      
+      const { data: activities, error } = await supabase
+        .from('activities')
+        .select('activity_id')
+        .not('activity_id', 'in', `(${excludedProducts.join(',')})`);
+
+      if (error) throw error;
+      if (!activities || activities.length === 0) {
+        console.log('⚠️ Nessun prodotto trovato.');
+        return;
+      }
+
+      console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti (esclusi: ${excludedProducts.length})`);
 
       for (const activity of activities) {
         for (let i = 0; i < days; i++) {
