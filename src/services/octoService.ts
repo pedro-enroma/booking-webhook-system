@@ -117,23 +117,26 @@ export class OctoService {
     console.log(`✅ Salvato prodotto: ${product.internalName || product.title} (Option: ${defaultOptionId})`);
   }
 
-  // Recupera l'option ID corretto per un prodotto
+  // Recupera l'option ID corretto per un prodotto - CORREZIONE QUI
   private async getProductOptionId(productId: string): Promise<string> {
     try {
       // Prima proviamo a recuperare dal database se l'abbiamo salvato
       const { data, error } = await supabase
         .from('activities')
-        .select('*')
+        .select('default_option_id')
         .eq('activity_id', productId)
         .single();
       
       if (data && data.default_option_id) {
+        console.log(`✅ Option ID trovato nel DB: ${data.default_option_id}`);
         return data.default_option_id;
       }
       
       // Se non l'abbiamo, recuperiamo il prodotto dall'API
-      console.log(`📡 Recupero opzioni per prodotto ${productId}`);
-      const url = `${this.baseUrl}/suppliers/${this.supplierId}/products/${productId}`;
+      console.log(`📡 Recupero opzioni per prodotto ${productId} dall'API`);
+      
+      // CORREZIONE: Usa l'endpoint corretto senza suppliers
+      const url = `${this.baseUrl}/products/${productId}`;
       
       const response = await axios.get<OctoProduct>(url, {
         headers: this.getHeaders()
@@ -143,13 +146,23 @@ export class OctoService {
       if (product.options && product.options.length > 0) {
         // Prendi la prima opzione o quella marcata come default
         const defaultOption = product.options.find((opt) => opt.default) || product.options[0];
+        
+        // Salva nel database per uso futuro
+        await supabase
+          .from('activities')
+          .update({ default_option_id: defaultOption.id })
+          .eq('activity_id', productId);
+        
+        console.log(`✅ Option ID recuperato dall'API: ${defaultOption.id}`);
         return defaultOption.id;
       }
       
-      return 'DEFAULT'; // Fallback
-    } catch (error) {
-      console.error('Errore recuperando option ID:', error);
-      return 'DEFAULT';
+      // CORREZIONE: Non ritornare 'DEFAULT', lancia un errore
+      throw new Error(`Nessuna option trovata per il prodotto ${productId}`);
+      
+    } catch (error: any) {
+      console.error('❌ Errore recuperando option ID:', error.message);
+      throw error; // Propaga l'errore invece di ritornare 'DEFAULT'
     }
   }
 
