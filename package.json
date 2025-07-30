@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test-sync": "ts-node src/test-sync.ts",
+    "verify-fix": "ts-node src/verify-fix.ts",
+    "test-complete": "ts-node src/test-complete.ts",
+    "test-mass": "ts-node src/test-mass-sync.ts",
+    "create-view": "ts-node src/create-view.ts"
   },
   "keywords": [],
   "author": "",
