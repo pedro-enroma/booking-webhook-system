@@ -176,19 +176,8 @@ export class BookingService {
       // Recupera productId
       const productId = bookingData.productId?.toString() || bookingData.product?.id?.toString();
       
-      // NUOVO: Verifica se è un prodotto Channel Manager
-      if (productId) {
-        const { data: product } = await supabase
-          .from('activities')
-          .select('description')
-          .eq('activity_id', productId)
-          .single();
-        
-        if (product && product.description && product.description.includes('[CHANNEL MANAGER]')) {
-          console.log('⚠️ Prodotto Channel Manager rilevato, skip sincronizzazione disponibilità');
-          return;
-        }
-      }
+      // RIMOSSO: Il controllo per prodotti Channel Manager
+      // Ora sincronizziamo TUTTI i prodotti, inclusi Channel Manager
       
       // Prova a ottenere la data da varie fonti
       let dateToSync = null;
@@ -238,9 +227,9 @@ export class BookingService {
           await this.octoService.syncAvailability(productId, dateToSync);
           console.log(`✅ Disponibilità aggiornata per ${productId} - ${dateToSync}`);
         } catch (error: any) {
-          // Se è un 404, probabilmente è un prodotto Channel Manager non ancora marcato
+          // Se è un 404, logga ma non bloccare
           if (error.response && error.response.status === 404) {
-            console.log('⚠️ Prodotto non trovato su OCTO API, probabilmente Channel Manager');
+            console.log('⚠️ Prodotto non trovato su OCTO API, continuo comunque');
           } else {
             console.error(`❌ Errore sincronizzando disponibilità per ${productId}:`, error);
           }
