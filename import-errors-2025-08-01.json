@@ -1,0 +1,14 @@
+[
+  {
+    "bookingId": "BUE-63005542",
+    "confirmationCode": "ENRO-T93897858",
+    "error": "time zone displacement out of range: \"25 10:33-24-04 00:00:00\"",
+    "customer": "BALLESTER CAUDET, ENRIQUE"
+  },
+  {
+    "bookingId": "BUE-67127401",
+    "confirmationCode": "ENRO-T99133840",
+    "error": "time zone displacement out of range: \"25 21:52-21-06 00:00:00\"",
+    "customer": "FERNÁNDEZ ALVAREZ, JULIO VICENTE"
+  }
+]
