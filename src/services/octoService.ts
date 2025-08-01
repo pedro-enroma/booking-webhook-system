@@ -25,20 +25,24 @@ export class OctoService {
   // Headers corretti per Bokun OCTO API
   private getHeaders() {
     return {
+      // Usa Authorization con formato vendor-specific per rimuovere il limite di 100 prodotti
       'Authorization': `Bearer ${this.apiKey}/${this.supplierId}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Octo-Capabilities': 'text' // Aggiungi questo header come nei tuoi test
+      'Accept': 'application/json'
     };
   }
+
+  // RIMOSSO: Funzione di conversione orario - Bokun invia già gli orari locali corretti
 
   // Sincronizza tutti i prodotti
   async syncProducts(): Promise<void> {
     try {
       console.log('🔄 Inizio sincronizzazione prodotti...');
       
+      // Usa /products senza supplier ID (il vendor ID è nel token)
       const url = `${this.baseUrl}/products`;
       console.log('📍 URL chiamata:', url);
+      console.log('🔑 Headers:', JSON.stringify(this.getHeaders(), null, 2));
       
       const response = await axios.get<OctoProduct[]>(url, {
         headers: this.getHeaders()
@@ -47,15 +51,22 @@ export class OctoService {
       console.log('📡 Risposta ricevuta:', response.status);
       
       const products = response.data;
-      console.log(`📦 Trovati ${products.length} prodotti`);
+      console.log(`📦 Trovati ${products.length} prodotti (senza limite di paginazione)`);
 
-      // Salva i prodotti in batch per migliori performance
-      const savePromises = products.map(product => this.saveProduct(product));
-      await Promise.all(savePromises);
+      for (const product of products) {
+        await this.saveProduct(product);
+      }
 
       console.log('✅ Sincronizzazione prodotti completata');
     } catch (error: any) {
       console.error('❌ Errore sincronizzazione prodotti:', error.response?.data || error.message);
+      
+      if (error.response) {
+        console.error('🚨 Dettagli errore:');
+        console.error('   - Status:', error.response.status);
+        console.error('   - Response:', JSON.stringify(error.response.data));
+      }
+      
       throw error;
     }
   }
@@ -86,7 +97,7 @@ export class OctoService {
         instant_delivery: product.instantDelivery || false,
         requires_date: product.availabilityRequired || true,
         requires_time: product.availabilityType === 'START_TIME',
-        default_option_id: defaultOptionId,
+        default_option_id: defaultOptionId,  // Salva l'option ID
         last_sync: new Date().toISOString()
       }, {
         onConflict: 'activity_id'
@@ -96,12 +107,13 @@ export class OctoService {
       console.error(`❌ Errore salvando prodotto ${product.id}:`, error);
       throw error;
     }
+    console.log(`✅ Salvato prodotto: ${product.internalName || product.title} (Option: ${defaultOptionId})`);
   }
 
-  // Recupera l'option ID corretto per un prodotto
+  // Recupera l'option ID corretto per un prodotto - CORREZIONE QUI
   private async getProductOptionId(productId: string): Promise<string> {
     try {
-      // Prima proviamo a recuperare dal database
+      // Prima proviamo a recuperare dal database se l'abbiamo salvato
       const { data, error } = await supabase
         .from('activities')
         .select('default_option_id')
@@ -109,12 +121,14 @@ export class OctoService {
         .single();
       
       if (data && data.default_option_id) {
+        console.log(`✅ Option ID trovato nel DB: ${data.default_option_id}`);
         return data.default_option_id;
       }
       
       // Se non l'abbiamo, recuperiamo il prodotto dall'API
       console.log(`📡 Recupero opzioni per prodotto ${productId} dall'API`);
       
+      // CORREZIONE: Usa l'endpoint corretto senza suppliers
       const url = `${this.baseUrl}/products/${productId}`;
       
       const response = await axios.get<OctoProduct>(url, {
@@ -123,6 +137,7 @@ export class OctoService {
       
       const product = response.data;
       if (product.options && product.options.length > 0) {
+        // Prendi la prima opzione o quella marcata come default
         const defaultOption = product.options.find((opt) => opt.default) || product.options[0];
         
         // Salva nel database per uso futuro
@@ -131,34 +146,35 @@ export class OctoService {
           .update({ default_option_id: defaultOption.id })
           .eq('activity_id', productId);
         
+        console.log(`✅ Option ID recuperato dall'API: ${defaultOption.id}`);
         return defaultOption.id;
       }
       
+      // CORREZIONE: Non ritornare 'DEFAULT', lancia un errore
       throw new Error(`Nessuna option trovata per il prodotto ${productId}`);
       
     } catch (error: any) {
       console.error('❌ Errore recuperando option ID:', error.message);
-      throw error;
+      throw error; // Propaga l'errore invece di ritornare 'DEFAULT'
     }
   }
 
-  // Sincronizza disponibilità per un prodotto con range di date
-  async syncAvailabilityRange(productId: string, startDate: string, endDate: string): Promise<void> {
+  // Sincronizza disponibilità per un prodotto
+  async syncAvailability(productId: string, date: string): Promise<void> {
     try {
-      console.log(`🔄 Sincronizzazione disponibilità per ${productId} dal ${startDate} al ${endDate}`);
+      console.log(`🔄 Sincronizzazione disponibilità per ${productId} - ${date}`);
       
       // Recupera l'option ID corretto
       const optionId = await this.getProductOptionId(productId);
+      console.log(`📌 Usando option ID: ${optionId}`);
       
       const url = `${this.baseUrl}/availability`;
       const payload = {
         productId: productId,
-        optionId: optionId,
-        localDateStart: startDate,
-        localDateEnd: endDate
+        optionId: optionId,  // Usa l'option ID recuperato
+        localDateStart: date,
+        localDateEnd: date
       };
-      
-      console.log('📤 Richiesta disponibilità:', payload);
       
       const response = await axios.post<OctoAvailability[]>(url, payload, {
         headers: this.getHeaders()
@@ -166,59 +182,70 @@ export class OctoService {
 
       const availabilities = response.data;
       
+      // LOG DEBUG
       console.log(`📊 Ricevute ${availabilities.length} disponibilità`);
+      if (availabilities.length > 0) {
+        console.log('Esempio disponibilità:', JSON.stringify(availabilities[0], null, 2));
+      }
       
-      // Salva tutte le disponibilità in batch
-      const savePromises = availabilities.map(availability => 
-        this.saveAvailability(productId, availability)
-      );
-      await Promise.all(savePromises);
+      for (const availability of availabilities) {
+        await this.saveAvailability(productId, availability);
+      }
 
       console.log(`✅ Salvate ${availabilities.length} disponibilità`);
     } catch (error: any) {
-      if (error.response?.status === 404) {
-        console.log(`⚠️ Prodotto ${productId} non trovato su OCTO API`);
-        return;
-      }
-      console.error(`❌ Errore sincronizzazione disponibilità per ${productId}:`, error.response?.data || error.message);
+      console.error('❌ Errore sincronizzazione disponibilità:', error.response?.data || error.message);
       throw error;
     }
   }
 
-  // Sincronizza disponibilità per una singola data (usato dai webhook)
-  async syncAvailability(productId: string, date: string): Promise<void> {
-    await this.syncAvailabilityRange(productId, date, date);
-  }
-
   // Salva singola disponibilità
   private async saveAvailability(productId: string, availability: OctoAvailability): Promise<void> {
-    // SALVA ESATTAMENTE COME ARRIVA DA BOKUN - NESSUNA MODIFICA
-    // Supabase o l'app che legge aggiungerà 2 ore quando necessario
-    const dateTimeStr = availability.localDateTimeStart.replace('Z', '');
-    const [datePart, timeWithSeconds] = dateTimeStr.split('T');
-    const timePart = timeWithSeconds.substring(0, 5); // HH:MM
+    // Estrai data e ora da localDateTimeStart
+    let localDate = availability.localDate;
+    let localTime = availability.localTime;
+    
+    if (!localDate || !localTime) {
+      // Bokun invia in formato UTC (con Z), dobbiamo convertire in ora locale
+      const utcDate = new Date(availability.localDateTimeStart);
+      
+      // Converti in ora locale di Roma (il server potrebbe non essere in timezone Roma)
+      // Usa toLocaleString con timezone Europe/Rome
+      const romeDateTime = utcDate.toLocaleString('en-US', {
+        timeZone: 'Europe/Rome',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      
+      // Parsing del formato MM/DD/YYYY, HH:MM
+      const [datePart, timePart] = romeDateTime.split(', ');
+      const [month, day, year] = datePart.split('/');
+      localDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      localTime = timePart; // Già in formato HH:MM
+      
+      console.log(`📝 Conversione da UTC: ${availability.localDateTimeStart} → ${localDate} ${localTime} (Roma)`);
+    }
     
     // Calcola i posti venduti
     const vacancySold = (availability.capacity || 0) - (availability.vacancies || 0);
-    
-    // Log per debug
-    if (Math.random() < 0.1) { // Log solo 10% per non intasare
-      console.log(`💾 Bokun: ${availability.localDateTimeStart} → DB: ${datePart} ${timePart} (no modifiche)`);
-    }
     
     const { error } = await supabase
       .from('activity_availability')
       .upsert({
         activity_id: productId,
         availability_id: availability.id,
-        local_date_time: availability.localDateTimeStart, // Timestamp originale di Bokun
-        local_date: datePart,
-        local_time: timePart, // Ora esatta di Bokun (16:00)
+        local_date_time: availability.localDateTimeStart, // Mantieni l'originale UTC
+        local_date: localDate, // Data in ora locale Roma
+        local_time: localTime, // Ora in ora locale Roma
         available: availability.available,
         status: availability.status,
-        vacancy_opening: availability.capacity || 0,
-        vacancy_available: availability.vacancies || 0,
-        vacancy_sold: vacancySold,
+        vacancy_opening: availability.capacity || 0,  // Capacità totale
+        vacancy_available: availability.vacancies || 0,  // Posti disponibili
+        vacancy_sold: vacancySold,  // Posti venduti (calcolati)
         price_currency: availability.pricing?.[0]?.currency,
         price_amount: availability.pricing?.[0]?.amount || availability.pricing?.[0]?.unitPrice,
         updated_at: new Date().toISOString()
@@ -226,75 +253,38 @@ export class OctoService {
         onConflict: 'availability_id'
       });
 
-    if (error) {
-      console.error(`❌ Errore salvando disponibilità ${availability.id}:`, error);
-      throw error;
-    }
+    if (error) throw error;
+    
+    console.log(`💾 Salvata disponibilità: ${localDate} ${localTime} - Posti: ${availability.vacancies}/${availability.capacity} - Status: ${availability.status}`);
   }
 
-  // Sincronizza disponibilità per tutti i prodotti per i prossimi N giorni - OTTIMIZZATO
+  // Sincronizza disponibilità per tutti i prodotti per i prossimi N giorni
   async syncAllAvailability(days: number = 30): Promise<void> {
     try {
       console.log(`🔄 Inizio sincronizzazione disponibilità per ${days} giorni`);
       
-      // Recupera tutti i prodotti
-      let query = supabase
+      const { data: activities, error } = await supabase
         .from('activities')
-        .select('activity_id, description');
-      
-      const { data: activities, error } = await query;
+        .select('activity_id');
 
       if (error) throw error;
       if (!activities || activities.length === 0) {
         console.log('⚠️ Nessun prodotto trovato. Esegui prima la sincronizzazione prodotti.');
         return;
       }
-      
-      // Filtra manualmente i prodotti Channel Manager
-      const filteredActivities = activities.filter(activity => {
-        return !activity.description || !activity.description.includes('[CHANNEL MANAGER]');
-      });
-      
-      console.log(`📦 Trovati ${activities.length} prodotti totali, ${filteredActivities.length} da sincronizzare`);
-      
-      if (filteredActivities.length === 0) {
-        console.log('⚠️ Nessun prodotto da sincronizzare dopo il filtro Channel Manager.');
-        return;
-      }
 
-      // Calcola le date di inizio e fine
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + days);
-      
-      const startDateStr = startDate.toISOString().split('T')[0];
-      const endDateStr = endDate.toISOString().split('T')[0];
+      console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti`);
 
-      console.log(`📅 Range date: ${startDateStr} - ${endDateStr}`);
-
-      // Processa i prodotti in batch per evitare troppi carichi sull'API
-      const batchSize = 5; // Processa 5 prodotti alla volta
-      
-      for (let i = 0; i < filteredActivities.length; i += batchSize) {
-        const batch = filteredActivities.slice(i, i + batchSize);
-        
-        const batchPromises = batch.map(async (activity) => {
-          try {
-            // Richiedi l'intero range di date in una singola chiamata
-            await this.syncAvailabilityRange(activity.activity_id, startDateStr, endDateStr);
-          } catch (error) {
-            console.error(`⚠️ Errore per prodotto ${activity.activity_id}, continuo con gli altri`);
-          }
-        });
-        
-        await Promise.all(batchPromises);
-        
-        // Log progressi
-        console.log(`📊 Progresso: ${Math.min(i + batchSize, filteredActivities.length)}/${filteredActivities.length} prodotti`);
-        
-        // Pausa tra i batch per non sovraccaricare l'API
-        if (i + batchSize < filteredActivities.length) {
-          await new Promise(resolve => setTimeout(resolve, 1000)); // 1 secondo tra i batch
+      for (const activity of activities) {
+        for (let i = 0; i < days; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          await this.syncAvailability(activity.activity_id, dateStr);
+          
+          // Pausa per non sovraccaricare l'API
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
 
@@ -305,67 +295,34 @@ export class OctoService {
     }
   }
 
-  // Sincronizza disponibilità per tutti i prodotti ECCETTO alcuni - OTTIMIZZATO
+  // Sincronizza disponibilità per tutti i prodotti ECCETTO alcuni, per i prossimi N giorni
   async syncAllAvailabilityExcept(days: number = 30, excludedProducts: string[] = []): Promise<void> {
     try {
       console.log(`🔄 Inizio sincronizzazione disponibilità per ${days} giorni (con esclusioni)`);
-      console.log(`📋 Prodotti esclusi: ${excludedProducts.join(', ')}`);
       
-      // Recupera tutti i prodotti
       const { data: activities, error } = await supabase
         .from('activities')
-        .select('activity_id, description');
+        .select('activity_id')
+        .not('activity_id', 'in', `(${excludedProducts.join(',')})`);
 
       if (error) throw error;
       if (!activities || activities.length === 0) {
         console.log('⚠️ Nessun prodotto trovato.');
         return;
       }
-      
-      // Filtra manualmente: escludi Channel Manager E prodotti nella lista di esclusione
-      const filteredActivities = activities.filter(activity => {
-        const isChannelManager = activity.description && activity.description.includes('[CHANNEL MANAGER]');
-        const isExcluded = excludedProducts.includes(activity.activity_id);
-        return !isChannelManager && !isExcluded;
-      });
-      
-      console.log(`📦 Trovati ${activities.length} prodotti totali, ${filteredActivities.length} da sincronizzare`);
-      
-      if (filteredActivities.length === 0) {
-        console.log('⚠️ Nessun prodotto da sincronizzare dopo i filtri.');
-        return;
-      }
 
-      // Calcola le date
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + days);
-      
-      const startDateStr = startDate.toISOString().split('T')[0];
-      const endDateStr = endDate.toISOString().split('T')[0];
+      console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti (esclusi: ${excludedProducts.length})`);
 
-      console.log(`📅 Range date: ${startDateStr} - ${endDateStr}`);
-
-      // Processa in batch
-      const batchSize = 5;
-      
-      for (let i = 0; i < filteredActivities.length; i += batchSize) {
-        const batch = filteredActivities.slice(i, i + batchSize);
-        
-        const batchPromises = batch.map(async (activity) => {
-          try {
-            await this.syncAvailabilityRange(activity.activity_id, startDateStr, endDateStr);
-          } catch (error) {
-            console.error(`⚠️ Errore per prodotto ${activity.activity_id}, continuo con gli altri`);
-          }
-        });
-        
-        await Promise.all(batchPromises);
-        
-        console.log(`📊 Progresso: ${Math.min(i + batchSize, filteredActivities.length)}/${filteredActivities.length} prodotti`);
-        
-        if (i + batchSize < filteredActivities.length) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+      for (const activity of activities) {
+        for (let i = 0; i < days; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          await this.syncAvailability(activity.activity_id, dateStr);
+          
+          // Pausa per non sovraccaricare l'API
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
 

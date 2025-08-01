@@ -11,7 +11,8 @@
     "verify-fix": "ts-node src/verify-fix.ts",
     "test-complete": "ts-node src/test-complete.ts",
     "test-mass": "ts-node src/test-mass-sync.ts",
-    "create-view": "ts-node src/create-view.ts"
+    "create-view": "ts-node src/create-view.ts",
+    "import-signature": "ts-node src/import-signature.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +24,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "node-cron": "^4.2.0"
+    "node-cron": "^4.2.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",

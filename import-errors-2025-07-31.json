@@ -1,0 +1,22 @@
+[
+  {
+    "error": "Cannot read properties of undefined (reading 'toUpperCase')",
+    "customer": "Jiménez Salazar, Horacio Francisco"
+  },
+  {
+    "error": "Cannot read properties of undefined (reading 'toUpperCase')",
+    "customer": "Delgado Pacheco, Estefanía"
+  },
+  {
+    "error": "Cannot read properties of undefined (reading 'toUpperCase')",
+    "customer": "SARACCO, ALDO SERGIO"
+  },
+  {
+    "error": "Cannot read properties of undefined (reading 'toUpperCase')",
+    "customer": "BALLESTER CAUDET, ENRIQUE"
+  },
+  {
+    "error": "Cannot read properties of undefined (reading 'toUpperCase')",
+    "customer": "FERNÁNDEZ ALVAREZ, JULIO VICENTE"
+  }
+]
