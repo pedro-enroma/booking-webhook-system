@@ -35,6 +35,7 @@ interface ImportRow {
   'Total PAX': number;  // Con spazio e maiuscole!
   Participants: string;  // Maiuscola!
   'signature.PaxName': string;
+  'Total price with discount': number;  // Aggiungo questo campo!
 }
 
 // Funzione per parsare i nomi dei passeggeri
@@ -93,6 +94,9 @@ async function findOrCreateBooking(row: ImportRow) {
     // Crea prima il customer se necessario
     const customerId = await findOrCreateCustomer(row);
     
+    // Calcola il total price del booking (potrebbe essere la somma di più attività)
+    const totalPrice = row['Total price with discount'] || 0;
+    
     // Poi crea il booking (usa bookingIdNumeric già dichiarato sopra)
     const { data: newBooking, error: insertError } = await supabase
       .from('bookings')
@@ -102,9 +106,9 @@ async function findOrCreateBooking(row: ImportRow) {
         external_booking_reference: row.external_reference,
         status: row.booking_status,
         currency: 'EUR',
-        total_price: 0, // Non abbiamo questo dato nel CSV
+        total_price: totalPrice,  // Usa il prezzo dall'Excel
         total_paid: 0,
-        total_due: 0,
+        total_due: totalPrice,    // Assumiamo che sia tutto da pagare
         payment_type: 'NOT_PAID',
         language: 'es',
         action: 'BOOKING_CONFIRMED',
@@ -134,14 +138,9 @@ async function findOrCreateBooking(row: ImportRow) {
       throw insertError;
     }
     
-    // Collega il booking al customer
+    // Collega il booking al cliente
     if (customerId && newBooking) {
-      await supabase
-        .from('booking_customers')
-        .insert({
-          booking_id: newBooking.booking_id,
-          customer_id: customerId
-        });
+      await linkBookingToCustomer(newBooking.booking_id, customerId);
     }
     
     return newBooking?.booking_id;
@@ -197,12 +196,55 @@ async function findOrCreateCustomer(row: ImportRow) {
   }
 }
 
+// Funzione per collegare la prenotazione al cliente
+async function linkBookingToCustomer(bookingId: number, customerId: number): Promise<void> {
+  const { error } = await supabase
+    .from('booking_customers')
+    .upsert({
+      booking_id: bookingId,
+      customer_id: customerId
+    }, {
+      onConflict: 'booking_id,customer_id',
+      ignoreDuplicates: true
+    });
+  
+  if (error) {
+    console.error('Errore collegando booking a customer:', error);
+  }
+}
+
 // Funzione per creare un nuovo activity booking (quando sappiamo già che non esiste)
 async function createActivityBooking(row: ImportRow, parentBookingId: number, activityBookingId: number) {
   try {
+    // Metodo semplice: prendi i valori locali e aggiungi 'Z' per forzare come UTC
     const startDateTime = new Date(row.start_date_time);
+    
+    // Estrai i componenti locali
+    const year = startDateTime.getFullYear();
+    const month = String(startDateTime.getMonth() + 1).padStart(2, '0');
+    const day = String(startDateTime.getDate()).padStart(2, '0');
+    const hours = String(startDateTime.getHours()).padStart(2, '0');
+    const minutes = String(startDateTime.getMinutes()).padStart(2, '0');
+    const seconds = '00';
+    
+    // Costruisci ISO string con l'ora LOCALE ma marcata come UTC
+    // Questo preserverà l'ora esatta che vedi nell'Excel
+    const startDateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`;
+    
+    // Calcola end time (+2 ore)
     const endDateTime = new Date(startDateTime);
-    endDateTime.setHours(endDateTime.getHours() + 2); // Assumiamo 2 ore di durata
+    endDateTime.setHours(endDateTime.getHours() + 2);
+    
+    const endYear = endDateTime.getFullYear();
+    const endMonth = String(endDateTime.getMonth() + 1).padStart(2, '0');
+    const endDay = String(endDateTime.getDate()).padStart(2, '0');
+    const endHours = String(endDateTime.getHours()).padStart(2, '0');
+    const endMinutes = String(endDateTime.getMinutes()).padStart(2, '0');
+    
+    const endDateTimeStr = `${endYear}-${endMonth}-${endDay}T${endHours}:${endMinutes}:${seconds}.000Z`;
+    
+    // Prendi il prezzo dalla colonna corretta
+    const totalPrice = row['Total price with discount'] || 0;
     
     const { data: newActivity, error } = await supabase
       .from('activity_bookings')
@@ -213,13 +255,13 @@ async function createActivityBooking(row: ImportRow, parentBookingId: number, ac
         activity_id: row.product_id.toString(),
         product_title: row.product_title,
         product_confirmation_code: row.confirmation_code,
-        start_date_time: startDateTime.toISOString(),
-        end_date_time: endDateTime.toISOString(),
+        start_date_time: startDateTimeStr,  // Ora esatta dall'Excel
+        end_date_time: endDateTimeStr,      // +2 ore
         status: row.booking_status,
-        total_price: 0,
+        total_price: totalPrice,  // Usa il valore dall'Excel
         rate_title: 'Standard',
-        start_time: startDateTime.toTimeString().substring(0, 5),
-        date_string: startDateTime.toLocaleDateString()
+        start_time: `${hours}:${minutes}`,  // Ora locale
+        date_string: `${day}/${month}/${year}`
       })
       .select('activity_booking_id')
       .single();
@@ -230,73 +272,12 @@ async function createActivityBooking(row: ImportRow, parentBookingId: number, ac
     }
     
     console.log(`   ✅ Activity booking creato: ${activityBookingId} (${row.product_title})`);
+    console.log(`      📅 Data/ora: ${day}/${month}/${year} ${hours}:${minutes}`);
+    console.log(`      💰 Prezzo: €${totalPrice}`);
     return activityBookingId;
     
   } catch (error) {
     console.error('Errore in createActivityBooking:', error);
-    throw error;
-  }
-}
-
-// Funzione per trovare o creare activity booking (DEPRECATA - non più usata)
-async function findOrCreateActivityBooking(row: ImportRow, parentBookingId: number) {
-  try {
-    // Estrai l'activity_booking_id dal confirmation_code
-    // Es: ENRO-T100013270 → 100013270
-    // Supporta anche altri formati: ENRO-100013270, etc.
-    const match = row.confirmation_code.match(/[A-Z]+[-]?T?(\d+)/);
-    if (!match) {
-      throw new Error(`Formato confirmation_code non valido: ${row.confirmation_code}`);
-    }
-    
-    const activityBookingId = parseInt(match[1]);
-    
-    const { data: existing } = await supabase
-      .from('activity_bookings')
-      .select('activity_booking_id')
-      .eq('activity_booking_id', activityBookingId)
-      .maybeSingle();
-    
-    if (existing) {
-      console.log(`   ✅ Activity booking esistente: ${activityBookingId}`);
-      return activityBookingId;
-    }
-    
-    // Crea nuovo activity booking
-    const startDateTime = new Date(row.start_date_time);
-    const endDateTime = new Date(startDateTime);
-    endDateTime.setHours(endDateTime.getHours() + 2); // Assumiamo 2 ore di durata
-    
-    const { data: newActivity, error } = await supabase
-      .from('activity_bookings')
-      .insert({
-        booking_id: parentBookingId,
-        activity_booking_id: activityBookingId,
-        product_id: row.product_id,
-        activity_id: row.product_id.toString(),
-        product_title: row.product_title,
-        product_confirmation_code: row.confirmation_code,
-        start_date_time: startDateTime.toISOString(),
-        end_date_time: endDateTime.toISOString(),
-        status: row.booking_status,
-        total_price: 0,
-        rate_title: 'Standard',
-        start_time: startDateTime.toTimeString().substring(0, 5),
-        date_string: startDateTime.toLocaleDateString()
-      })
-      .select('activity_booking_id')
-      .single();
-    
-    if (error) {
-      console.error('   ❌ Errore creando activity booking:', error);
-      throw error;
-    }
-    
-    console.log(`   📝 Activity booking creato: ${activityBookingId} (${row.product_title})`);
-    return activityBookingId;
-    
-  } catch (error) {
-    console.error('Errore in findOrCreateActivityBooking:', error);
     throw error;
   }
 }
@@ -310,8 +291,8 @@ async function importSignatures(filePath: string) {
     // Leggi il file Excel
     const fileContent = fs.readFileSync(filePath);
     const workbook = XLSX.read(fileContent, {
-      cellDates: true,
-      dateNF: 'yyyy-mm-dd'
+      cellDates: true,  // IMPORTANTE: converte automaticamente le date Excel in oggetti Date
+      dateNF: 'dd/mm/yyyy hh:mm:ss'  // Formato date
     });
     
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -334,6 +315,7 @@ async function importSignatures(filePath: string) {
       console.log(`   Booking principale: ${row.booking_id}`);
       console.log(`   Activity: ${row.confirmation_code} - ${row.product_title}`);
       console.log(`   Cliente: ${row.Customer}`);
+      console.log(`   Prezzo: €${row['Total price with discount']}`);
       
       try {
         // Verifica che ci siano nomi passeggeri
