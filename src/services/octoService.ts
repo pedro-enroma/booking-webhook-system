@@ -182,86 +182,21 @@ export class OctoService {
 
       const availabilities = response.data;
       
-      // LOG COMPLETO DELLA RISPOSTA BOKUN
+      // LOG DEBUG
       console.log(`📊 Ricevute ${availabilities.length} disponibilità`);
-      console.log('🔍 RISPOSTA COMPLETA BOKUN:');
-      console.log(JSON.stringify(availabilities, null, 2));
-      
-      // Se non ci sono disponibilità (0), marca la data come CLOSED
-      if (availabilities.length === 0) {
-        await this.markDateAsClosed(productId, date);
-        console.log(`🚫 Nessuna disponibilità per ${date} - marcata come CLOSED`);
-      } else {
-        // Altrimenti salva normalmente
-        for (const availability of availabilities) {
-          await this.saveAvailability(productId, availability);
-        }
-        console.log(`✅ Salvate ${availabilities.length} disponibilità`);
+      if (availabilities.length > 0) {
+        console.log('Esempio disponibilità:', JSON.stringify(availabilities[0], null, 2));
       }
+      
+      // Salva solo se ci sono disponibilità
+      for (const availability of availabilities) {
+        await this.saveAvailability(productId, availability);
+      }
+
+      console.log(`✅ Salvate ${availabilities.length} disponibilità`);
     } catch (error: any) {
       console.error('❌ Errore sincronizzazione disponibilità:', error.response?.data || error.message);
       throw error;
-    }
-  }
-
-  // Nuovo metodo per marcare una data come CLOSED quando non ci sono disponibilità
-  private async markDateAsClosed(productId: string, date: string): Promise<void> {
-    // Prima verifica se esistono già record per questa data
-    const { data: existingRecords, error: selectError } = await supabase
-      .from('activity_availability')
-      .select('availability_id')
-      .eq('activity_id', productId)
-      .eq('local_date', date);
-    
-    if (selectError) {
-      console.error('Errore verificando record esistenti:', selectError);
-      return;
-    }
-    
-    if (existingRecords && existingRecords.length > 0) {
-      // Aggiorna i record esistenti a CLOSED
-      const { error: updateError } = await supabase
-        .from('activity_availability')
-        .update({
-          status: 'CLOSED',
-          available: false,
-          vacancy_available: 0,
-          updated_at: new Date().toISOString()
-        })
-        .eq('activity_id', productId)
-        .eq('local_date', date);
-      
-      if (updateError) {
-        console.error('Errore aggiornando a CLOSED:', updateError);
-      } else {
-        console.log(`✅ Aggiornati ${existingRecords.length} record a CLOSED per ${date}`);
-      }
-    } else {
-      // Se non esistono record, crea un placeholder CLOSED
-      // Dobbiamo generare un availability_id unico
-      const availabilityId = `${date}_${productId}_CLOSED`;
-      
-      const { error: insertError } = await supabase
-        .from('activity_availability')
-        .insert({
-          activity_id: productId,
-          availability_id: availabilityId,
-          local_date_time: `${date}T00:00:00Z`, // Placeholder
-          local_date: date,
-          local_time: '00:00', // Placeholder
-          available: false,
-          status: 'CLOSED',
-          vacancy_opening: 0,
-          vacancy_available: 0,
-          vacancy_sold: 0,
-          updated_at: new Date().toISOString()
-        });
-      
-      if (insertError) {
-        console.error('Errore creando record CLOSED:', insertError);
-      } else {
-        console.log(`✅ Creato record CLOSED per ${date}`);
-      }
     }
   }
 
