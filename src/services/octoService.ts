@@ -182,52 +182,130 @@ export class OctoService {
 
       const availabilities = response.data;
       
-      // LOG DEBUG
+      // LOG COMPLETO DELLA RISPOSTA BOKUN
       console.log(`📊 Ricevute ${availabilities.length} disponibilità`);
-      if (availabilities.length > 0) {
-        console.log('Esempio disponibilità:', JSON.stringify(availabilities[0], null, 2));
-      }
+      console.log('🔍 RISPOSTA COMPLETA BOKUN:');
+      console.log(JSON.stringify(availabilities, null, 2));
       
-      for (const availability of availabilities) {
-        await this.saveAvailability(productId, availability);
+      // Se non ci sono disponibilità (0), marca la data come CLOSED
+      if (availabilities.length === 0) {
+        await this.markDateAsClosed(productId, date);
+        console.log(`🚫 Nessuna disponibilità per ${date} - marcata come CLOSED`);
+      } else {
+        // Altrimenti salva normalmente
+        for (const availability of availabilities) {
+          await this.saveAvailability(productId, availability);
+        }
+        console.log(`✅ Salvate ${availabilities.length} disponibilità`);
       }
-
-      console.log(`✅ Salvate ${availabilities.length} disponibilità`);
     } catch (error: any) {
       console.error('❌ Errore sincronizzazione disponibilità:', error.response?.data || error.message);
       throw error;
     }
   }
 
+  // Nuovo metodo per marcare una data come CLOSED quando non ci sono disponibilità
+  private async markDateAsClosed(productId: string, date: string): Promise<void> {
+    // Prima verifica se esistono già record per questa data
+    const { data: existingRecords, error: selectError } = await supabase
+      .from('activity_availability')
+      .select('availability_id')
+      .eq('activity_id', productId)
+      .eq('local_date', date);
+    
+    if (selectError) {
+      console.error('Errore verificando record esistenti:', selectError);
+      return;
+    }
+    
+    if (existingRecords && existingRecords.length > 0) {
+      // Aggiorna i record esistenti a CLOSED
+      const { error: updateError } = await supabase
+        .from('activity_availability')
+        .update({
+          status: 'CLOSED',
+          available: false,
+          vacancy_available: 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('activity_id', productId)
+        .eq('local_date', date);
+      
+      if (updateError) {
+        console.error('Errore aggiornando a CLOSED:', updateError);
+      } else {
+        console.log(`✅ Aggiornati ${existingRecords.length} record a CLOSED per ${date}`);
+      }
+    } else {
+      // Se non esistono record, crea un placeholder CLOSED
+      // Dobbiamo generare un availability_id unico
+      const availabilityId = `${date}_${productId}_CLOSED`;
+      
+      const { error: insertError } = await supabase
+        .from('activity_availability')
+        .insert({
+          activity_id: productId,
+          availability_id: availabilityId,
+          local_date_time: `${date}T00:00:00Z`, // Placeholder
+          local_date: date,
+          local_time: '00:00', // Placeholder
+          available: false,
+          status: 'CLOSED',
+          vacancy_opening: 0,
+          vacancy_available: 0,
+          vacancy_sold: 0,
+          updated_at: new Date().toISOString()
+        });
+      
+      if (insertError) {
+        console.error('Errore creando record CLOSED:', insertError);
+      } else {
+        console.log(`✅ Creato record CLOSED per ${date}`);
+      }
+    }
+  }
+
   // Salva singola disponibilità
   private async saveAvailability(productId: string, availability: OctoAvailability): Promise<void> {
-    // Estrai data e ora da localDateTimeStart
     let localDate = availability.localDate;
     let localTime = availability.localTime;
     
     if (!localDate || !localTime) {
-      // Bokun invia in formato UTC (con Z), dobbiamo convertire in ora locale
-      const utcDate = new Date(availability.localDateTimeStart);
+      // Se Bokun non manda localDate/localTime, estraili da localDateTimeStart
       
-      // Converti in ora locale di Roma (il server potrebbe non essere in timezone Roma)
-      // Usa toLocaleString con timezone Europe/Rome
-      const romeDateTime = utcDate.toLocaleString('en-US', {
-        timeZone: 'Europe/Rome',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-      
-      // Parsing del formato MM/DD/YYYY, HH:MM
-      const [datePart, timePart] = romeDateTime.split(', ');
-      const [month, day, year] = datePart.split('/');
-      localDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-      localTime = timePart; // Già in formato HH:MM
-      
-      console.log(`📝 Conversione da UTC: ${availability.localDateTimeStart} → ${localDate} ${localTime} (Roma)`);
+      // Controlla se c'è la Z alla fine (UTC)
+      if (availability.localDateTimeStart.endsWith('Z')) {
+        // È UTC, dobbiamo convertire a ora locale Roma
+        // Parsing manuale per evitare problemi con timezone del server
+        const [datePart, timePart] = availability.localDateTimeStart.split('T');
+        localDate = datePart;
+        
+        // Estrai ore e minuti
+        const hours = parseInt(timePart.substring(0, 2));
+        const minutes = timePart.substring(3, 5);
+        
+        // Aggiungi 2 ore per Roma (UTC+2 in estate)
+        const romeHours = (hours + 2) % 24;
+        
+        // Se superiamo mezzanotte, aggiusta anche la data
+        if (hours + 2 >= 24) {
+          const date = new Date(datePart);
+          date.setDate(date.getDate() + 1);
+          localDate = date.toISOString().split('T')[0];
+        }
+        
+        localTime = `${romeHours.toString().padStart(2, '0')}:${minutes}`;
+        
+        console.log(`🕐 Conversione UTC→Roma: ${availability.localDateTimeStart} → ${localDate} ${localTime}`);
+      } else {
+        // Non c'è la Z, è già ora locale
+        const parts = availability.localDateTimeStart.split('T');
+        localDate = parts[0];
+        if (parts[1]) {
+          localTime = parts[1].substring(0, 5);
+        }
+        console.log(`📝 Ora locale (no Z): ${localDate} ${localTime}`);
+      }
     }
     
     // Calcola i posti venduti
@@ -238,9 +316,9 @@ export class OctoService {
       .upsert({
         activity_id: productId,
         availability_id: availability.id,
-        local_date_time: availability.localDateTimeStart, // Mantieni l'originale UTC
-        local_date: localDate, // Data in ora locale Roma
-        local_time: localTime, // Ora in ora locale Roma
+        local_date_time: availability.localDateTimeStart, // Salva l'originale
+        local_date: localDate, // Data locale
+        local_time: localTime, // Ora locale
         available: availability.available,
         status: availability.status,
         vacancy_opening: availability.capacity || 0,  // Capacità totale

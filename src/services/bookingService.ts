@@ -176,8 +176,7 @@ export class BookingService {
       // Recupera productId
       const productId = bookingData.productId?.toString() || bookingData.product?.id?.toString();
       
-      // RIMOSSO: Il controllo per prodotti Channel Manager
-      // Ora sincronizziamo TUTTI i prodotti, inclusi Channel Manager
+      // RIMOSSO: Controllo Channel Manager - ora sincronizziamo TUTTI i prodotti
       
       // Prova a ottenere la data da varie fonti
       let dateToSync = null;
@@ -227,12 +226,8 @@ export class BookingService {
           await this.octoService.syncAvailability(productId, dateToSync);
           console.log(`✅ Disponibilità aggiornata per ${productId} - ${dateToSync}`);
         } catch (error: any) {
-          // Se è un 404, logga ma non bloccare
-          if (error.response && error.response.status === 404) {
-            console.log('⚠️ Prodotto non trovato su OCTO API, continuo comunque');
-          } else {
-            console.error(`❌ Errore sincronizzando disponibilità per ${productId}:`, error);
-          }
+          // Logga l'errore ma continua - non importa se è Channel Manager o meno
+          console.error(`❌ Errore sincronizzando disponibilità per ${productId}:`, error.message || error);
         }
       } else {
         console.log('⚠️ Dati mancanti per sincronizzazione disponibilità:', { 
