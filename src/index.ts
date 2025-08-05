@@ -35,7 +35,8 @@ app.get('/', (req, res) => {
   res.json({
     message: '🚀 Server Webhook per Bokun attivo!',
     endpoints: {
-      webhook: 'POST /webhook/booking',
+      webhook_booking: 'POST /webhook/booking',
+      webhook_availability: 'POST /webhook/availability',
       health: 'GET /health',
       syncProducts: 'POST /api/sync/products',
       syncAvailability: 'POST /api/sync/availability',
@@ -56,6 +57,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('================================');
   console.log('Endpoints disponibili:');
   console.log(`- POST http://localhost:${PORT}/webhook/booking (riceve prenotazioni)`);
+  console.log(`- POST http://localhost:${PORT}/webhook/availability (riceve aggiornamenti disponibilità)`);
   console.log(`- GET  http://localhost:${PORT}/health (verifica stato)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/products (sincronizza prodotti)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/availability (sincronizza disponibilità)`);

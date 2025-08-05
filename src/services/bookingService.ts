@@ -165,35 +165,18 @@ export class BookingService {
     try {
       console.log('🔄 Sincronizzazione disponibilità per prenotazione:', bookingData.confirmationCode);
       
-      // LOG DEBUG
-      console.log('📊 Dati ricevuti per sync:', {
-        productId: bookingData.productId,
-        product: bookingData.product,
-        dateString: bookingData.dateString,
-        startDateTime: bookingData.startDateTime
-      });
-      
-      // Recupera productId
       const productId = bookingData.productId?.toString() || bookingData.product?.id?.toString();
       
-      // RIMOSSO: Controllo Channel Manager - ora sincronizziamo TUTTI i prodotti
+      // Determina la data centrale
+      let centralDate = null;
       
-      // Prova a ottenere la data da varie fonti
-      let dateToSync = null;
-      
-      // Prima prova con startDateTime (timestamp)
       if (bookingData.startDateTime) {
-        dateToSync = new Date(bookingData.startDateTime).toISOString().split('T')[0];
-      }
-      // Altrimenti usa dateString ma convertilo
-      else if (bookingData.dateString) {
-        // Se dateString è già in formato YYYY-MM-DD, usalo
+        centralDate = new Date(bookingData.startDateTime);
+      } else if (bookingData.dateString) {
         if (/^\d{4}-\d{2}-\d{2}$/.test(bookingData.dateString)) {
-          dateToSync = bookingData.dateString;
+          centralDate = new Date(bookingData.dateString);
         } else {
-          // Altrimenti prova a parsare date tipo "jue, julio 31 2025 - 11:45"
           try {
-            // Estrai solo la parte della data
             const dateMatch = bookingData.dateString.match(/\b(\w+)\s+(\d{1,2})\s+(\d{4})\b/);
             if (dateMatch) {
               const monthsES: { [key: string]: string } = {
@@ -201,7 +184,6 @@ export class BookingService {
                 'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
                 'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
               };
-              // Aggiungi anche i mesi in inglese
               const monthsEN: { [key: string]: string } = {
                 'january': '01', 'february': '02', 'march': '03', 'april': '04',
                 'may': '05', 'june': '06', 'july': '07', 'august': '08',
@@ -211,7 +193,7 @@ export class BookingService {
               const month = monthsES[monthName] || monthsEN[monthName] || '01';
               const day = dateMatch[2].padStart(2, '0');
               const year = dateMatch[3];
-              dateToSync = `${year}-${month}-${day}`;
+              centralDate = new Date(`${year}-${month}-${day}`);
             }
           } catch (e) {
             console.error('Errore parsing data:', e);
@@ -219,22 +201,32 @@ export class BookingService {
         }
       }
       
-      if (productId && dateToSync) {
-        console.log(`📅 Aggiornamento disponibilità per prodotto ${productId} - data ${dateToSync}`);
+      if (productId && centralDate) {
+        console.log(`📅 Aggiornamento disponibilità per prodotto ${productId} - range 7 giorni`);
         
-        try {
-          await this.octoService.syncAvailability(productId, dateToSync);
-          console.log(`✅ Disponibilità aggiornata per ${productId} - ${dateToSync}`);
-        } catch (error: any) {
-          // Logga l'errore ma continua - non importa se è Channel Manager o meno
-          console.error(`❌ Errore sincronizzando disponibilità per ${productId}:`, error.message || error);
+        // Sincronizza da -3 a +3 giorni
+        for (let offset = -3; offset <= 3; offset++) {
+          const date = new Date(centralDate);
+          date.setDate(date.getDate() + offset);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          console.log(`📅 Sync ${dateStr} (${offset >= 0 ? '+' : ''}${offset} giorni)`);
+          
+          try {
+            await this.octoService.syncAvailability(productId, dateStr);
+          } catch (error: any) {
+            console.error(`❌ Errore sincronizzando ${dateStr}:`, error.message || error);
+          }
+          
+          // Piccola pausa tra le chiamate
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
+        
+        console.log(`✅ Disponibilità aggiornata per ${productId} - 7 giorni totali`);
       } else {
         console.log('⚠️ Dati mancanti per sincronizzazione disponibilità:', { 
           productId, 
-          dateToSync,
-          originalDateString: bookingData.dateString,
-          startDateTime: bookingData.startDateTime
+          centralDate
         });
       }
     } catch (error) {

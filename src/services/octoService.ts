@@ -211,27 +211,36 @@ export class OctoService {
       // Controlla se c'è la Z alla fine (UTC)
       if (availability.localDateTimeStart.endsWith('Z')) {
         // È UTC, dobbiamo convertire a ora locale Roma
-        // Parsing manuale per evitare problemi con timezone del server
         const [datePart, timePart] = availability.localDateTimeStart.split('T');
-        localDate = datePart;
         
-        // Estrai ore e minuti
-        const hours = parseInt(timePart.substring(0, 2));
-        const minutes = timePart.substring(3, 5);
+        // Usa l'oggetto Date per determinare automaticamente il fuso orario
+        const utcDate = new Date(availability.localDateTimeStart);
         
-        // Aggiungi 2 ore per Roma (UTC+2 in estate)
-        const romeHours = (hours + 2) % 24;
+        // Crea una data "fittizia" per verificare l'offset
+        // Convertiamo in stringa locale per Roma e vediamo la differenza
+        const romeTime = utcDate.toLocaleString('en-US', { 
+          timeZone: 'Europe/Rome',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
         
-        // Se superiamo mezzanotte, aggiusta anche la data
-        if (hours + 2 >= 24) {
-          const date = new Date(datePart);
-          date.setDate(date.getDate() + 1);
-          localDate = date.toISOString().split('T')[0];
-        }
+        // Parsing della stringa risultante (MM/DD/YYYY, HH:MM)
+        const [datePartRome, timePartRome] = romeTime.split(', ');
+        const [month, day, year] = datePartRome.split('/');
+        localDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        localTime = timePartRome;
         
-        localTime = `${romeHours.toString().padStart(2, '0')}:${minutes}`;
+        // Log per debug
+        const utcHours = parseInt(timePart.substring(0, 2));
+        const romeHours = parseInt(timePartRome.substring(0, 2));
+        const offset = romeHours - utcHours;
+        const adjustedOffset = offset < 0 ? offset + 24 : offset;
         
-        console.log(`🕐 Conversione UTC→Roma: ${availability.localDateTimeStart} → ${localDate} ${localTime}`);
+        console.log(`🕐 Conversione UTC→Roma (UTC+${adjustedOffset}): ${availability.localDateTimeStart} → ${localDate} ${localTime}`);
       } else {
         // Non c'è la Z, è già ora locale
         const parts = availability.localDateTimeStart.split('T');
@@ -271,6 +280,58 @@ export class OctoService {
     console.log(`💾 Salvata disponibilità: ${localDate} ${localTime} - Posti: ${availability.vacancies}/${availability.capacity} - Status: ${availability.status}`);
   }
 
+  // Sincronizza un singolo prodotto per N giorni
+  async syncProductForDays(productId: string, days: number): Promise<void> {
+    try {
+      console.log(`🔄 Sincronizzazione ${productId} per ${days} giorni`);
+      
+      for (let i = 0; i < days; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        await this.syncAvailability(productId, dateStr);
+        
+        // Pausa brevissima tra le chiamate
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      console.log(`✅ Sincronizzazione ${productId} completata per ${days} giorni`);
+    } catch (error) {
+      console.error(`❌ Errore sincronizzazione ${productId}:`, error);
+      throw error;
+    }
+  }
+  
+  // Sincronizza disponibilità per un range di date
+  async syncAvailabilityRange(productId: string, dateFrom: string, dateTo: string): Promise<void> {
+    try {
+      console.log(`🔄 Sincronizzazione ${productId} dal ${dateFrom} al ${dateTo}`);
+      
+      const startDate = new Date(dateFrom);
+      const endDate = new Date(dateTo);
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      
+      console.log(`📅 Sincronizzazione di ${daysDiff} giorni`);
+      
+      for (let i = 0; i < daysDiff; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(currentDate.getDate() + i);
+        const dateStr = currentDate.toISOString().split('T')[0];
+        
+        await this.syncAvailability(productId, dateStr);
+        
+        // Pausa brevissima
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      console.log(`✅ Range sincronizzato per ${productId}`);
+    } catch (error) {
+      console.error(`❌ Errore sync range ${productId}:`, error);
+      throw error;
+    }
+  }
+
   // Sincronizza disponibilità per tutti i prodotti per i prossimi N giorni
   async syncAllAvailability(days: number = 30): Promise<void> {
     try {
@@ -287,21 +348,49 @@ export class OctoService {
       }
 
       console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti`);
-
-      for (const activity of activities) {
-        for (let i = 0; i < days; i++) {
-          const date = new Date();
-          date.setDate(date.getDate() + i);
-          const dateStr = date.toISOString().split('T')[0];
-          
-          await this.syncAvailability(activity.activity_id, dateStr);
-          
-          // Pausa per non sovraccaricare l'API
-          await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Per evitare timeout, processa in batch
+      const BATCH_SIZE = 5; // Processa 5 prodotti alla volta
+      const DAYS_PER_BATCH = days > 30 ? 30 : days; // Max 30 giorni per batch se sono richiesti più giorni
+      
+      let totalProcessed = 0;
+      
+      for (let i = 0; i < activities.length; i += BATCH_SIZE) {
+        const batch = activities.slice(i, i + BATCH_SIZE);
+        console.log(`📊 Processando batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(activities.length/BATCH_SIZE)} (${batch.length} prodotti)`);
+        
+        // Processa ogni prodotto nel batch
+        await Promise.all(batch.map(async (activity) => {
+          try {
+            // Se sono richiesti più di 30 giorni, falli in chunks
+            for (let dayOffset = 0; dayOffset < days; dayOffset += DAYS_PER_BATCH) {
+              const daysToSync = Math.min(DAYS_PER_BATCH, days - dayOffset);
+              
+              for (let j = 0; j < daysToSync; j++) {
+                const date = new Date();
+                date.setDate(date.getDate() + dayOffset + j);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                await this.syncAvailability(activity.activity_id, dateStr);
+                
+                // Pausa brevissima
+                await new Promise(resolve => setTimeout(resolve, 50));
+              }
+            }
+            totalProcessed++;
+          } catch (error) {
+            console.error(`❌ Errore sync prodotto ${activity.activity_id}:`, error);
+          }
+        }));
+        
+        // Pausa tra i batch per non sovraccaricare
+        if (i + BATCH_SIZE < activities.length) {
+          console.log(`⏸️ Pausa tra i batch...`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
 
-      console.log('✅ Sincronizzazione disponibilità completata');
+      console.log(`✅ Sincronizzazione disponibilità completata: ${totalProcessed}/${activities.length} prodotti processati`);
     } catch (error) {
       console.error('❌ Errore sincronizzazione disponibilità:', error);
       throw error;
