@@ -2,8 +2,8 @@ import cron from 'node-cron';
 import { OctoService } from './services/octoService';
 
 // Prodotti con diverse priorità
-const PRIORITY_PRODUCTS = ['217949', '220107', '216954', '841874'];
-const SECONDARY_PRODUCTS = ['221221', '812355', '221226'];
+const PRIORITY_PRODUCTS = ['216954', '217949', '220107', '840868', '841414', '841874', '892386', '901938', '901972'];
+const SECONDARY_PRODUCTS = ['219901', '220614', '220617', '221221', '221226', '222980', '265854', '734833', '812355', '820657', '852605', '856126', '898759', '901369', '901961', '903596', '923099', '926058', '952868', '1038597'];
 const EXCLUDED_PRODUCTS = ['243718', '243709', '219735', '217930'];
 
 // Tracking delle esecuzioni
