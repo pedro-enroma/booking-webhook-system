@@ -160,7 +160,7 @@ export class BookingService {
     }
   }
 
-  // NUOVO METODO: Sincronizza disponibilità per una prenotazione
+  // 🚀 METODO OTTIMIZZATO: Usa syncAvailabilityOptimized invece di 7 chiamate separate
   private async syncAvailabilityForBooking(bookingData: any): Promise<void> {
     try {
       console.log('🔄 Sincronizzazione disponibilità per prenotazione:', bookingData.confirmationCode);
@@ -202,35 +202,73 @@ export class BookingService {
       }
       
       if (productId && centralDate) {
-        console.log(`📅 Aggiornamento disponibilità per prodotto ${productId} - range 7 giorni`);
+        // 🚀 OTTIMIZZAZIONE: Usa una singola chiamata range invece di 7 chiamate separate
+        const startDate = new Date(centralDate);
+        const endDate = new Date(centralDate);
         
-        // Sincronizza da -3 a +3 giorni
-        for (let offset = -3; offset <= 3; offset++) {
-          const date = new Date(centralDate);
-          date.setDate(date.getDate() + offset);
-          const dateStr = date.toISOString().split('T')[0];
+        // Calcola range: 3 giorni prima e 3 dopo
+        startDate.setDate(startDate.getDate() - 3);
+        endDate.setDate(endDate.getDate() + 3);
+        
+        const startDateStr = startDate.toISOString().split('T')[0];
+        const endDateStr = endDate.toISOString().split('T')[0];
+        const centralDateStr = centralDate.toISOString().split('T')[0];
+        
+        console.log(`📅 Aggiornamento disponibilità per prodotto ${productId}`);
+        console.log(`   📆 Data prenotazione: ${centralDateStr}`);
+        console.log(`   🔄 Range ottimizzato: ${startDateStr} → ${endDateStr} (7 giorni)`);
+        
+        try {
+          // 🚀 USA IL METODO OTTIMIZZATO (1 chiamata invece di 7!)
+          const slotsSynced = await this.octoService.syncAvailabilityOptimized(
+            productId, 
+            startDateStr, 
+            endDateStr
+          );
           
-          console.log(`📅 Sync ${dateStr} (${offset >= 0 ? '+' : ''}${offset} giorni)`);
+          console.log(`✅ Disponibilità aggiornata: ${slotsSynced} slot sincronizzati con 1 chiamata!`);
           
-          try {
-            await this.octoService.syncAvailability(productId, dateStr);
-          } catch (error: any) {
-            console.error(`❌ Errore sincronizzando ${dateStr}:`, error.message || error);
+        } catch (optimizedError: any) {
+          console.warn(`⚠️ Metodo ottimizzato fallito: ${optimizedError.message}`);
+          console.log('📌 Fallback al metodo tradizionale (7 chiamate separate)...');
+          
+          // FALLBACK: Se il metodo ottimizzato fallisce, usa quello tradizionale
+          let successCount = 0;
+          let failCount = 0;
+          
+          for (let offset = -3; offset <= 3; offset++) {
+            const date = new Date(centralDate);
+            date.setDate(date.getDate() + offset);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            console.log(`   📅 Sync ${dateStr} (${offset >= 0 ? '+' : ''}${offset} giorni)`);
+            
+            try {
+              await this.octoService.syncAvailability(productId, dateStr);
+              successCount++;
+            } catch (error: any) {
+              console.error(`   ❌ Errore sync ${dateStr}:`, error.message);
+              failCount++;
+            }
+            
+            // Piccola pausa tra le chiamate
+            if (offset < 3) {
+              await new Promise(resolve => setTimeout(resolve, 100));
+            }
           }
           
-          // Piccola pausa tra le chiamate
-          await new Promise(resolve => setTimeout(resolve, 100));
+          console.log(`✅ Fallback completato: ${successCount} successi, ${failCount} falliti`);
         }
         
-        console.log(`✅ Disponibilità aggiornata per ${productId} - 7 giorni totali`);
       } else {
         console.log('⚠️ Dati mancanti per sincronizzazione disponibilità:', { 
           productId, 
-          centralDate
+          centralDate: centralDate?.toISOString()
         });
       }
     } catch (error) {
       console.error('❌ Errore nella sincronizzazione disponibilità post-webhook:', error);
+      // Non propagare l'errore per non bloccare il webhook
     }
   }
 
