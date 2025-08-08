@@ -6,9 +6,13 @@ export class OctoService {
   private apiKey: string;
   private baseUrl: string;
   private supplierId: string;
+  
+  // Configurazione batch processing
+  private readonly PARALLEL_PRODUCTS = 3; // Processa 3 prodotti in parallelo
+  private readonly DAYS_PER_CHUNK = 10;   // Processa 10 giorni alla volta
+  private readonly API_DELAY_MS = 50;     // Delay tra chiamate API
 
   constructor() {
-    // Verifica variabili d'ambiente
     if (!process.env.BOKUN_API_KEY || !process.env.BOKUN_SUPPLIER_ID) {
       throw new Error('Mancano le variabili di ambiente BOKUN_API_KEY o BOKUN_SUPPLIER_ID');
     }
@@ -17,41 +21,285 @@ export class OctoService {
     this.baseUrl = process.env.BOKUN_API_URL || 'https://api.bokun.io/octo/v1';
     this.supplierId = process.env.BOKUN_SUPPLIER_ID;
     
-    console.log('🔧 OctoService inizializzato:');
+    console.log('🔧 OctoService inizializzato con ottimizzazioni:');
     console.log('   - API URL:', this.baseUrl);
     console.log('   - Supplier ID:', this.supplierId);
+    console.log('   - Parallel products:', this.PARALLEL_PRODUCTS);
+    console.log('   - Days per chunk:', this.DAYS_PER_CHUNK);
   }
 
-  // Headers corretti per Bokun OCTO API
   private getHeaders() {
     return {
-      // Usa Authorization con formato vendor-specific per rimuovere il limite di 100 prodotti
       'Authorization': `Bearer ${this.apiKey}/${this.supplierId}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
   }
 
-  // RIMOSSO: Funzione di conversione orario - Bokun invia già gli orari locali corretti
+  // Helper: divide array in chunks
+  private chunkArray<T>(array: T[], size: number): T[][] {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
 
-  // Sincronizza tutti i prodotti
+  // Helper: delay
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // NUOVO: Salva checkpoint per riprendere
+  private async saveCheckpoint(jobType: string, productId: string, lastDate: string): Promise<void> {
+    try {
+      await supabase
+        .from('sync_checkpoints')
+        .upsert({
+          job_type: jobType,
+          product_id: productId,
+          last_synced_date: lastDate,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'job_type,product_id'
+        });
+    } catch (error) {
+      console.warn('⚠️ Impossibile salvare checkpoint (tabella potrebbe non esistere)');
+    }
+  }
+
+  // NUOVO: Recupera checkpoint
+  private async getCheckpoint(jobType: string, productId: string): Promise<string | null> {
+    try {
+      const { data } = await supabase
+        .from('sync_checkpoints')
+        .select('last_synced_date')
+        .eq('job_type', jobType)
+        .eq('product_id', productId)
+        .single();
+      
+      return data?.last_synced_date || null;
+    } catch {
+      return null;
+    }
+  }
+
+  // OTTIMIZZATO: Sincronizza disponibilità con range API
+  async syncAvailabilityOptimized(productId: string, startDate: string, endDate: string): Promise<number> {
+    try {
+      const optionId = await this.getProductOptionId(productId);
+      
+      // Prova prima con range completo (Bokun potrebbe supportarlo)
+      const url = `${this.baseUrl}/availability`;
+      const payload = {
+        productId: productId,
+        optionId: optionId,
+        localDateStart: startDate,
+        localDateEnd: endDate
+      };
+      
+      console.log(`📅 Tentativo range ${productId}: ${startDate} → ${endDate}`);
+      
+      try {
+        const response = await axios.post<OctoAvailability[]>(url, payload, {
+          headers: this.getHeaders(),
+          timeout: 30000
+        });
+
+        const availabilities = response.data;
+        
+        // Salva in batch
+        if (availabilities.length > 0) {
+          const batchData = availabilities.map(avail => 
+            this.prepareAvailabilityData(productId, avail)
+          );
+          
+          const { error } = await supabase
+            .from('activity_availability')
+            .upsert(batchData, { onConflict: 'availability_id' });
+          
+          if (error) throw error;
+          
+          console.log(`✅ Range OK: ${availabilities.length} slot salvati`);
+          return availabilities.length;
+        }
+        return 0;
+        
+      } catch (rangeError: any) {
+        // Se il range non funziona, fallback su chiamate giornaliere
+        if (rangeError.response?.status === 400 || rangeError.response?.status === 422) {
+          console.log(`⚠️ Range non supportato, uso fallback giornaliero`);
+          return await this.syncAvailabilityFallback(productId, startDate, endDate);
+        }
+        throw rangeError;
+      }
+      
+    } catch (error: any) {
+      console.error(`❌ Errore sync ${productId}:`, error.message);
+      throw error;
+    }
+  }
+
+  // Fallback: sincronizza giorno per giorno
+  private async syncAvailabilityFallback(productId: string, startDate: string, endDate: string): Promise<number> {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    let totalSynced = 0;
+    
+    while (start <= end) {
+      const dateStr = start.toISOString().split('T')[0];
+      await this.syncAvailability(productId, dateStr);
+      totalSynced++;
+      start.setDate(start.getDate() + 1);
+      await this.delay(this.API_DELAY_MS);
+    }
+    
+    return totalSynced;
+  }
+
+  // Prepara dati per salvataggio batch
+  private prepareAvailabilityData(productId: string, availability: OctoAvailability): any {
+    let localDate = availability.localDate;
+    let localTime = availability.localTime;
+    
+    if (!localDate || !localTime) {
+      if (availability.localDateTimeStart.endsWith('Z')) {
+        const utcDate = new Date(availability.localDateTimeStart);
+        const romeTime = utcDate.toLocaleString('en-US', { 
+          timeZone: 'Europe/Rome',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const [datePartRome, timePartRome] = romeTime.split(', ');
+        const [month, day, year] = datePartRome.split('/');
+        localDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        localTime = timePartRome;
+      } else {
+        const parts = availability.localDateTimeStart.split('T');
+        localDate = parts[0];
+        if (parts[1]) {
+          localTime = parts[1].substring(0, 5);
+        }
+      }
+    }
+    
+    const vacancySold = (availability.capacity || 0) - (availability.vacancies || 0);
+    
+    return {
+      activity_id: productId,
+      availability_id: availability.id,
+      local_date_time: availability.localDateTimeStart,
+      local_date: localDate,
+      local_time: localTime,
+      available: availability.available,
+      status: availability.status,
+      vacancy_opening: availability.capacity || 0,
+      vacancy_available: availability.vacancies || 0,
+      vacancy_sold: vacancySold,
+      price_currency: availability.pricing?.[0]?.currency,
+      price_amount: availability.pricing?.[0]?.amount || availability.pricing?.[0]?.unitPrice,
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  // NUOVO: Sincronizza lista prodotti per N giorni con batch processing
+  async syncProductListForDays(
+    productIds: string[], 
+    days: number, 
+    jobType: string = 'manual'
+  ): Promise<{ success: number; failed: number }> {
+    console.log(`🚀 Sync batch: ${productIds.length} prodotti per ${days} giorni`);
+    
+    const results = { success: 0, failed: 0 };
+    const productChunks = this.chunkArray(productIds, this.PARALLEL_PRODUCTS);
+    
+    for (let chunkIndex = 0; chunkIndex < productChunks.length; chunkIndex++) {
+      const chunk = productChunks[chunkIndex];
+      console.log(`📦 Chunk ${chunkIndex + 1}/${productChunks.length} (${chunk.length} prodotti)`);
+      
+      // Processa prodotti in parallelo
+      const promises = chunk.map(async (productId) => {
+        try {
+          // Controlla checkpoint
+          const checkpoint = await this.getCheckpoint(jobType, productId);
+          let startDay = 0;
+          
+          if (checkpoint) {
+            const checkpointDate = new Date(checkpoint);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Se il checkpoint è di oggi, skip
+            if (checkpointDate.toISOString().split('T')[0] === today.toISOString().split('T')[0]) {
+              console.log(`⏭️ ${productId} già sincronizzato oggi`);
+              return;
+            }
+            
+            // Calcola da dove riprendere
+            const daysSinceCheckpoint = Math.ceil((today.getTime() - checkpointDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysSinceCheckpoint < days) {
+              startDay = daysSinceCheckpoint;
+              console.log(`↻ ${productId} resume dal giorno ${startDay}`);
+            }
+          }
+          
+          // Sincronizza a chunks di giorni
+          for (let dayOffset = startDay; dayOffset < days; dayOffset += this.DAYS_PER_CHUNK) {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() + dayOffset);
+            
+            const endOffset = Math.min(dayOffset + this.DAYS_PER_CHUNK - 1, days - 1);
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + endOffset);
+            
+            await this.syncAvailabilityOptimized(
+              productId,
+              startDate.toISOString().split('T')[0],
+              endDate.toISOString().split('T')[0]
+            );
+            
+            // Salva checkpoint
+            await this.saveCheckpoint(jobType, productId, endDate.toISOString().split('T')[0]);
+          }
+          
+          results.success++;
+          
+        } catch (error: any) {
+          console.error(`❌ Fallito ${productId}: ${error.message}`);
+          results.failed++;
+        }
+      });
+      
+      await Promise.all(promises);
+      
+      // Pausa tra chunks
+      if (chunkIndex < productChunks.length - 1) {
+        await this.delay(1000);
+      }
+    }
+    
+    console.log(`✅ Completato: ${results.success} successi, ${results.failed} falliti`);
+    return results;
+  }
+
+  // MANTIENI I METODI ESISTENTI per compatibilità
+  
   async syncProducts(): Promise<void> {
     try {
       console.log('🔄 Inizio sincronizzazione prodotti...');
-      
-      // Usa /products senza supplier ID (il vendor ID è nel token)
       const url = `${this.baseUrl}/products`;
-      console.log('📍 URL chiamata:', url);
-      console.log('🔑 Headers:', JSON.stringify(this.getHeaders(), null, 2));
       
       const response = await axios.get<OctoProduct[]>(url, {
         headers: this.getHeaders()
       });
 
-      console.log('📡 Risposta ricevuta:', response.status);
-      
       const products = response.data;
-      console.log(`📦 Trovati ${products.length} prodotti (senza limite di paginazione)`);
+      console.log(`📦 Trovati ${products.length} prodotti`);
 
       for (const product of products) {
         await this.saveProduct(product);
@@ -60,22 +308,11 @@ export class OctoService {
       console.log('✅ Sincronizzazione prodotti completata');
     } catch (error: any) {
       console.error('❌ Errore sincronizzazione prodotti:', error.response?.data || error.message);
-      
-      if (error.response) {
-        console.error('🚨 Dettagli errore:');
-        console.error('   - Status:', error.response.status);
-        console.error('   - Response:', JSON.stringify(error.response.data));
-      }
-      
       throw error;
     }
   }
 
-  // Salva un singolo prodotto
   private async saveProduct(product: OctoProduct): Promise<void> {
-    console.log(`💾 Salvando prodotto: ${product.id} - ${product.internalName || product.title}`);
-    
-    // Trova l'option ID di default se esiste
     let defaultOptionId = null;
     if (product.options && product.options.length > 0) {
       const defaultOption = product.options.find(opt => opt.default) || product.options[0];
@@ -97,81 +334,60 @@ export class OctoService {
         instant_delivery: product.instantDelivery || false,
         requires_date: product.availabilityRequired || true,
         requires_time: product.availabilityType === 'START_TIME',
-        default_option_id: defaultOptionId,  // Salva l'option ID
+        default_option_id: defaultOptionId,
         last_sync: new Date().toISOString()
       }, {
         onConflict: 'activity_id'
       });
 
-    if (error) {
-      console.error(`❌ Errore salvando prodotto ${product.id}:`, error);
-      throw error;
-    }
-    console.log(`✅ Salvato prodotto: ${product.internalName || product.title} (Option: ${defaultOptionId})`);
+    if (error) throw error;
   }
 
-  // Recupera l'option ID corretto per un prodotto - CORREZIONE QUI
   private async getProductOptionId(productId: string): Promise<string> {
     try {
-      // Prima proviamo a recuperare dal database se l'abbiamo salvato
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('activities')
         .select('default_option_id')
         .eq('activity_id', productId)
         .single();
       
       if (data && data.default_option_id) {
-        console.log(`✅ Option ID trovato nel DB: ${data.default_option_id}`);
         return data.default_option_id;
       }
       
-      // Se non l'abbiamo, recuperiamo il prodotto dall'API
-      console.log(`📡 Recupero opzioni per prodotto ${productId} dall'API`);
-      
-      // CORREZIONE: Usa l'endpoint corretto senza suppliers
       const url = `${this.baseUrl}/products/${productId}`;
-      
       const response = await axios.get<OctoProduct>(url, {
         headers: this.getHeaders()
       });
       
       const product = response.data;
       if (product.options && product.options.length > 0) {
-        // Prendi la prima opzione o quella marcata come default
         const defaultOption = product.options.find((opt) => opt.default) || product.options[0];
         
-        // Salva nel database per uso futuro
         await supabase
           .from('activities')
           .update({ default_option_id: defaultOption.id })
           .eq('activity_id', productId);
         
-        console.log(`✅ Option ID recuperato dall'API: ${defaultOption.id}`);
         return defaultOption.id;
       }
       
-      // CORREZIONE: Non ritornare 'DEFAULT', lancia un errore
       throw new Error(`Nessuna option trovata per il prodotto ${productId}`);
       
     } catch (error: any) {
       console.error('❌ Errore recuperando option ID:', error.message);
-      throw error; // Propaga l'errore invece di ritornare 'DEFAULT'
+      throw error;
     }
   }
 
-  // Sincronizza disponibilità per un prodotto
   async syncAvailability(productId: string, date: string): Promise<void> {
     try {
-      console.log(`🔄 Sincronizzazione disponibilità per ${productId} - ${date}`);
-      
-      // Recupera l'option ID corretto
       const optionId = await this.getProductOptionId(productId);
-      console.log(`📌 Usando option ID: ${optionId}`);
       
       const url = `${this.baseUrl}/availability`;
       const payload = {
         productId: productId,
-        optionId: optionId,  // Usa l'option ID recuperato
+        optionId: optionId,
         localDateStart: date,
         localDateEnd: date
       };
@@ -182,102 +398,23 @@ export class OctoService {
 
       const availabilities = response.data;
       
-      // LOG DEBUG
-      console.log(`📊 Ricevute ${availabilities.length} disponibilità`);
-      if (availabilities.length > 0) {
-        console.log('Esempio disponibilità:', JSON.stringify(availabilities[0], null, 2));
-      }
-      
-      // Salva solo se ci sono disponibilità
       for (const availability of availabilities) {
         await this.saveAvailability(productId, availability);
       }
-
-      console.log(`✅ Salvate ${availabilities.length} disponibilità`);
+      
     } catch (error: any) {
-      console.error('❌ Errore sincronizzazione disponibilità:', error.response?.data || error.message);
-      throw error;
+      console.error(`❌ Errore sync ${productId} ${date}:`, error.message);
+      // Non propagare per non bloccare batch
     }
   }
 
-  // Salva singola disponibilità
   private async saveAvailability(productId: string, availability: OctoAvailability): Promise<void> {
-    let localDate = availability.localDate;
-    let localTime = availability.localTime;
-    
-    if (!localDate || !localTime) {
-      // Se Bokun non manda localDate/localTime, estraili da localDateTimeStart
-      
-      // Controlla se c'è la Z alla fine (UTC)
-      if (availability.localDateTimeStart.endsWith('Z')) {
-        // È UTC, dobbiamo convertire a ora locale Roma
-        const [datePart, timePart] = availability.localDateTimeStart.split('T');
-        
-        // Usa l'oggetto Date per determinare automaticamente il fuso orario
-        const utcDate = new Date(availability.localDateTimeStart);
-        
-        // Crea una data "fittizia" per verificare l'offset
-        // Convertiamo in stringa locale per Roma e vediamo la differenza
-        const romeTime = utcDate.toLocaleString('en-US', { 
-          timeZone: 'Europe/Rome',
-          hour12: false,
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        
-        // Parsing della stringa risultante (MM/DD/YYYY, HH:MM)
-        const [datePartRome, timePartRome] = romeTime.split(', ');
-        const [month, day, year] = datePartRome.split('/');
-        localDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        localTime = timePartRome;
-        
-        // Log per debug
-        const utcHours = parseInt(timePart.substring(0, 2));
-        const romeHours = parseInt(timePartRome.substring(0, 2));
-        const offset = romeHours - utcHours;
-        const adjustedOffset = offset < 0 ? offset + 24 : offset;
-        
-        console.log(`🕐 Conversione UTC→Roma (UTC+${adjustedOffset}): ${availability.localDateTimeStart} → ${localDate} ${localTime}`);
-      } else {
-        // Non c'è la Z, è già ora locale
-        const parts = availability.localDateTimeStart.split('T');
-        localDate = parts[0];
-        if (parts[1]) {
-          localTime = parts[1].substring(0, 5);
-        }
-        console.log(`📝 Ora locale (no Z): ${localDate} ${localTime}`);
-      }
-    }
-    
-    // Calcola i posti venduti
-    const vacancySold = (availability.capacity || 0) - (availability.vacancies || 0);
-    
+    const data = this.prepareAvailabilityData(productId, availability);
     const { error } = await supabase
       .from('activity_availability')
-      .upsert({
-        activity_id: productId,
-        availability_id: availability.id,
-        local_date_time: availability.localDateTimeStart, // Salva l'originale
-        local_date: localDate, // Data locale
-        local_time: localTime, // Ora locale
-        available: availability.available,
-        status: availability.status,
-        vacancy_opening: availability.capacity || 0,  // Capacità totale
-        vacancy_available: availability.vacancies || 0,  // Posti disponibili
-        vacancy_sold: vacancySold,  // Posti venduti (calcolati)
-        price_currency: availability.pricing?.[0]?.currency,
-        price_amount: availability.pricing?.[0]?.amount || availability.pricing?.[0]?.unitPrice,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'availability_id'
-      });
-
-    if (error) throw error;
+      .upsert(data, { onConflict: 'availability_id' });
     
-    console.log(`💾 Salvata disponibilità: ${localDate} ${localTime} - Posti: ${availability.vacancies}/${availability.capacity} - Status: ${availability.status}`);
+    if (error) throw error;
   }
 
   // Sincronizza un singolo prodotto per N giorni
@@ -332,76 +469,9 @@ export class OctoService {
     }
   }
 
-  // Sincronizza disponibilità per tutti i prodotti per i prossimi N giorni
-  async syncAllAvailability(days: number = 30): Promise<void> {
-    try {
-      console.log(`🔄 Inizio sincronizzazione disponibilità per ${days} giorni`);
-      
-      const { data: activities, error } = await supabase
-        .from('activities')
-        .select('activity_id');
-
-      if (error) throw error;
-      if (!activities || activities.length === 0) {
-        console.log('⚠️ Nessun prodotto trovato. Esegui prima la sincronizzazione prodotti.');
-        return;
-      }
-
-      console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti`);
-      
-      // Per evitare timeout, processa in batch
-      const BATCH_SIZE = 5; // Processa 5 prodotti alla volta
-      const DAYS_PER_BATCH = days > 30 ? 30 : days; // Max 30 giorni per batch se sono richiesti più giorni
-      
-      let totalProcessed = 0;
-      
-      for (let i = 0; i < activities.length; i += BATCH_SIZE) {
-        const batch = activities.slice(i, i + BATCH_SIZE);
-        console.log(`📊 Processando batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(activities.length/BATCH_SIZE)} (${batch.length} prodotti)`);
-        
-        // Processa ogni prodotto nel batch
-        await Promise.all(batch.map(async (activity) => {
-          try {
-            // Se sono richiesti più di 30 giorni, falli in chunks
-            for (let dayOffset = 0; dayOffset < days; dayOffset += DAYS_PER_BATCH) {
-              const daysToSync = Math.min(DAYS_PER_BATCH, days - dayOffset);
-              
-              for (let j = 0; j < daysToSync; j++) {
-                const date = new Date();
-                date.setDate(date.getDate() + dayOffset + j);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                await this.syncAvailability(activity.activity_id, dateStr);
-                
-                // Pausa brevissima
-                await new Promise(resolve => setTimeout(resolve, 50));
-              }
-            }
-            totalProcessed++;
-          } catch (error) {
-            console.error(`❌ Errore sync prodotto ${activity.activity_id}:`, error);
-          }
-        }));
-        
-        // Pausa tra i batch per non sovraccaricare
-        if (i + BATCH_SIZE < activities.length) {
-          console.log(`⏸️ Pausa tra i batch...`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
-
-      console.log(`✅ Sincronizzazione disponibilità completata: ${totalProcessed}/${activities.length} prodotti processati`);
-    } catch (error) {
-      console.error('❌ Errore sincronizzazione disponibilità:', error);
-      throw error;
-    }
-  }
-
-  // Sincronizza disponibilità per tutti i prodotti ECCETTO alcuni, per i prossimi N giorni
+  // Wrapper per compatibilità con cron esistenti
   async syncAllAvailabilityExcept(days: number = 30, excludedProducts: string[] = []): Promise<void> {
     try {
-      console.log(`🔄 Inizio sincronizzazione disponibilità per ${days} giorni (con esclusioni)`);
-      
       const { data: activities, error } = await supabase
         .from('activities')
         .select('activity_id')
@@ -413,24 +483,36 @@ export class OctoService {
         return;
       }
 
-      console.log(`📦 Sincronizzazione disponibilità per ${activities.length} prodotti (esclusi: ${excludedProducts.length})`);
+      const productIds = activities.map(a => a.activity_id);
+      await this.syncProductListForDays(productIds, days, 'all-except');
+      
+    } catch (error) {
+      console.error('❌ Errore:', error);
+      throw error;
+    }
+  }
 
-      for (const activity of activities) {
-        for (let i = 0; i < days; i++) {
-          const date = new Date();
-          date.setDate(date.getDate() + i);
-          const dateStr = date.toISOString().split('T')[0];
-          
-          await this.syncAvailability(activity.activity_id, dateStr);
-          
-          // Pausa per non sovraccaricare l'API
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
+  // NUOVO METODO per compatibilità con routes/sync.ts
+  async syncAllAvailability(days: number = 30): Promise<void> {
+    try {
+      console.log(`🔄 Sincronizzazione tutti i prodotti per ${days} giorni`);
+      
+      const { data: activities, error } = await supabase
+        .from('activities')
+        .select('activity_id');
+
+      if (error) throw error;
+      if (!activities || activities.length === 0) {
+        console.log('⚠️ Nessun prodotto trovato.');
+        return;
       }
 
-      console.log('✅ Sincronizzazione disponibilità completata');
+      const productIds = activities.map(a => a.activity_id);
+      await this.syncProductListForDays(productIds, days, 'all-products');
+      
+      console.log('✅ Sincronizzazione completata');
     } catch (error) {
-      console.error('❌ Errore sincronizzazione disponibilità:', error);
+      console.error('❌ Errore:', error);
       throw error;
     }
   }

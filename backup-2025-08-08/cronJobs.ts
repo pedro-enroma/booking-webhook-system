@@ -1,6 +1,5 @@
 import cron from 'node-cron';
 import { OctoService } from './services/octoService';
-import { supabase } from './config/supabase';
 
 // Prodotti con diverse priorità
 const PRIORITY_PRODUCTS = ['216954', '217949', '220107', '840868', '841414', '841874', '892386', '901938', '901972'];
@@ -51,7 +50,7 @@ function logCronEnd(jobId: string, itemsProcessed: number, success: boolean, err
 export function initializeCronJobs() {
   const octoService = new OctoService();
   
-  console.log('⏰ Inizializzazione cron jobs ottimizzati...');
+  console.log('⏰ Inizializzazione cron jobs...');
   
   // 1. Sincronizza PRODOTTI una volta al giorno alle 1:00 AM
   cron.schedule('0 1 * * *', async () => {
@@ -66,69 +65,115 @@ export function initializeCronJobs() {
     }
   });
   
-  // 2. PRODOTTI PRIORITARI - Ogni 4 ore (15 giorni) - OTTIMIZZATO
+  // 2. PRODOTTI PRIORITARI - Ogni 4 ore
   cron.schedule('0 */4 * * *', async () => {
     const jobId = `priority-15d-${Date.now()}`;
     logCronStart('Prodotti prioritari - 15 giorni', jobId);
     
     try {
-      const result = await octoService.syncProductListForDays(
-        PRIORITY_PRODUCTS, 
-        15, 
-        'priority-15d'
-      );
-      logCronEnd(jobId, result.success, true);
+      let totalSynced = 0;
+      const totalToSync = PRIORITY_PRODUCTS.length * 15;
+      
+      for (const productId of PRIORITY_PRODUCTS) {
+        for (let i = 0; i < 15; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          totalSynced++;
+          if (totalSynced % 20 === 0 || totalSynced === 1) {
+            console.log(`📈 Progress: ${totalSynced}/${totalToSync} (${Math.round(totalSynced/totalToSync*100)}%)`);
+          }
+          
+          await octoService.syncAvailability(productId, dateStr);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      logCronEnd(jobId, totalSynced, true);
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
   });
   
-  // 3. PRODOTTI PRIORITARI - Ogni giorno alle 2:00 AM (60 giorni) - OTTIMIZZATO
+  // 3. PRODOTTI PRIORITARI - Ogni giorno alle 2:00 AM (60 giorni)
   cron.schedule('0 2 * * *', async () => {
     const jobId = `priority-60d-${Date.now()}`;
     logCronStart('Prodotti prioritari - 60 giorni', jobId);
     
     try {
-      const result = await octoService.syncProductListForDays(
-        PRIORITY_PRODUCTS, 
-        60, 
-        'priority-60d'
-      );
-      logCronEnd(jobId, result.success, true);
+      let totalSynced = 0;
+      const totalToSync = PRIORITY_PRODUCTS.length * 60;
+      
+      for (const productId of PRIORITY_PRODUCTS) {
+        for (let i = 0; i < 60; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          totalSynced++;
+          if (totalSynced % 50 === 0 || totalSynced === 1) {
+            console.log(`📈 Progress: ${totalSynced}/${totalToSync} (${Math.round(totalSynced/totalToSync*100)}%)`);
+          }
+          
+          await octoService.syncAvailability(productId, dateStr);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      logCronEnd(jobId, totalSynced, true);
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
   });
   
-  // 4. PRODOTTI SECONDARI - Ogni 12 ore (15 giorni) - OTTIMIZZATO
+  // 4. PRODOTTI SECONDARI - Ogni 12 ore
   cron.schedule('0 */12 * * *', async () => {
     const jobId = `secondary-15d-${Date.now()}`;
     logCronStart('Prodotti secondari - 15 giorni', jobId);
     
     try {
-      const result = await octoService.syncProductListForDays(
-        SECONDARY_PRODUCTS, 
-        15, 
-        'secondary-15d'
-      );
-      logCronEnd(jobId, result.success, true);
+      let totalSynced = 0;
+      
+      for (const productId of SECONDARY_PRODUCTS) {
+        for (let i = 0; i < 15; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          totalSynced++;
+          await octoService.syncAvailability(productId, dateStr);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      logCronEnd(jobId, totalSynced, true);
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
   });
   
-  // 5. PRODOTTI SECONDARI - Ogni giorno alle 4:00 AM (30 giorni) - OTTIMIZZATO
+  // 5. PRODOTTI SECONDARI - Ogni giorno alle 4:00 AM (30 giorni)
   cron.schedule('0 4 * * *', async () => {
     const jobId = `secondary-30d-${Date.now()}`;
     logCronStart('Prodotti secondari - 30 giorni', jobId);
     
     try {
-      const result = await octoService.syncProductListForDays(
-        SECONDARY_PRODUCTS, 
-        30, 
-        'secondary-30d'
-      );
-      logCronEnd(jobId, result.success, true);
+      let totalSynced = 0;
+      
+      for (const productId of SECONDARY_PRODUCTS) {
+        for (let i = 0; i < 30; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          totalSynced++;
+          await octoService.syncAvailability(productId, dateStr);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      logCronEnd(jobId, totalSynced, true);
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
@@ -146,104 +191,36 @@ export function initializeCronJobs() {
         ...SECONDARY_PRODUCTS
       ]);
       
-      logCronEnd(jobId, 30, true);
+      logCronEnd(jobId, 30, true); // Approssimativo
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
   });
   
   // 7. TUTTI GLI ALTRI PRODOTTI - Ogni venerdì alle 6:00 AM (365 giorni)
-  // DIVISO IN PIÙ ESECUZIONI per evitare timeout
   cron.schedule('0 6 * * 5', async () => {
-    const jobId = `others-365d-week-${Date.now()}`;
-    logCronStart('Altri prodotti - 365 giorni (settimana)', jobId);
+    const jobId = `others-365d-${Date.now()}`;
+    logCronStart('Altri prodotti - 365 giorni (venerdì)', jobId);
     
     try {
-      // Invece di 365 giorni in una volta, fai solo i prossimi 90
-      // Gli altri verranno fatti nei giorni successivi con checkpoint
-      await octoService.syncAllAvailabilityExcept(90, [
+      await octoService.syncAllAvailabilityExcept(365, [
         ...EXCLUDED_PRODUCTS,
         ...PRIORITY_PRODUCTS,
         ...SECONDARY_PRODUCTS
       ]);
       
-      logCronEnd(jobId, 90, true);
+      logCronEnd(jobId, 365, true); // Approssimativo
     } catch (error) {
       logCronEnd(jobId, 0, false, error);
     }
   });
   
-  // 8. NUOVO: Health check ogni 30 minuti per verificare stato sync
-  cron.schedule('*/30 * * * *', async () => {
-    try {
-      const now = new Date();
-      const running = Object.values(cronExecutions).filter(
-        e => e.start && !e.end && (now.getTime() - e.start.getTime()) > 3600000 // Running da più di 1 ora
-      );
-      
-      if (running.length > 0) {
-        console.log(`⚠️ [HEALTH] ${running.length} job in esecuzione da più di 1 ora`);
-        running.forEach(job => {
-          const minutes = Math.round((now.getTime() - job.start.getTime()) / 60000);
-          console.log(`   - Running da ${minutes} minuti`);
-        });
-      }
-      
-      // Controlla prodotti non sincronizzati
-      const { data: staleProducts } = await supabase
-        .from('activity_availability')
-        .select('activity_id')
-        .lt('updated_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-        .limit(10);
-      
-      if (staleProducts && staleProducts.length > 0) {
-        console.log(`⚠️ [HEALTH] ${staleProducts.length} prodotti non aggiornati da 7+ giorni`);
-      }
-      
-    } catch (error) {
-      console.error('❌ [HEALTH] Errore health check:', error);
-    }
-  });
-  
-  // 9. NUOVO: Cleanup checkpoint vecchi ogni domenica
-  cron.schedule('0 0 * * 0', async () => {
-    try {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      await supabase
-        .from('sync_checkpoints')
-        .delete()
-        .lt('updated_at', thirtyDaysAgo.toISOString());
-      
-      console.log('🧹 [CLEANUP] Checkpoint vecchi puliti');
-    } catch (error) {
-      console.error('❌ [CLEANUP] Errore pulizia:', error);
-    }
-  });
-  
-  console.log('✅ Cron jobs ottimizzati inizializzati:');
+  console.log('✅ Cron jobs inizializzati:');
   console.log('   - Prodotti: ogni giorno alle 1:00 AM');
-  console.log('   - Prioritari: ogni 4 ore (15gg) + 2:00 AM (60gg) [BATCH]');
-  console.log('   - Secondari: ogni 12 ore (15gg) + 4:00 AM (30gg) [BATCH]');
-  console.log('   - Altri: 6:00 AM (30gg) + venerdì (90gg) [CHECKPOINT]');
-  console.log('   - Health check: ogni 30 minuti');
-  console.log('   - Cleanup: ogni domenica');
+  console.log('   - Prioritari: ogni 4 ore (15gg) + 2:00 AM (60gg)');
+  console.log('   - Secondari: ogni 12 ore (15gg) + 4:00 AM (30gg)');
+  console.log('   - Altri: 6:00 AM (30gg) + venerdì (365gg)');
   console.log(`   - Esclusi: ${EXCLUDED_PRODUCTS.length} prodotti`);
-}
-
-// Funzione per forzare sincronizzazione manuale
-export async function forceSyncProducts(productIds: string[], days: number): Promise<void> {
-  const octoService = new OctoService();
-  console.log(`🔧 Sincronizzazione manuale: ${productIds.length} prodotti per ${days} giorni`);
-  
-  try {
-    const result = await octoService.syncProductListForDays(productIds, days, 'manual');
-    console.log(`✅ Completato: ${result.success} successi, ${result.failed} falliti`);
-  } catch (error) {
-    console.error('❌ Errore sync manuale:', error);
-    throw error;
-  }
 }
 
 export function getCronStatus() {

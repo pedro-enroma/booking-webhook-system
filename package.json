@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test-sync": "ts-node src/test-sync.ts",
+    "test-sync-opt": "ts-node src/test-sync-optimized.ts",
     "verify-fix": "ts-node src/verify-fix.ts",
     "test-complete": "ts-node src/test-complete.ts",
     "test-mass": "ts-node src/test-mass-sync.ts",
