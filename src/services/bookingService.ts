@@ -160,7 +160,7 @@ export class BookingService {
     }
   }
 
-  // 🚀 METODO OTTIMIZZATO: Usa syncAvailabilityOptimized invece di 7 chiamate separate
+  // 🚀 METODO OTTIMIZZATO: Usa syncAvailabilityOptimized invece di 11 chiamate separate
   private async syncAvailabilityForBooking(bookingData: any): Promise<void> {
     try {
       console.log('🔄 Sincronizzazione disponibilità per prenotazione:', bookingData.confirmationCode);
@@ -202,13 +202,13 @@ export class BookingService {
       }
       
       if (productId && centralDate) {
-        // 🚀 OTTIMIZZAZIONE: Usa una singola chiamata range invece di 7 chiamate separate
+        // 🚀 OTTIMIZZAZIONE: Usa una singola chiamata range invece di 11 chiamate separate
         const startDate = new Date(centralDate);
         const endDate = new Date(centralDate);
         
-        // Calcola range: 3 giorni prima e 3 dopo
-        startDate.setDate(startDate.getDate() - 3);
-        endDate.setDate(endDate.getDate() + 3);
+        // Calcola range: 5 giorni prima e 5 dopo
+        startDate.setDate(startDate.getDate() - 5);
+        endDate.setDate(endDate.getDate() + 5);
         
         const startDateStr = startDate.toISOString().split('T')[0];
         const endDateStr = endDate.toISOString().split('T')[0];
@@ -216,10 +216,10 @@ export class BookingService {
         
         console.log(`📅 Aggiornamento disponibilità per prodotto ${productId}`);
         console.log(`   📆 Data prenotazione: ${centralDateStr}`);
-        console.log(`   🔄 Range ottimizzato: ${startDateStr} → ${endDateStr} (7 giorni)`);
+        console.log(`   🔄 Range ottimizzato: ${startDateStr} → ${endDateStr} (11 giorni)`);
         
         try {
-          // 🚀 USA IL METODO OTTIMIZZATO (1 chiamata invece di 7!)
+          // 🚀 USA IL METODO OTTIMIZZATO (1 chiamata invece di 11!)
           const slotsSynced = await this.octoService.syncAvailabilityOptimized(
             productId, 
             startDateStr, 
@@ -230,13 +230,13 @@ export class BookingService {
           
         } catch (optimizedError: any) {
           console.warn(`⚠️ Metodo ottimizzato fallito: ${optimizedError.message}`);
-          console.log('📌 Fallback al metodo tradizionale (7 chiamate separate)...');
+          console.log('📌 Fallback al metodo tradizionale (11 chiamate separate)...');
           
           // FALLBACK: Se il metodo ottimizzato fallisce, usa quello tradizionale
           let successCount = 0;
           let failCount = 0;
           
-          for (let offset = -3; offset <= 3; offset++) {
+          for (let offset = -5; offset <= 5; offset++) {
             const date = new Date(centralDate);
             date.setDate(date.getDate() + offset);
             const dateStr = date.toISOString().split('T')[0];
@@ -252,7 +252,7 @@ export class BookingService {
             }
             
             // Piccola pausa tra le chiamate
-            if (offset < 3) {
+            if (offset < 5) {
               await new Promise(resolve => setTimeout(resolve, 100));
             }
           }
