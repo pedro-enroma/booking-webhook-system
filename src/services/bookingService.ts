@@ -62,8 +62,12 @@ export class BookingService {
         console.log('✅ Venditore salvato/aggiornato:', sellerId);
       }
       
-      // 5. Salva l'attività
-      await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId);
+      // 4.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
+      const sellerName = parentBooking.seller?.title || 'EnRoma.com';
+      console.log('📌 Seller name per le attività:', sellerName);
+      
+      // 5. Salva l'attività CON IL SELLER
+      await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
       console.log('✅ Attività salvata:', bookingData.title);
       
       // 6. Salva i partecipanti con info passeggeri
@@ -109,8 +113,12 @@ export class BookingService {
       await this.updateMainBooking(parentBooking);
       console.log('✅ Prenotazione principale aggiornata');
       
-      // 3. Aggiorna attività
-      await this.updateActivityBooking(bookingData, parentBooking.bookingId);
+      // 2.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
+      const sellerName = parentBooking.seller?.title || 'EnRoma.com';
+      console.log('📌 Seller name per aggiornamento attività:', sellerName);
+      
+      // 3. Aggiorna attività CON IL SELLER
+      await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName);
       console.log('✅ Attività aggiornata');
       
       // 4. Aggiorna partecipanti
@@ -429,8 +437,8 @@ export class BookingService {
     if (error) throw error;
   }
   
-  // Funzione per salvare l'attività dal root object
-  private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number): Promise<void> {
+  // Funzione per salvare l'attività dal root object (AGGIORNATA CON SELLER)
+  private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
     
@@ -456,17 +464,23 @@ export class BookingService {
         rate_id: activityData.rateId,
         rate_title: activityData.rateTitle,
         start_time: activityData.startTime,
-        date_string: activityData.dateString
+        date_string: activityData.dateString,
+        activity_seller: sellerName  // NUOVO CAMPO!
       }, {
         onConflict: 'activity_booking_id',
         ignoreDuplicates: false
       });
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Errore salvando activity booking:', error);
+      throw error;
+    }
+    
+    console.log(`✅ Activity booking salvato con seller: ${sellerName}`);
   }
   
-  // Funzione per aggiornare l'attività
-  private async updateActivityBooking(activityData: any, parentBookingId: number): Promise<void> {
+  // Funzione per aggiornare l'attività (AGGIORNATA CON SELLER)
+  private async updateActivityBooking(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
     
@@ -485,11 +499,17 @@ export class BookingService {
         total_price: activityData.totalPrice,
         rate_title: activityData.rateTitle,
         start_time: activityData.startTime,
-        date_string: activityData.dateString
+        date_string: activityData.dateString,
+        activity_seller: sellerName  // NUOVO CAMPO!
       })
       .eq('activity_booking_id', activityData.bookingId);
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Errore aggiornando activity booking:', error);
+      throw error;
+    }
+    
+    console.log(`✅ Activity booking aggiornato con seller: ${sellerName}`);
   }
   
   // Elimina partecipanti esistenti prima di aggiornare
