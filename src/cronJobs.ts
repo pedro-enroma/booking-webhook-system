@@ -152,20 +152,15 @@ export function initializeCronJobs() {
     }
   });
   
-  // 7. TUTTI GLI ALTRI PRODOTTI - Ogni venerdì alle 6:00 AM (365 giorni)
-  // DIVISO IN PIÙ ESECUZIONI per evitare timeout
+  // 7. TUTTI I PRODOTTI (tranne esclusi) - Ogni venerdì alle 6:00 AM (90 giorni)
   cron.schedule('0 6 * * 5', async () => {
-    const jobId = `others-365d-week-${Date.now()}`;
-    logCronStart('Altri prodotti - 365 giorni (settimana)', jobId);
+    const jobId = `all-products-90d-${Date.now()}`;
+    logCronStart('Tutti i prodotti - 90 giorni (venerdì)', jobId);
     
     try {
-      // Invece di 365 giorni in una volta, fai solo i prossimi 90
-      // Gli altri verranno fatti nei giorni successivi con checkpoint
-      await octoService.syncAllAvailabilityExcept(90, [
-        ...EXCLUDED_PRODUCTS,
-        ...PRIORITY_PRODUCTS,
-        ...SECONDARY_PRODUCTS
-      ]);
+      // Sincronizza TUTTI i prodotti per i prossimi 90 giorni
+      // Escludi solo i 4 prodotti nella blacklist
+      await octoService.syncAllAvailabilityExcept(90, EXCLUDED_PRODUCTS);
       
       logCronEnd(jobId, 90, true);
     } catch (error) {
