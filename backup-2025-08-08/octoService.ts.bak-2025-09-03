@@ -250,36 +250,32 @@ export class OctoService {
           const checkpoint = await this.getCheckpoint(jobType, productId);
           let startDay = 0;
           
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          
           if (checkpoint) {
             const checkpointDate = new Date(checkpoint);
-            checkpointDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
             
-            // Se il checkpoint è di oggi o oltre, skip
+            // Se il checkpoint è di oggi, skip
             if (checkpointDate.toISOString().split('T')[0] === today.toISOString().split('T')[0]) {
               console.log(`⏭️ ${productId} già sincronizzato oggi`);
               return;
             }
             
-            // Calcola da dove riprendere, ma non prima di oggi
+            // Calcola da dove riprendere
             const daysSinceCheckpoint = Math.ceil((today.getTime() - checkpointDate.getTime()) / (1000 * 60 * 60 * 24));
-            if (daysSinceCheckpoint > 0) {
-              startDay = 0; // riparti da oggi
-              console.log(`↻ ${productId} checkpoint vecchio (${checkpoint}), riparto da oggi`);
+            if (daysSinceCheckpoint < days) {
+              startDay = daysSinceCheckpoint;
+              console.log(`↻ ${productId} resume dal giorno ${startDay}`);
             }
           }
           
           // Sincronizza a chunks di giorni
           for (let dayOffset = startDay; dayOffset < days; dayOffset += this.DAYS_PER_CHUNK) {
             const startDate = new Date();
-            startDate.setHours(0, 0, 0, 0);
             startDate.setDate(startDate.getDate() + dayOffset);
             
             const endOffset = Math.min(dayOffset + this.DAYS_PER_CHUNK - 1, days - 1);
             const endDate = new Date();
-            endDate.setHours(0, 0, 0, 0);
             endDate.setDate(endDate.getDate() + endOffset);
             
             await this.syncAvailabilityOptimized(
