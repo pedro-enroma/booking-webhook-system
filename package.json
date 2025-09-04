@@ -13,7 +13,9 @@
     "test-complete": "ts-node src/test-complete.ts",
     "test-mass": "ts-node src/test-mass-sync.ts",
     "create-view": "ts-node src/create-view.ts",
-    "import-signature": "ts-node src/import-signature.ts"
+    "import-signature": "ts-node src/import-signature.ts",
+    "migrate-gtm": "ts-node src/migrations/run-gtm-migration.ts",
+    "test-gtm": "ts-node src/test-gtm-webhook.ts"
   },
   "keywords": [],
   "author": "",

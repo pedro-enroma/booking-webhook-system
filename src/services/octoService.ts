@@ -11,6 +11,7 @@ export class OctoService {
   private readonly PARALLEL_PRODUCTS = 3; // Processa 3 prodotti in parallelo
   private readonly DAYS_PER_CHUNK = 10;   // Processa 10 giorni alla volta
   private readonly API_DELAY_MS = 50;     // Delay tra chiamate API
+  private readonly VERBOSE = process.env.VERBOSE_SYNC === 'true';
 
   constructor() {
     if (!process.env.BOKUN_API_KEY || !process.env.BOKUN_SUPPLIER_ID) {
@@ -281,6 +282,10 @@ export class OctoService {
             const endDate = new Date();
             endDate.setHours(0, 0, 0, 0);
             endDate.setDate(endDate.getDate() + endOffset);
+            
+            if (this.VERBOSE) {
+              console.log(`📅 Batch ${productId}: ${startDate.toISOString().split('T')[0]} → ${endDate.toISOString().split('T')[0]}`);
+            }
             
             await this.syncAvailabilityOptimized(
               productId,

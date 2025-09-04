@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import webhookRoutes from './routes/webhook';
 import syncRoutes from './routes/sync';
+import gtmRoutes from './routes/gtm';
 import { initializeCronJobs } from './cronJobs';
 
 // Carica le variabili d'ambiente dal file .env
@@ -15,8 +16,40 @@ const app = express();
 // IMPORTANTE: Railway fornisce la porta tramite la variabile PORT
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
-// Middleware
-app.use(cors());
+// Middleware with CORS configuration for GTM
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'https://enroma.com',
+      'https://www.enroma.com',
+      'http://localhost:3000', // for testing
+      /\.googletagmanager\.com$/  // Allow all GTM domains
+    ];
+    
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return allowed === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('⚠️ CORS blocked origin:', origin);
+      callback(null, true); // Still allow for now, but log it
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -29,6 +62,7 @@ app.use((req, res, next) => {
 // Routes
 app.use(webhookRoutes);
 app.use('/api', syncRoutes);
+app.use(gtmRoutes);
 
 // Route principale
 app.get('/', (req, res) => {
@@ -37,6 +71,8 @@ app.get('/', (req, res) => {
     endpoints: {
       webhook_booking: 'POST /webhook/booking',
       webhook_availability: 'POST /webhook/availability',
+      webhook_gtm: 'POST /webhook/gtm',
+      gtm_health: 'GET /webhook/gtm/health',
       health: 'GET /health',
       syncProducts: 'POST /api/sync/products',
       syncAvailability: 'POST /api/sync/availability',
@@ -58,6 +94,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('Endpoints disponibili:');
   console.log(`- POST http://localhost:${PORT}/webhook/booking (riceve prenotazioni)`);
   console.log(`- POST http://localhost:${PORT}/webhook/availability (riceve aggiornamenti disponibilità)`);
+  console.log(`- POST http://localhost:${PORT}/webhook/gtm (riceve dati GTM/GA4)`);
+  console.log(`- GET  http://localhost:${PORT}/webhook/gtm/health (stato GTM webhook)`);
   console.log(`- GET  http://localhost:${PORT}/health (verifica stato)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/products (sincronizza prodotti)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/availability (sincronizza disponibilità)`);

@@ -254,12 +254,16 @@ export class BookingService {
             const dateAtMidnight = new Date(date);
             dateAtMidnight.setHours(0, 0, 0, 0);
             if (dateAtMidnight < today) {
-              console.log(`   ⏭️ Skip ${date.toISOString().split('T')[0]} (passato)`);
+              if (process.env.VERBOSE_SYNC === 'true') {
+                console.log(`   ⏭️ Skip ${date.toISOString().split('T')[0]} (passato)`);
+              }
               continue;
             }
             const dateStr = date.toISOString().split('T')[0];
             
-            console.log(`   📅 Sync ${dateStr} (${offset >= 0 ? '+' : ''}${offset} giorni)`);
+            if (process.env.VERBOSE_SYNC === 'true') {
+              console.log(`   📅 Sync ${dateStr} (${offset >= 0 ? '+' : ''}${offset} giorni)`);
+            }
             
             try {
               await this.octoService.syncAvailability(productId, dateStr);
