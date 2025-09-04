@@ -15,7 +15,8 @@
     "create-view": "ts-node src/create-view.ts",
     "import-signature": "ts-node src/import-signature.ts",
     "migrate-gtm": "ts-node src/migrations/run-gtm-migration.ts",
-    "test-gtm": "ts-node src/test-gtm-webhook.ts"
+    "test-gtm": "ts-node src/test-gtm-webhook.ts",
+    "update-affiliates": "ts-node src/run-manual-affiliate-updates.ts"
   },
   "keywords": [],
   "author": "",

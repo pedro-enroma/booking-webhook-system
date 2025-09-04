@@ -16,8 +16,14 @@ export class GTMService {
   async processGTMWebhook(payload: GTMWebhookPayload): Promise<GTMProcessingResult> {
     const startTime = Date.now();
     const transactionId = payload.ecommerce?.transaction_id;
-    const affiliateId = payload.variables?.['TH - url - affiliate_id'];
+    let affiliateId = payload.variables?.['TH - url - affiliate_id'];
     const firstCampaign = payload.variables?.['TH - url - first_campaign_id'];
+    
+    // RULE: Convert specific affiliate_id to "il-colosseo"
+    if (affiliateId === '8463d56e1b524f509d8a3698feebcd0c') {
+      console.log('🔄 Converting affiliate_id from 8463d56e1b524f509d8a3698feebcd0c to il-colosseo');
+      affiliateId = 'il-colosseo';
+    }
     
     // Initial validation
     if (!transactionId) {
