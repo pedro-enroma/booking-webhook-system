@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W25X6RC');</script>
+    <!-- End Google Tag Manager -->
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Purchase Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .status {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .warning {
+            border-left-color: #ff9800;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        pre {
+            background: #2b2b2b;
+            color: #f8f8f2;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W25X6RC"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div class="container">
+        <h1>🧪 GTM Purchase Tracking Test</h1>
+        
+        <div class="status">
+            <h3>Current URL Parameters:</h3>
+            <pre id="urlParams"></pre>
+        </div>
+        
+        <div class="status">
+            <h3>localStorage Values:</h3>
+            <pre id="localStorage"></pre>
+        </div>
+        
+        <div class="status">
+            <h3>GTM Data Layer:</h3>
+            <pre id="dataLayer"></pre>
+        </div>
+        
+        <h2>Test Actions:</h2>
+        
+        <button onclick="simulatePurchase()">
+            🛍️ Simulate Purchase Event
+        </button>
+        
+        <button onclick="checkLocalStorage()">
+            🔍 Check localStorage
+        </button>
+        
+        <button onclick="clearLocalStorage()">
+            🗑️ Clear localStorage
+        </button>
+        
+        <button onclick="addTestParams()">
+            ➕ Add Test URL Params
+        </button>
+        
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // Check URL parameters
+        function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const paramsObj = {};
+            for (let [key, value] of params) {
+                paramsObj[key] = value;
+            }
+            document.getElementById('urlParams').textContent = JSON.stringify(paramsObj, null, 2);
+            return paramsObj;
+        }
+
+        // Check localStorage
+        function checkLocalStorage() {
+            const storageData = {
+                'th_affiliate_id': localStorage.getItem('th_affiliate_id'),
+                'th_first_campaign_id': localStorage.getItem('th_first_campaign_id'),
+                'GTM_affiliate_id': localStorage.getItem('affiliate_id'),
+                'GTM_first_campaign': localStorage.getItem('first_campaign_id')
+            };
+            document.getElementById('localStorage').textContent = JSON.stringify(storageData, null, 2);
+            return storageData;
+        }
+
+        // Check data layer
+        function checkDataLayer() {
+            if (window.dataLayer) {
+                const recentEvents = window.dataLayer.slice(-5);
+                document.getElementById('dataLayer').textContent = JSON.stringify(recentEvents, null, 2);
+            } else {
+                document.getElementById('dataLayer').textContent = 'DataLayer not found - GTM may not be loaded';
+            }
+        }
+
+        // Simulate purchase event
+        function simulatePurchase() {
+            // Use a real booking ID for testing
+            const bookingId = '73525199'; // Real booking ID from database
+            const results = document.getElementById('results');
+            
+            // Push purchase event to dataLayer
+            if (window.dataLayer) {
+                window.dataLayer.push({
+                    'event': 'purchase',
+                    'ecommerce': {
+                        'transaction_id': bookingId,
+                        'value': 150.00,
+                        'currency': 'EUR',
+                        'items': [{
+                            'item_name': 'Test Tour',
+                            'quantity': 2,
+                            'price': 75.00
+                        }]
+                    }
+                });
+                
+                results.innerHTML = `
+                    <div class="status">
+                        <strong>✅ Purchase Event Sent!</strong><br>
+                        Transaction ID: ${bookingId}<br>
+                        Check your GTM Preview to see if the webhook fired.<br>
+                        Check Railway logs for webhook activity.
+                    </div>
+                `;
+            } else {
+                results.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ GTM Not Found!</strong><br>
+                        Make sure GTM is installed on this page.
+                    </div>
+                `;
+            }
+            
+            // Refresh displays
+            setTimeout(() => {
+                checkDataLayer();
+                checkLocalStorage();
+            }, 1000);
+        }
+
+        // Clear localStorage
+        function clearLocalStorage() {
+            localStorage.removeItem('th_affiliate_id');
+            localStorage.removeItem('th_first_campaign_id');
+            localStorage.removeItem('affiliate_id');
+            localStorage.removeItem('first_campaign_id');
+            checkLocalStorage();
+            
+            document.getElementById('results').innerHTML = `
+                <div class="status warning">
+                    <strong>🗑️ localStorage Cleared</strong>
+                </div>
+            `;
+        }
+
+        // Add test parameters to URL
+        function addTestParams() {
+            const newUrl = window.location.pathname + '?affiliate_id=test-affiliate-' + Date.now() + '&utm_campaign=test-campaign-' + Date.now();
+            window.location.href = newUrl;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            checkUrlParams();
+            checkLocalStorage();
+            checkDataLayer();
+            
+            // Check every 5 seconds
+            setInterval(() => {
+                checkDataLayer();
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

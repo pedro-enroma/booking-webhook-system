@@ -120,7 +120,8 @@ async function testGTMWebhook() {
     });
     
     console.log('  ✅ Response:', response4.data);
-    if (response4.data.affiliate_id === 'il-colosseo') {
+    const data4 = response4.data as any;
+    if (data4.affiliate_id === 'il-colosseo') {
       console.log('  ✅ Conversion worked: 8463d56e... → il-colosseo');
     } else {
       console.log('  ⚠️ Conversion did not work as expected');
