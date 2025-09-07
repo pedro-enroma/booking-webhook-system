@@ -85,7 +85,7 @@ export class OctoService {
     }
   }
 
-  // OTTIMIZZATO: Sincronizza disponibilità con range API
+  // OTTIMIZZATO: Sincronizza disponibilità con range API per TUTTI gli options
   async syncAvailabilityOptimized(productId: string, startDate: string, endDate: string): Promise<number> {
     try {
       // Evita di sincronizzare giorni passati
@@ -98,61 +98,77 @@ export class OctoService {
         console.log(`⚠️ startDate (${startDate}) nel passato, aggiorno a oggi (${todayStr})`);
         startDate = todayStr;
       }
-      const optionId = await this.getProductOptionId(productId);
       
-      // Prova prima con range completo (Bokun potrebbe supportarlo)
-      const url = `${this.baseUrl}/availability`;
-      const payload = {
-        productId: productId,
-        optionId: optionId,
-        localDateStart: startDate,
-        localDateEnd: endDate
-      };
+      // Get ALL options for the product
+      const optionIds = await this.getAllProductOptionIds(productId);
       
-      console.log(`📅 Tentativo range ${productId}: ${startDate} → ${endDate}`);
-      
-      try {
-        const response = await axios.post<OctoAvailability[]>(url, payload, {
-          headers: this.getHeaders(),
-          timeout: 30000
-        });
-
-        const availabilities = response.data;
-        
-        // Salva in batch
-        if (availabilities.length > 0) {
-          const batchData = availabilities.map(avail => 
-            this.prepareAvailabilityData(productId, avail)
-          );
-          
-          const { error } = await supabase
-            .from('activity_availability')
-            .upsert(batchData, { onConflict: 'availability_id' });
-          
-          if (error) throw error;
-          
-          console.log(`✅ Range OK: ${availabilities.length} slot salvati`);
-          return availabilities.length;
-        }
+      if (optionIds.length === 0) {
+        console.log(`⚠️ Nessuna option trovata per ${productId}`);
         return 0;
-        
-      } catch (rangeError: any) {
-        // Se il range non funziona, fallback su chiamate giornaliere
-        if (rangeError.response?.status === 400 || rangeError.response?.status === 422) {
-          console.log(`⚠️ Range non supportato, uso fallback giornaliero`);
-          return await this.syncAvailabilityFallback(productId, startDate, endDate);
-        }
-        throw rangeError;
       }
       
+      console.log(`📅 Sync ${productId}: ${startDate} → ${endDate} (${optionIds.length} options)`);
+      
+      let totalSynced = 0;
+      const url = `${this.baseUrl}/availability`;
+      
+      // Sync each option
+      for (const optionId of optionIds) {
+        const payload = {
+          productId: productId,
+          optionId: optionId,
+          localDateStart: startDate,
+          localDateEnd: endDate
+        };
+        
+        try {
+          const response = await axios.post<OctoAvailability[]>(url, payload, {
+            headers: this.getHeaders(),
+            timeout: 30000
+          });
+
+          const availabilities = response.data;
+          
+          // Salva in batch
+          if (availabilities.length > 0) {
+            const batchData = availabilities.map(avail => 
+              this.prepareAvailabilityData(productId, avail)
+            );
+            
+            const { error } = await supabase
+              .from('activity_availability')
+              .upsert(batchData, { onConflict: 'availability_id' });
+            
+            if (error) throw error;
+            
+            console.log(`  ✅ Option ${optionId}: ${availabilities.length} slot salvati`);
+            totalSynced += availabilities.length;
+          }
+          
+        } catch (optionError: any) {
+          // If one option fails, continue with others
+          if (optionError.response?.status === 400 || optionError.response?.status === 422) {
+            console.log(`  ⚠️ Option ${optionId} fallback needed`);
+            // Try fallback for this option
+            const fallbackCount = await this.syncAvailabilityFallback(productId, startDate, endDate, optionId);
+            totalSynced += fallbackCount;
+          } else {
+            console.error(`  ❌ Option ${optionId} error: ${optionError.message}`);
+          }
+        }
+      }
+      
+      console.log(`✅ Total synced for ${productId}: ${totalSynced} slots`);
+      return totalSynced;
+      
     } catch (error: any) {
-      console.error(`❌ Errore sync ${productId}:`, error.message);
+      console.error(`❌ Errore sync availability:`, error.message);
       throw error;
     }
   }
 
   // Fallback: sincronizza giorno per giorno
-  private async syncAvailabilityFallback(productId: string, startDate: string, endDate: string): Promise<number> {
+  private async syncAvailabilityFallback(productId: string, startDate: string, endDate: string, optionId?: string): Promise<number> {
     // Evita di sincronizzare giorni passati
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -373,6 +389,30 @@ export class OctoService {
     if (error) throw error;
   }
 
+  // Get ALL option IDs for a product
+  private async getAllProductOptionIds(productId: string): Promise<string[]> {
+    try {
+      const url = `${this.baseUrl}/products/${productId}`;
+      const response = await axios.get<OctoProduct>(url, {
+        headers: this.getHeaders()
+      });
+      
+      const product = response.data;
+      if (product.options && product.options.length > 0) {
+        const optionIds = product.options.map(opt => opt.id);
+        console.log(`  Found ${optionIds.length} options for ${productId}`);
+        return optionIds;
+      }
+      
+      console.log(`  No options found for ${productId}`);
+      return [];
+      
+    } catch (error: any) {
+      console.error('❌ Error getting product options:', error.message);
+      return [];
+    }
+  }
+  
   private async getProductOptionId(productId: string): Promise<string> {
     try {
       const { data } = await supabase
@@ -412,24 +452,39 @@ export class OctoService {
 
   async syncAvailability(productId: string, date: string): Promise<void> {
     try {
-      const optionId = await this.getProductOptionId(productId);
+      // Get ALL options for the product
+      const optionIds = await this.getAllProductOptionIds(productId);
+      
+      if (optionIds.length === 0) {
+        console.log(`⚠️ No options found for ${productId}`);
+        return;
+      }
       
       const url = `${this.baseUrl}/availability`;
-      const payload = {
-        productId: productId,
-        optionId: optionId,
-        localDateStart: date,
-        localDateEnd: date
-      };
       
-      const response = await axios.post<OctoAvailability[]>(url, payload, {
-        headers: this.getHeaders()
-      });
+      // Sync each option
+      for (const optionId of optionIds) {
+        const payload = {
+          productId: productId,
+          optionId: optionId,
+          localDateStart: date,
+          localDateEnd: date
+        };
+        
+        try {
+          const response = await axios.post<OctoAvailability[]>(url, payload, {
+            headers: this.getHeaders()
+          });
 
-      const availabilities = response.data;
-      
-      for (const availability of availabilities) {
-        await this.saveAvailability(productId, availability);
+          const availabilities = response.data;
+          
+          for (const availability of availabilities) {
+            await this.saveAvailability(productId, availability);
+          }
+        } catch (optionError: any) {
+          console.error(`❌ Error syncing option ${optionId} for ${productId} ${date}:`, optionError.message);
+          // Continue with other options
+        }
       }
       
     } catch (error: any) {

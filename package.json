@@ -16,7 +16,15 @@
     "import-signature": "ts-node src/import-signature.ts",
     "migrate-gtm": "ts-node src/migrations/run-gtm-migration.ts",
     "test-gtm": "ts-node src/test-gtm-webhook.ts",
-    "update-affiliates": "ts-node src/run-manual-affiliate-updates.ts"
+    "update-affiliates": "ts-node src/run-manual-affiliate-updates.ts",
+    "update-mv": "ts-node src/migrations/update-mv-with-affiliates.ts",
+    "check-tables": "ts-node src/check-table-relationships.ts",
+    "check-customers": "ts-node src/check-missing-customers.ts",
+    "import-customers": "ts-node src/run-customer-import.ts",
+    "import-csv": "ts-node src/import-from-csv.ts",
+    "import-batch": "ts-node src/import-csv-batch.ts",
+    "import-batch2": "ts-node src/import-csv-batch2.ts",
+    "health-check": "ts-node src/monitor-webhook-health.ts"
   },
   "keywords": [],
   "author": "",

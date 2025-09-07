@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import webhookRoutes from './routes/webhook';
 import syncRoutes from './routes/sync';
 import gtmRoutes from './routes/gtm';
+// import gtmEnhancedRoutes from './routes/gtm-enhanced'; // Not needed - using existing GTM webhook
 import { initializeCronJobs } from './cronJobs';
 
 // Carica le variabili d'ambiente dal file .env
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
 app.use(webhookRoutes);
 app.use('/api', syncRoutes);
 app.use(gtmRoutes);
+// app.use(gtmEnhancedRoutes); // Not needed - using existing GTM webhook
 
 // Route principale
 app.get('/', (req, res) => {
