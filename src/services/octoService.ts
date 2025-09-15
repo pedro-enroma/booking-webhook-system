@@ -454,14 +454,15 @@ export class OctoService {
     try {
       // Get ALL options for the product
       const optionIds = await this.getAllProductOptionIds(productId);
-      
+
       if (optionIds.length === 0) {
         console.log(`⚠️ No options found for ${productId}`);
         return;
       }
-      
+
       const url = `${this.baseUrl}/availability`;
-      
+      let totalSaved = 0;
+
       // Sync each option
       for (const optionId of optionIds) {
         const payload = {
@@ -470,23 +471,34 @@ export class OctoService {
           localDateStart: date,
           localDateEnd: date
         };
-        
+
         try {
           const response = await axios.post<OctoAvailability[]>(url, payload, {
             headers: this.getHeaders()
           });
 
           const availabilities = response.data;
-          
+          let optionSaved = 0;
+
           for (const availability of availabilities) {
             await this.saveAvailability(productId, availability);
+            optionSaved++;
+          }
+
+          if (optionSaved > 0) {
+            console.log(`  ✅ Option ${optionId}: ${optionSaved} slot salvati`);
+            totalSaved += optionSaved;
           }
         } catch (optionError: any) {
           console.error(`❌ Error syncing option ${optionId} for ${productId} ${date}:`, optionError.message);
           // Continue with other options
         }
       }
-      
+
+      if (totalSaved > 0) {
+        console.log(`✅ Total synced for ${productId} on ${date}: ${totalSaved} slots`);
+      }
+
     } catch (error: any) {
       console.error(`❌ Errore sync ${productId} ${date}:`, error.message);
       // Non propagare per non bloccare batch
@@ -506,18 +518,19 @@ export class OctoService {
   async syncProductForDays(productId: string, days: number): Promise<void> {
     try {
       console.log(`🔄 Sincronizzazione ${productId} per ${days} giorni`);
-      
+
       for (let i = 0; i < days; i++) {
         const date = new Date();
         date.setDate(date.getDate() + i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
+        console.log(`📅 Giorno ${i + 1}/${days}: ${dateStr}`);
         await this.syncAvailability(productId, dateStr);
-        
+
         // Pausa brevissima tra le chiamate
         await new Promise(resolve => setTimeout(resolve, 50));
       }
-      
+
       console.log(`✅ Sincronizzazione ${productId} completata per ${days} giorni`);
     } catch (error) {
       console.error(`❌ Errore sincronizzazione ${productId}:`, error);
