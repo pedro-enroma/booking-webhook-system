@@ -28,6 +28,7 @@ const corsOptions = {
       'https://enroma.com',
       'https://www.enroma.com',
       'http://localhost:3000', // for testing
+      'http://localhost:3002', // for Next.js dev
       /\.googletagmanager\.com$/  // Allow all GTM domains
     ];
     
