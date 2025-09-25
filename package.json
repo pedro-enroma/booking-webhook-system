@@ -24,7 +24,10 @@
     "import-csv": "ts-node src/import-from-csv.ts",
     "import-batch": "ts-node src/import-csv-batch.ts",
     "import-batch2": "ts-node src/import-csv-batch2.ts",
-    "health-check": "ts-node src/monitor-webhook-health.ts"
+    "health-check": "ts-node src/monitor-webhook-health.ts",
+    "update-status": "ts-node src/update-activity-status.ts",
+    "setup-webhook-logging": "ts-node src/setup-webhook-logging.ts",
+    "test-webhook-logging": "ts-node src/test-webhook-logging.ts"
   },
   "keywords": [],
   "author": "",
