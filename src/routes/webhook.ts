@@ -100,7 +100,7 @@ router.post('/webhook/availability', async (req: Request, res: Response) => {
 });
 
 // Endpoint esistente per booking webhook
-router.post('/webhook/booking', async (req: Request, res: Response) => {
+router.post('/webhook/booking', async (req: Request, res: Response): Promise<Response> => {
   console.log('🔔 Webhook ricevuto da Bokun');
 
   // Log webhook to our detailed logging system
@@ -200,7 +200,7 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
       previousStatus ? { from: previousStatus, to: req.body.status } : undefined
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Webhook elaborato con successo'
     });
@@ -215,7 +215,7 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
       error.message || 'Unknown error'
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Errore nel processare il webhook'
     });
@@ -237,7 +237,7 @@ router.get('/health', (req: Request, res: Response) => {
 });
 
 // New debug endpoints for webhook analysis
-router.get('/webhook/debug/history/:confirmationCode', async (req: Request, res: Response) => {
+router.get('/webhook/debug/history/:confirmationCode', async (req: Request, res: Response): Promise<Response> => {
   try {
     const { confirmationCode } = req.params;
     const issues = await webhookLogger.detectOutOfOrderIssues(confirmationCode);
@@ -248,10 +248,10 @@ router.get('/webhook/debug/history/:confirmationCode', async (req: Request, res:
       });
     }
 
-    res.json(issues);
+    return res.json(issues);
   } catch (error: any) {
     console.error('Error fetching webhook history:', error);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Error fetching webhook history',
       message: error.message
     });
@@ -259,21 +259,21 @@ router.get('/webhook/debug/history/:confirmationCode', async (req: Request, res:
 });
 
 // Get webhook logs for a specific booking
-router.get('/webhook/debug/logs/:bookingId', async (req: Request, res: Response) => {
+router.get('/webhook/debug/logs/:bookingId', async (req: Request, res: Response): Promise<Response> => {
   try {
     const { bookingId } = req.params;
     const limit = parseInt(req.query.limit as string) || 20;
 
     const history = await webhookLogger.getWebhookHistory(bookingId, limit);
 
-    res.json({
+    return res.json({
       booking_id: bookingId,
       webhook_count: history.length,
       webhooks: history
     });
   } catch (error: any) {
     console.error('Error fetching webhook logs:', error);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Error fetching webhook logs',
       message: error.message
     });
@@ -281,7 +281,7 @@ router.get('/webhook/debug/logs/:bookingId', async (req: Request, res: Response)
 });
 
 // Generate webhook report
-router.get('/webhook/debug/report', async (req: Request, res: Response) => {
+router.get('/webhook/debug/report', async (req: Request, res: Response): Promise<Response> => {
   try {
     const startDate = req.query.startDate
       ? new Date(req.query.startDate as string)
@@ -293,10 +293,10 @@ router.get('/webhook/debug/report', async (req: Request, res: Response) => {
 
     const report = await webhookLogger.generateReport(startDate, endDate);
 
-    res.type('text/plain').send(report);
+    return res.type('text/plain').send(report);
   } catch (error: any) {
     console.error('Error generating report:', error);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Error generating report',
       message: error.message
     });
