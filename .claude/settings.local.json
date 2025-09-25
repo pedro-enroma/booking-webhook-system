@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run ts-node:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(node:*)",
+      "Bash(npm run update-status:*)",
+      "Bash(awk:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(railway up:*)",
+      "Bash(npm run setup-webhook-logging:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

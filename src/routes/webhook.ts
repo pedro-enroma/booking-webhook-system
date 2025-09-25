@@ -133,7 +133,7 @@ router.post('/webhook/booking', async (req: Request, res: Response) => {
       if (logEntry.action === 'BOOKING_UPDATED' && logEntry.status !== 'CANCELLED') {
         // Check if we already have a CANCELLED status for this booking
         const history = await webhookLogger.getWebhookHistory(logEntry.booking_id, 5);
-        const hasCancellation = history.some(h =>
+        const hasCancellation = history.some((h: any) =>
           h.action === 'BOOKING_ITEM_CANCELLED' || h.status === 'CANCELLED'
         );
 

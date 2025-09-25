@@ -247,9 +247,11 @@ export class WebhookLogger {
     // Check for out-of-order webhooks
     // CANCELLATION should come after CONFIRMATION or UPDATE
     if (logEntry.action === 'BOOKING_ITEM_CANCELLED' || logEntry.status === 'CANCELLED') {
-      const lastNonCancelled = sequence.findLast(entry =>
+      // Use filter and pop instead of findLast for compatibility
+      const nonCancelledEntries = sequence.filter((entry: WebhookLogEntry) =>
         entry.action !== 'BOOKING_ITEM_CANCELLED' && entry.status !== 'CANCELLED'
       );
+      const lastNonCancelled = nonCancelledEntries.length > 0 ? nonCancelledEntries[nonCancelledEntries.length - 1] : null;
 
       if (!lastNonCancelled) {
         // Cancellation came first - this is out of order!
@@ -259,7 +261,7 @@ export class WebhookLogger {
 
     // Check if UPDATE comes after CANCELLATION
     if (logEntry.action === 'BOOKING_UPDATED' && logEntry.status !== 'CANCELLED') {
-      const hasCancellation = sequence.some(entry =>
+      const hasCancellation = sequence.some((entry: WebhookLogEntry) =>
         entry.action === 'BOOKING_ITEM_CANCELLED' || entry.status === 'CANCELLED'
       );
 
