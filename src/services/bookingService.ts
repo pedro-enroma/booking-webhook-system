@@ -63,7 +63,8 @@ export class BookingService {
       }
       
       // 4.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
-      const sellerName = parentBooking.seller?.title || 'EnRoma.com';
+      // Priorità: agent.title > seller.title > default 'EnRoma.com'
+      const sellerName = bookingData.agent?.title || parentBooking.seller?.title || 'EnRoma.com';
       console.log('📌 Seller name per le attività:', sellerName);
       
       // 5. Salva l'attività CON IL SELLER
@@ -114,7 +115,8 @@ export class BookingService {
       console.log('✅ Prenotazione principale aggiornata');
       
       // 2.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
-      const sellerName = parentBooking.seller?.title || 'EnRoma.com';
+      // Priorità: agent.title > seller.title > default 'EnRoma.com'
+      const sellerName = bookingData.agent?.title || parentBooking.seller?.title || 'EnRoma.com';
       console.log('📌 Seller name per aggiornamento attività:', sellerName);
       
       // 3. Aggiorna attività CON IL SELLER
