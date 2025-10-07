@@ -9,7 +9,10 @@
       "Bash(git add:*)",
       "Bash(git push:*)",
       "Bash(railway up:*)",
-      "Bash(npm run setup-webhook-logging:*)"
+      "Bash(npm run setup-webhook-logging:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run setup-participant-sync:*)"
     ],
     "deny": [],
     "ask": []

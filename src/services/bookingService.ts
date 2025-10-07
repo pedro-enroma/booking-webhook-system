@@ -123,16 +123,15 @@ export class BookingService {
       await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName);
       console.log('✅ Attività aggiornata');
       
-      // 4. Aggiorna partecipanti
+      // 4. NUOVO: Sincronizza partecipanti in modo intelligente
       if (bookingData.pricingCategoryBookings) {
-        // Prima elimina i partecipanti esistenti
-        await this.deleteExistingParticipants(bookingData.bookingId);
-        
-        // Poi inserisce i nuovi
-        for (const participant of bookingData.pricingCategoryBookings) {
-          await this.savePricingCategoryBooking(participant, bookingData.bookingId);
-        }
-        console.log('✅ Partecipanti aggiornati');
+        await this.syncParticipantsIntelligently(
+          bookingData.bookingId,
+          bookingData.pricingCategoryBookings,
+          parentBooking.bookingId,
+          bookingData.confirmationCode
+        );
+        console.log('✅ Partecipanti sincronizzati intelligentemente');
       }
       
       // 5. NUOVO: Sincronizza disponibilità
@@ -528,6 +527,199 @@ export class BookingService {
     console.log(`✅ Activity booking aggiornato con seller: ${sellerName}`);
   }
   
+  // NUOVO: Sincronizza partecipanti in modo intelligente (add/remove/match)
+  private async syncParticipantsIntelligently(
+    activityBookingId: number,
+    webhookParticipants: any[],
+    parentBookingId: number,
+    confirmationCode: string
+  ): Promise<void> {
+    try {
+      console.log(`🔄 Sincronizzazione intelligente partecipanti per activity_booking ${activityBookingId}`);
+
+      // 1. Recupera partecipanti esistenti dal DB
+      const { data: existingParticipants, error: fetchError } = await supabase
+        .from('pricing_category_bookings')
+        .select('*')
+        .eq('activity_booking_id', activityBookingId);
+
+      if (fetchError) throw fetchError;
+
+      const existingCount = existingParticipants?.length || 0;
+      const webhookCount = webhookParticipants.length;
+
+      console.log(`   📊 DB partecipanti: ${existingCount}, Webhook partecipanti: ${webhookCount}`);
+
+      // 2. Crea mappa dei partecipanti dal webhook (usando pricing_category_booking_id)
+      const webhookParticipantMap = new Map(
+        webhookParticipants.map(p => [p.id, p])
+      );
+
+      // 3. Identifica partecipanti da mantenere, rimuovere e aggiungere
+      const toKeep: any[] = [];
+      const toRemove: any[] = [];
+
+      // Check quali partecipanti esistenti sono ancora nel webhook
+      for (const existing of existingParticipants || []) {
+        if (webhookParticipantMap.has(existing.pricing_category_booking_id)) {
+          toKeep.push(existing);
+
+          // Log MATCH
+          await this.logParticipantSync({
+            activity_booking_id: activityBookingId,
+            booking_id: parentBookingId,
+            confirmation_code: confirmationCode,
+            sync_action: 'MATCH',
+            pricing_category_booking_id: existing.pricing_category_booking_id,
+            pricing_category_id: existing.pricing_category_id,
+            pricing_category_title: existing.booked_title,
+            passenger_first_name: existing.passenger_first_name,
+            passenger_last_name: existing.passenger_last_name,
+            quantity: existing.quantity,
+            occupancy: existing.occupancy,
+            webhook_participant_count: webhookCount,
+            db_participant_count_before: existingCount,
+            db_participant_count_after: existingCount,
+            raw_participant_data: webhookParticipantMap.get(existing.pricing_category_booking_id),
+            notes: 'Participant matched in webhook - keeping'
+          });
+        } else {
+          toRemove.push(existing);
+
+          // Log REMOVE
+          await this.logParticipantSync({
+            activity_booking_id: activityBookingId,
+            booking_id: parentBookingId,
+            confirmation_code: confirmationCode,
+            sync_action: 'REMOVE',
+            pricing_category_booking_id: existing.pricing_category_booking_id,
+            pricing_category_id: existing.pricing_category_id,
+            pricing_category_title: existing.booked_title,
+            passenger_first_name: existing.passenger_first_name,
+            passenger_last_name: existing.passenger_last_name,
+            quantity: existing.quantity,
+            occupancy: existing.occupancy,
+            webhook_participant_count: webhookCount,
+            db_participant_count_before: existingCount,
+            db_participant_count_after: existingCount - 1,
+            raw_participant_data: null,
+            notes: 'Participant not in webhook - removing'
+          });
+        }
+      }
+
+      // 4. Identifica nuovi partecipanti da aggiungere
+      const existingIds = new Set((existingParticipants || []).map(p => p.pricing_category_booking_id));
+      const toAdd = webhookParticipants.filter(p => !existingIds.has(p.id));
+
+      console.log(`   ✅ Mantengo: ${toKeep.length}, ❌ Rimuovo: ${toRemove.length}, ➕ Aggiungo: ${toAdd.length}`);
+
+      // 5. Rimuovi partecipanti non più presenti
+      for (const participant of toRemove) {
+        const { error: deleteError } = await supabase
+          .from('pricing_category_bookings')
+          .delete()
+          .eq('pricing_category_booking_id', participant.pricing_category_booking_id);
+
+        if (deleteError) {
+          console.error(`❌ Errore rimozione participant ${participant.pricing_category_booking_id}:`, deleteError);
+        } else {
+          console.log(`   ❌ Rimosso participant ${participant.pricing_category_booking_id} (${participant.booked_title})`);
+        }
+      }
+
+      // 6. Aggiungi nuovi partecipanti con placeholder "DA CERCARE"
+      let finalCount = existingCount - toRemove.length;
+
+      for (const participant of toAdd) {
+        // Usa i dati del passeggero se presenti, altrimenti "DA CERCARE"
+        const passengerFirstName = participant.passengerInfo?.firstName || 'DA';
+        const passengerLastName = participant.passengerInfo?.lastName || 'CERCARE';
+
+        await this.savePricingCategoryBooking(participant, activityBookingId, true);
+        finalCount++;
+
+        console.log(`   ➕ Aggiunto participant ${participant.id} (${participant.bookedTitle}) - ${passengerFirstName} ${passengerLastName}`);
+
+        // Log ADD
+        await this.logParticipantSync({
+          activity_booking_id: activityBookingId,
+          booking_id: parentBookingId,
+          confirmation_code: confirmationCode,
+          sync_action: 'ADD',
+          pricing_category_booking_id: participant.id,
+          pricing_category_id: participant.pricingCategoryId,
+          pricing_category_title: participant.bookedTitle,
+          passenger_first_name: passengerFirstName,
+          passenger_last_name: passengerLastName,
+          quantity: participant.quantity,
+          occupancy: participant.occupancy,
+          webhook_participant_count: webhookCount,
+          db_participant_count_before: existingCount,
+          db_participant_count_after: finalCount,
+          raw_participant_data: participant,
+          notes: participant.passengerInfo ? 'New participant with passenger info' : 'New participant with placeholder DA CERCARE'
+        });
+      }
+
+      console.log(`   🎯 Sincronizzazione completata: ${existingCount} → ${finalCount} partecipanti`);
+
+    } catch (error) {
+      console.error('❌ Errore nella sincronizzazione intelligente partecipanti:', error);
+      throw error;
+    }
+  }
+
+  // Helper: Log participant sync to database
+  private async logParticipantSync(logData: {
+    activity_booking_id: number;
+    booking_id: number;
+    confirmation_code: string;
+    sync_action: 'ADD' | 'REMOVE' | 'MATCH' | 'UPDATE';
+    pricing_category_booking_id: number;
+    pricing_category_id: number;
+    pricing_category_title: string;
+    passenger_first_name: string | null;
+    passenger_last_name: string | null;
+    quantity: number;
+    occupancy: number;
+    webhook_participant_count: number;
+    db_participant_count_before: number;
+    db_participant_count_after: number;
+    raw_participant_data: any;
+    notes: string;
+  }): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('participant_sync_logs')
+        .insert({
+          activity_booking_id: logData.activity_booking_id,
+          booking_id: logData.booking_id,
+          confirmation_code: logData.confirmation_code,
+          sync_action: logData.sync_action,
+          pricing_category_booking_id: logData.pricing_category_booking_id,
+          pricing_category_id: logData.pricing_category_id,
+          pricing_category_title: logData.pricing_category_title,
+          passenger_first_name: logData.passenger_first_name,
+          passenger_last_name: logData.passenger_last_name,
+          quantity: logData.quantity,
+          occupancy: logData.occupancy,
+          webhook_participant_count: logData.webhook_participant_count,
+          db_participant_count_before: logData.db_participant_count_before,
+          db_participant_count_after: logData.db_participant_count_after,
+          raw_participant_data: logData.raw_participant_data,
+          notes: logData.notes
+        });
+
+      if (error) {
+        console.warn('⚠️ Non riesco a salvare log sincronizzazione participant:', error.message);
+      }
+    } catch (error) {
+      // Non propagare errori di logging
+      console.warn('⚠️ Errore logging participant sync:', error);
+    }
+  }
+
   // Elimina partecipanti esistenti prima di aggiornare
   private async deleteExistingParticipants(activityBookingId: number): Promise<void> {
     const { error } = await supabase
@@ -539,20 +731,26 @@ export class BookingService {
   }
   
   // Funzione aggiornata per salvare i partecipanti CON info passeggeri
-  private async savePricingCategoryBooking(participant: any, activityBookingId: number): Promise<void> {
+  private async savePricingCategoryBooking(participant: any, activityBookingId: number, usePlaceholder: boolean = false): Promise<void> {
     // Estrai info passeggero se esiste
     let passengerFirstName = null;
     let passengerLastName = null;
     let passengerDateOfBirth = null;
-    
+
     if (participant.passengerInfo) {
       passengerFirstName = participant.passengerInfo.firstName || null;
       passengerLastName = participant.passengerInfo.lastName || null;
-      
+
       // Converti data di nascita se presente
       if (participant.passengerInfo.dateOfBirth) {
         passengerDateOfBirth = new Date(participant.passengerInfo.dateOfBirth).toISOString().split('T')[0];
       }
+    }
+
+    // Se usePlaceholder è true e non ci sono dati passeggero, usa "DA CERCARE"
+    if (usePlaceholder && !passengerFirstName && !passengerLastName) {
+      passengerFirstName = 'DA';
+      passengerLastName = 'CERCARE';
     }
     
     const { error } = await supabase

@@ -1,0 +1,2786 @@
+[
+    {
+        "creationDate": 1759827323000,
+        "bookingId": 75863140,
+        "language": "es",
+        "confirmationCode": "ENRO-75863140",
+        "externalBookingReference": "ENRO-71774202",
+        "status": "CONFIRMED",
+        "currency": "EUR",
+        "totalPrice": 128,
+        "totalPaid": 128,
+        "totalDue": 0,
+        "totalDueAsText": "€0,00",
+        "totalPriceConverted": 128,
+        "customer": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 176572589,
+            "created": null,
+            "uuid": "d1949463-76cb-4764-b3bf-0a622ce2c0b9",
+            "email": "mebasconnet@gmail.com",
+            "title": null,
+            "firstName": "Maria Eugenia  ",
+            "lastName": "BASCONNET",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": "+54 91140729982",
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": "+5491140729982"
+        },
+        "invoice": {
+            "id": 432867087,
+            "issueDate": 1759830107000,
+            "currency": "EUR",
+            "includedAppliedTaxes": [],
+            "excludedAppliedTaxes": [],
+            "issuer": {
+                "id": 27164,
+                "title": "EnRoma.com",
+                "externalId": "",
+                "flags": []
+            },
+            "issuerCompany": {
+                "registrationNumber": "Licenza Provincia Roma n° 2316",
+                "vatRegistrationNumber": "IT09802381005"
+            },
+            "recipient": {
+                "contactDetailsHidden": false,
+                "contactDetailsHiddenUntil": null,
+                "id": 176572589,
+                "created": null,
+                "uuid": "d1949463-76cb-4764-b3bf-0a622ce2c0b9",
+                "email": "mebasconnet@gmail.com",
+                "title": null,
+                "firstName": "Maria Eugenia  ",
+                "lastName": "BASCONNET",
+                "personalIdNumber": null,
+                "clcEmail": false,
+                "language": null,
+                "nationality": null,
+                "sex": null,
+                "dateOfBirth": null,
+                "phoneNumber": "+54 91140729982",
+                "phoneNumberCountryCode": null,
+                "address": null,
+                "postCode": null,
+                "state": null,
+                "place": null,
+                "country": null,
+                "organization": null,
+                "passportId": null,
+                "passportExpDay": null,
+                "passportExpMonth": null,
+                "passportExpYear": null,
+                "credentials": null,
+                "acceptsMarketing": false,
+                "tags": null,
+                "octoNote": null,
+                "phoneNumberLinkable": "+5491140729982"
+            },
+            "customLineItems": [],
+            "productInvoices": [
+                {
+                    "id": 205920999,
+                    "currency": "EUR",
+                    "includedAppliedTaxes": [],
+                    "excludedAppliedTaxes": [],
+                    "productBookingId": 110220670,
+                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo - lun, octubre 27 2025 - 10:30",
+                    "product": {
+                        "id": 221221,
+                        "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                        "flags": [],
+                        "keyPhoto": {
+                            "id": 6372579,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "1414",
+                            "width": "2121",
+                            "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        "vendor": {
+                            "id": 27164,
+                            "title": "EnRoma.com",
+                            "currencyCode": "EUR",
+                            "countryCode": "IT",
+                            "showInvoiceIdOnTicket": false,
+                            "showAgentDetailsOnTicket": false,
+                            "showPaymentsOnInvoice": false,
+                            "companyEmailIsDefault": false
+                        },
+                        "isPassProduct": false,
+                        "rateTitle": "Coliseo - adaptado a niños en grupo",
+                        "offers": [
+                            {
+                                "id": 723,
+                                "ownerId": 27164,
+                                "discount": 12,
+                                "activities": [
+                                    {
+                                        "id": 221221,
+                                        "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                                        "excerpt": "",
+                                        "keyPhoto": {
+                                            "id": 6372579,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "1414",
+                                            "width": "2121",
+                                            "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "id": 221226,
+                                        "title": "Viaje al Centro del Mundo: Tour de grupo centro de Roma para niños",
+                                        "excerpt": "",
+                                        "keyPhoto": {
+                                            "id": 6372583,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "4032",
+                                            "width": "3024",
+                                            "fileName": "/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "id": 812355,
+                                        "title": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                        "excerpt": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                        "keyPhoto": {
+                                            "id": 6375470,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "3000",
+                                            "width": "4000",
+                                            "fileName": "/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "requireAllActivities": false,
+                                "applyToExtras": false,
+                                "applyToPickUpAndDropOff": false
+                            }
+                        ]
+                    },
+                    "productCategory": "ACTIVITIES",
+                    "productConfirmationCode": "ENRO-T110220670",
+                    "dates": "lun, octubre 27 2025 - 10:30",
+                    "timestamp": 1761561000000,
+                    "hasFees": false,
+                    "customLineItems": [],
+                    "lineItems": [
+                        {
+                            "id": 215676576,
+                            "title": "Adulto",
+                            "currency": "EUR",
+                            "unitPriceDate": 1759830107000,
+                            "quantity": 1,
+                            "unitPrice": 69,
+                            "calculatedDiscount": 0,
+                            "customDiscount": 0,
+                            "calculatedDiscountAmount": 0,
+                            "taxAmount": 0,
+                            "taxesAsMoney": [],
+                            "strikeThroughTotal": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "pricingCategoryId": 161601,
+                            "itemBookingId": "221221_161601",
+                            "costItemId": 124361815,
+                            "costItemTitle": "Adulto",
+                            "costGroupTitle": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                            "supportsDiscount": true,
+                            "people": 1,
+                            "total": 69,
+                            "totalDiscountedAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "totalDue": 69,
+                            "totalDueAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "unitPriceAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "totalAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "discount": 0,
+                            "totalDiscounted": 69,
+                            "taxAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPriceAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPrice": 69,
+                            "totalAsText": "€69,00",
+                            "totalDiscountedAsText": "€69,00",
+                            "totalDueAsText": "€69,00",
+                            "discountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "taxAsText": "€0,00",
+                            "discountedUnitPriceAsText": "€69,00",
+                            "unitPriceAsText": "€69,00",
+                            "calculatedDiscountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountAmountAsText": "€0,00"
+                        },
+                        {
+                            "id": 215676577,
+                            "title": "4 a 17 años",
+                            "currency": "EUR",
+                            "unitPriceDate": 1759830107000,
+                            "quantity": 1,
+                            "unitPrice": 59,
+                            "calculatedDiscount": 0,
+                            "customDiscount": 0,
+                            "calculatedDiscountAmount": 0,
+                            "taxAmount": 0,
+                            "taxesAsMoney": [],
+                            "strikeThroughTotal": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "pricingCategoryId": 165042,
+                            "itemBookingId": "221221_165042",
+                            "costItemId": 132726953,
+                            "costItemTitle": "4 a 17 años",
+                            "costGroupTitle": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                            "supportsDiscount": true,
+                            "people": 1,
+                            "total": 59,
+                            "totalDiscountedAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "totalDue": 59,
+                            "totalDueAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "unitPriceAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "totalAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "discount": 0,
+                            "totalDiscounted": 59,
+                            "taxAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPriceAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPrice": 59,
+                            "totalAsText": "€59,00",
+                            "totalDiscountedAsText": "€59,00",
+                            "totalDueAsText": "€59,00",
+                            "discountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "taxAsText": "€0,00",
+                            "discountedUnitPriceAsText": "€59,00",
+                            "unitPriceAsText": "€59,00",
+                            "calculatedDiscountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountAmountAsText": "€0,00"
+                        }
+                    ],
+                    "appliedFees": [],
+                    "totalFeesAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalFeesAsText": "€0,00",
+                    "totalDiscountedAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "free": false,
+                    "totalDueAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalExcludedTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalIncludedTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalDiscountAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "excludedTaxes": false,
+                    "includedTaxes": false,
+                    "strikeThroughTotalAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalAsText": "€128,00",
+                    "totalWithExcludedTaxAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalDiscountedAsText": "€128,00",
+                    "totalDiscountAsText": "€0,00",
+                    "totalDueAsText": "€128,00",
+                    "totalExcludedTaxAsText": "€0,00",
+                    "totalIncludedTaxAsText": "€0,00",
+                    "totalTaxAsText": "€0,00",
+                    "strikeThroughTotalAsText": "€128,00"
+                }
+            ],
+            "payments": [],
+            "appliedFees": [],
+            "issuerName": "EnRoma.com",
+            "totalDueAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "totalBookingFeePercent": 0,
+            "totalFeesAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "invoiceNumber": "C-432867087",
+            "lodgingTaxes": [],
+            "totalBookingFeeAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "totalDueWithoutExcludedTaxAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "recipientName": "Maria Eugenia   BASCONNET",
+            "totalFeesAsText": "€0,00",
+            "totalDiscountedAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "free": false,
+            "totalAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "totalExcludedTaxAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "totalIncludedTaxAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "totalDiscountAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "totalTaxAsMoney": {
+                "amount": 0,
+                "currency": "EUR"
+            },
+            "excludedTaxes": false,
+            "includedTaxes": false,
+            "strikeThroughTotalAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "totalAsText": "€128,00",
+            "totalWithExcludedTaxAsMoney": {
+                "amount": 128,
+                "currency": "EUR"
+            },
+            "totalDiscountedAsText": "€128,00",
+            "totalDiscountAsText": "€0,00",
+            "totalDueAsText": "€128,00",
+            "totalExcludedTaxAsText": "€0,00",
+            "totalIncludedTaxAsText": "€0,00",
+            "totalTaxAsText": "€0,00",
+            "strikeThroughTotalAsText": "€128,00"
+        },
+        "customerPayments": [
+            {
+                "id": 43331862,
+                "amount": 128,
+                "currency": "EUR",
+                "comment": "Payment for booking #75863140, performed by EnRoma.com: Alice M. (grupos@enroma.com)",
+                "transactionDate": 1759827323000,
+                "activeCustomerInvoiceId": 432850624,
+                "paymentType": "CASH",
+                "isRefundable": false,
+                "totalRefundedAmount": 0,
+                "maxRefundableAmount": 128,
+                "amountAsMoney": {
+                    "amount": 128,
+                    "currency": "EUR"
+                },
+                "refundable": false,
+                "amountAsText": "€128,00",
+                "refundedAmountAsText": "€0,00",
+                "remainingRefundableAmount": 128
+            }
+        ],
+        "extranetUser": {
+            "id": 46704,
+            "username": "grupos@enroma.com",
+            "firstName": "Alice",
+            "lastName": "Mongale",
+            "accountHolder": false,
+            "supportVendors": [],
+            "canDisguiseAsAnyVendor": false,
+            "fullNameShort": "Alice M."
+        },
+        "paymentType": "PAID_IN_FULL",
+        "seller": {
+            "id": 27164,
+            "title": "EnRoma.com",
+            "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+            "logo": {
+                "id": 5260859,
+                "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+                "description": null,
+                "alternateText": null,
+                "height": null,
+                "width": null,
+                "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+                "flags": [],
+                "derived": [
+                    {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+                    },
+                    {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+                    },
+                    {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+                    }
+                ]
+            },
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "phoneNumber": "+39 3762385032",
+            "emailAddress": "info@enroma.com",
+            "website": "https://www.enroma.com/",
+            "logoStyle": "",
+            "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+            "timeZone": "Europe/Rome",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": true
+        },
+        "bookingChannel": {
+            "id": 59838,
+            "uuid": "383ee764-e2dd-4948-987e-bd2229b558ef",
+            "title": "Backend",
+            "backend": true,
+            "overrideVoucherHeader": false,
+            "voucherName": "",
+            "voucherPhoneNumber": "",
+            "voucherEmailAddress": "",
+            "voucherLogoStyle": "",
+            "type": "BACKEND",
+            "voucherWebsite": "",
+            "paymentProviderAdded": true,
+            "flags": [],
+            "shoppingCartPosition": "RIGHT"
+        },
+        "accommodationBookings": [],
+        "activityBookings": [
+            {
+                "bookingId": 110220670,
+                "parentBookingId": 75863140,
+                "confirmationCode": "ENRO-75863140",
+                "productConfirmationCode": "ENRO-T110220670",
+                "barcode": {
+                    "value": "ENRO-T110220670",
+                    "barcodeType": "QR_CODE"
+                },
+                "hasTicket": false,
+                "boxBooking": false,
+                "startDateTime": 1761561000000,
+                "endDateTime": 1761571800000,
+                "status": "CONFIRMED",
+                "includedOnCustomerInvoice": false,
+                "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                "totalPrice": 128,
+                "priceWithDiscount": 128,
+                "totalPriceAsText": "€128.00",
+                "priceWithDiscountAsText": "€128.00",
+                "discountPercentage": 0,
+                "discountAmount": 0,
+                "productCategory": "ACTIVITIES",
+                "paidType": "PAID_IN_FULL",
+                "product": {
+                    "id": 221221,
+                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                    "flags": [],
+                    "vendor": {
+                        "id": 27164,
+                        "title": "EnRoma.com",
+                        "currencyCode": "EUR",
+                        "showInvoiceIdOnTicket": false,
+                        "showAgentDetailsOnTicket": false,
+                        "showPaymentsOnInvoice": false,
+                        "companyEmailIsDefault": false
+                    },
+                    "externalId": "ORI-7",
+                    "productCategory": "ACTIVITIES",
+                    "isPassProduct": false,
+                    "excerpt": "",
+                    "offers": [
+                        {
+                            "id": 723,
+                            "ownerId": 27164,
+                            "discount": 12,
+                            "activities": [
+                                {
+                                    "id": 221221,
+                                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                                    "excerpt": "",
+                                    "keyPhoto": {
+                                        "id": 6372579,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "1414",
+                                        "width": "2121",
+                                        "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": 221226,
+                                    "title": "Viaje al Centro del Mundo: Tour de grupo centro de Roma para niños",
+                                    "excerpt": "",
+                                    "keyPhoto": {
+                                        "id": 6372583,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "4032",
+                                        "width": "3024",
+                                        "fileName": "/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": 812355,
+                                    "title": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                    "excerpt": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                    "keyPhoto": {
+                                        "id": 6375470,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "3000",
+                                        "width": "4000",
+                                        "fileName": "/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "requireAllActivities": false,
+                            "applyToExtras": false,
+                            "applyToPickUpAndDropOff": false
+                        }
+                    ],
+                    "cancellationPolicy": {
+                        "id": 194044,
+                        "title": "Vaticano y Coliseo",
+                        "penaltyRules": [
+                            {
+                                "id": 211690,
+                                "cutoffHours": 168,
+                                "charge": 100,
+                                "chargeType": "percentage",
+                                "percentage": 100
+                            }
+                        ],
+                        "tax": null,
+                        "defaultPolicy": false,
+                        "policyType": "ADVANCED",
+                        "simpleCutoffHours": null,
+                        "policyTypeEnum": "ADVANCED"
+                    }
+                },
+                "productId": 221221,
+                "linksToExternalProducts": [],
+                "answers": [
+                    {
+                        "id": 21085182,
+                        "type": null,
+                        "question": "¿Cuáles son las edades de los niños?",
+                        "answer": "10 años",
+                        "group": null,
+                        "questionId": 1021655,
+                        "flags": []
+                    }
+                ],
+                "invoice": {
+                    "id": 205920999,
+                    "currency": "EUR",
+                    "includedAppliedTaxes": [],
+                    "excludedAppliedTaxes": [],
+                    "productBookingId": 110220670,
+                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo - lun, octubre 27 2025 - 10:30",
+                    "product": {
+                        "id": 221221,
+                        "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                        "flags": [],
+                        "keyPhoto": {
+                            "id": 6372579,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "1414",
+                            "width": "2121",
+                            "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        "vendor": {
+                            "id": 27164,
+                            "title": "EnRoma.com",
+                            "currencyCode": "EUR",
+                            "countryCode": "IT",
+                            "showInvoiceIdOnTicket": false,
+                            "showAgentDetailsOnTicket": false,
+                            "showPaymentsOnInvoice": false,
+                            "companyEmailIsDefault": false
+                        },
+                        "isPassProduct": false,
+                        "rateTitle": "Coliseo - adaptado a niños en grupo",
+                        "offers": [
+                            {
+                                "id": 723,
+                                "ownerId": 27164,
+                                "discount": 12,
+                                "activities": [
+                                    {
+                                        "id": 221221,
+                                        "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                                        "excerpt": "",
+                                        "keyPhoto": {
+                                            "id": 6372579,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "1414",
+                                            "width": "2121",
+                                            "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "id": 221226,
+                                        "title": "Viaje al Centro del Mundo: Tour de grupo centro de Roma para niños",
+                                        "excerpt": "",
+                                        "keyPhoto": {
+                                            "id": 6372583,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "4032",
+                                            "width": "3024",
+                                            "fileName": "/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "id": 812355,
+                                        "title": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                        "excerpt": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                        "keyPhoto": {
+                                            "id": 6375470,
+                                            "originalUrl": "https://bokun.s3.amazonaws.com/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                            "description": null,
+                                            "alternateText": null,
+                                            "height": "3000",
+                                            "width": "4000",
+                                            "fileName": "/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                            "flags": [],
+                                            "derived": [
+                                                {
+                                                    "name": "thumbnail",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop"
+                                                },
+                                                {
+                                                    "name": "preview",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300"
+                                                },
+                                                {
+                                                    "name": "large",
+                                                    "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660",
+                                                    "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "requireAllActivities": false,
+                                "applyToExtras": false,
+                                "applyToPickUpAndDropOff": false
+                            }
+                        ]
+                    },
+                    "productCategory": "ACTIVITIES",
+                    "productConfirmationCode": "ENRO-T110220670",
+                    "dates": "lun, octubre 27 2025 - 10:30",
+                    "timestamp": 1761561000000,
+                    "hasFees": false,
+                    "customLineItems": [],
+                    "lineItems": [
+                        {
+                            "id": 215676576,
+                            "title": "Adulto",
+                            "currency": "EUR",
+                            "unitPriceDate": 1759830107000,
+                            "quantity": 1,
+                            "unitPrice": 69,
+                            "calculatedDiscount": 0,
+                            "customDiscount": 0,
+                            "calculatedDiscountAmount": 0,
+                            "taxAmount": 0,
+                            "taxesAsMoney": [],
+                            "strikeThroughTotal": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "pricingCategoryId": 161601,
+                            "itemBookingId": "221221_161601",
+                            "costItemId": 124361815,
+                            "costItemTitle": "Adulto",
+                            "costGroupTitle": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                            "supportsDiscount": true,
+                            "people": 1,
+                            "total": 69,
+                            "totalDiscountedAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "totalDue": 69,
+                            "totalDueAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "unitPriceAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "totalAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "discount": 0,
+                            "totalDiscounted": 69,
+                            "taxAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPriceAsMoney": {
+                                "amount": 69,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPrice": 69,
+                            "totalAsText": "€69,00",
+                            "totalDiscountedAsText": "€69,00",
+                            "totalDueAsText": "€69,00",
+                            "discountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "taxAsText": "€0,00",
+                            "discountedUnitPriceAsText": "€69,00",
+                            "unitPriceAsText": "€69,00",
+                            "calculatedDiscountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountAmountAsText": "€0,00"
+                        },
+                        {
+                            "id": 215676577,
+                            "title": "4 a 17 años",
+                            "currency": "EUR",
+                            "unitPriceDate": 1759830107000,
+                            "quantity": 1,
+                            "unitPrice": 59,
+                            "calculatedDiscount": 0,
+                            "customDiscount": 0,
+                            "calculatedDiscountAmount": 0,
+                            "taxAmount": 0,
+                            "taxesAsMoney": [],
+                            "strikeThroughTotal": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "pricingCategoryId": 165042,
+                            "itemBookingId": "221221_165042",
+                            "costItemId": 132726953,
+                            "costItemTitle": "4 a 17 años",
+                            "costGroupTitle": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                            "supportsDiscount": true,
+                            "people": 1,
+                            "total": 59,
+                            "totalDiscountedAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "totalDue": 59,
+                            "totalDueAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "unitPriceAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "totalAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "discount": 0,
+                            "totalDiscounted": 59,
+                            "taxAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPriceAsMoney": {
+                                "amount": 59,
+                                "currency": "EUR"
+                            },
+                            "discountedUnitPrice": 59,
+                            "totalAsText": "€59,00",
+                            "totalDiscountedAsText": "€59,00",
+                            "totalDueAsText": "€59,00",
+                            "discountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "taxAsText": "€0,00",
+                            "discountedUnitPriceAsText": "€59,00",
+                            "unitPriceAsText": "€59,00",
+                            "calculatedDiscountAmountAsMoney": {
+                                "amount": 0,
+                                "currency": "EUR"
+                            },
+                            "discountAmountAsText": "€0,00"
+                        }
+                    ],
+                    "appliedFees": [],
+                    "totalFeesAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalFeesAsText": "€0,00",
+                    "totalDiscountedAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "free": false,
+                    "totalDueAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalExcludedTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalIncludedTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalDiscountAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "totalTaxAsMoney": {
+                        "amount": 0,
+                        "currency": "EUR"
+                    },
+                    "excludedTaxes": false,
+                    "includedTaxes": false,
+                    "strikeThroughTotalAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalAsText": "€128,00",
+                    "totalWithExcludedTaxAsMoney": {
+                        "amount": 128,
+                        "currency": "EUR"
+                    },
+                    "totalDiscountedAsText": "€128,00",
+                    "totalDiscountAsText": "€0,00",
+                    "totalDueAsText": "€128,00",
+                    "totalExcludedTaxAsText": "€0,00",
+                    "totalIncludedTaxAsText": "€0,00",
+                    "totalTaxAsText": "€0,00",
+                    "strikeThroughTotalAsText": "€128,00"
+                },
+                "notes": [
+                    {
+                        "author": "grupos@enroma.com",
+                        "body": "INSERITA X OPERATIVO ORARIO GIUSTO É UNA OTA CHE NON SI PUO SPOSTARE - CONFERMA VIA WHATSAPP ",
+                        "type": "GENERAL",
+                        "sentAsEmail": false,
+                        "voucherAttached": false,
+                        "voucherPricesShown": false
+                    },
+                    {
+                        "author": "grupos@enroma.com",
+                        "body": "INSERITA X OPERATIVO ORARIO GIUSTO É UNA OTA CHE NON SI PUO SPOSTARE - CONFERMA VIA WHATSAPP ",
+                        "type": "FINANCE",
+                        "sentAsEmail": false,
+                        "voucherAttached": false,
+                        "voucherPricesShown": false
+                    },
+                    {
+                        "author": "grupos@enroma.com",
+                        "body": "INSERITA X OPERATIVO ORARIO GIUSTO É UNA OTA CHE NON SI PUO SPOSTARE - CONFERMA VIA WHATSAPP ",
+                        "type": "OPERATIONS",
+                        "sentAsEmail": false,
+                        "voucherAttached": false,
+                        "voucherPricesShown": false
+                    }
+                ],
+                "supplierContractFlags": [],
+                "sellerContractFlags": [],
+                "cancellationPolicy": {
+                    "id": 194044,
+                    "title": "Vaticano y Coliseo",
+                    "penaltyRules": [
+                        {
+                            "id": 211690,
+                            "cutoffHours": 168,
+                            "charge": 100,
+                            "chargeType": "percentage",
+                            "percentage": 100
+                        }
+                    ],
+                    "tax": null,
+                    "defaultPolicy": false,
+                    "policyType": "ADVANCED",
+                    "simpleCutoffHours": null,
+                    "policyTypeEnum": "ADVANCED"
+                },
+                "bookingRoles": [
+                    "NONE",
+                    "SELLER",
+                    "SUPPLIER"
+                ],
+                "refundProtectionSelected": false,
+                "refundProtectionOffered": false,
+                "date": 1761523200000,
+                "dateString": "lun, octubre 27 2025 - 10:30",
+                "startTime": "10:30",
+                "startTimeId": 3470312,
+                "rateId": 558114,
+                "rateTitle": "Coliseo - adaptado a niños en grupo",
+                "activity": {
+                    "id": 221221,
+                    "externalId": "ORI-7",
+                    "productGroupId": 4636,
+                    "productCategory": "ACTIVITIES",
+                    "box": false,
+                    "inventoryLocal": true,
+                    "inventorySupportsPricing": false,
+                    "inventorySupportsAvailability": true,
+                    "creationDate": "Wed Sep 25 10:58:28 UTC 2019",
+                    "lastModified": "Mon Oct 06 09:40:23 UTC 2025",
+                    "lastPublished": "Mon Oct 06 09:40:23 UTC 2025",
+                    "published": true,
+                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                    "description": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Si estás de visita en Roma con tus hijos, te invitamos a descubrir nuestro emocionante recorrido por el Coliseo y el Foro Romano especialmente adaptado para niños. Es una oportunidad única para explorar estos emblemáticos lugares de manera entretenida y educativa, en un grupo pequeño con un límite de 15 participantes. Un modo de divertirse y aprender para grandes y pequeños.</p>",
+                    "excerpt": "",
+                    "cancellationPolicy": null,
+                    "overrideBarcodeFormat": false,
+                    "barcodeType": "QR_CODE",
+                    "timeZone": null,
+                    "mainContactFields": [
+                        {
+                            "field": "FIRST_NAME",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        },
+                        {
+                            "field": "LAST_NAME",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        },
+                        {
+                            "field": "EMAIL",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        },
+                        {
+                            "field": "PHONE_NUMBER",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        }
+                    ],
+                    "requiredCustomerFields": [],
+                    "keywords": [],
+                    "flags": [],
+                    "slug": null,
+                    "baseLanguage": "es",
+                    "languages": [
+                        "en_US",
+                        "pt_BR",
+                        "es"
+                    ],
+                    "paymentCurrencies": [
+                        "EUR"
+                    ],
+                    "customFields": [],
+                    "tagGroups": [],
+                    "categories": [],
+                    "keyPhoto": {
+                        "id": 6372579,
+                        "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                        "description": null,
+                        "alternateText": null,
+                        "height": "1414",
+                        "width": "2121",
+                        "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                        "flags": [],
+                        "derived": [
+                            {
+                                "name": "thumbnail",
+                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                            },
+                            {
+                                "name": "preview",
+                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                            },
+                            {
+                                "name": "large",
+                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                            }
+                        ]
+                    },
+                    "photos": [
+                        {
+                            "id": 6372579,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "1414",
+                            "width": "2121",
+                            "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 8712304,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "3024",
+                            "width": "2706",
+                            "fileName": "/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/e01ada8f-e2cb-4fca-80b6-ee57de8606d7.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 6372581,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "1536",
+                            "width": "2048",
+                            "fileName": "/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/ad5d468e-75c5-4918-8938-dd74c0af540a.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 8712305,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "2000",
+                            "width": "1500",
+                            "fileName": "/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/bec0bea3-c864-4684-8d7c-2373e86444a3.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 8712308,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "3892",
+                            "width": "5838",
+                            "fileName": "/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/544aee4c-f1c7-462f-a948-7b714ff93c17.jpeg?w=660&h=660"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 8712309,
+                            "originalUrl": "https://bokun.s3.amazonaws.com/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg",
+                            "description": null,
+                            "alternateText": null,
+                            "height": "4160",
+                            "width": "6240",
+                            "fileName": "/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg",
+                            "flags": [],
+                            "derived": [
+                                {
+                                    "name": "thumbnail",
+                                    "url": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=80&h=80&mode=crop",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=80&h=80&mode=crop"
+                                },
+                                {
+                                    "name": "preview",
+                                    "url": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=300&h=300",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=300&h=300"
+                                },
+                                {
+                                    "name": "large",
+                                    "url": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=660&h=660",
+                                    "cleanUrl": "https://imgcdn.bokun.tools/398432ea-7f66-4384-8bf0-ce11aee75d7a.jpeg?w=660&h=660"
+                                }
+                            ]
+                        }
+                    ],
+                    "videos": [],
+                    "vendor": {
+                        "id": 27164,
+                        "title": "EnRoma.com",
+                        "currencyCode": "EUR",
+                        "timeZone": "Europe/Rome",
+                        "showInvoiceIdOnTicket": false,
+                        "showAgentDetailsOnTicket": false,
+                        "showPaymentsOnInvoice": false,
+                        "companyEmailIsDefault": false
+                    },
+                    "boxedVendor": null,
+                    "storedExternally": false,
+                    "pluginId": null,
+                    "reviewRating": null,
+                    "reviewCount": null,
+                    "activityType": "DAY_TOUR_OR_ACTIVITY",
+                    "bookingType": "DATE_AND_TIME",
+                    "scheduleType": "RECURRING",
+                    "cutoffType": "RELATIVE_TO_START_TIME",
+                    "cutoffReferenceHour": null,
+                    "cutoffReferenceMinute": null,
+                    "earlyBookingLimitType": "UNLIMITED",
+                    "earlyBookingLimitSpecificDateTime": null,
+                    "earlyBookingLimitDaysBefore": null,
+                    "earlyBookingLimitMonthsBefore": null,
+                    "earlyBookingLimitTime": null,
+                    "capacityType": "LIMITED",
+                    "passExpiryType": null,
+                    "fixedPassExpiryDate": null,
+                    "meetingType": "MEET_ON_LOCATION",
+                    "privateActivity": false,
+                    "passCapacity": 0,
+                    "passValidForDays": null,
+                    "passesAvailable": 0,
+                    "affiliateHubProduct": false,
+                    "dressCode": false,
+                    "passportRequired": false,
+                    "supportedAccessibilityTypes": [],
+                    "startPoints": [
+                        {
+                            "id": 62637,
+                            "type": null,
+                            "title": "Arco di Costantino",
+                            "code": null,
+                            "address": {
+                                "id": 538164,
+                                "created": null,
+                                "addressLine1": "Via di San Gregorio",
+                                "addressLine2": "",
+                                "addressLine3": "",
+                                "city": "Roma",
+                                "state": "Lazio",
+                                "postalCode": "00184",
+                                "countryCode": "IT",
+                                "mapZoomLevel": 14,
+                                "geoPoint": {
+                                    "latitude": 41.8866413,
+                                    "longitude": 12.4898459
+                                },
+                                "unLocode": {
+                                    "country": "",
+                                    "city": ""
+                                },
+                                "origin": "GOOGLE_PLACES",
+                                "originId": "EjtWaWEgZGkgU2FuIEdyZWdvcmlvLCBSb21lLCBNZXRyb3BvbGl0YW4gQ2l0eSBvZiBSb21lLCBJdGFseSIuKiwKFAoSCQndFB7KYS8TEa6I3f7fM84KEhQKEgm7jpL5lmEvExE4bmWTBncPuQ",
+                                "googlePlaceId": null
+                            },
+                            "pickupTicketDescription": null,
+                            "dropoffTicketDescription": null,
+                            "labels": []
+                        }
+                    ],
+                    "bookingQuestions": [
+                        {
+                            "id": 1021655,
+                            "personalData": false,
+                            "questionCode": "",
+                            "label": "¿Cuáles son las edades de los niños?",
+                            "help": "",
+                            "placeholder": "",
+                            "required": true,
+                            "defaultValue": "4 años",
+                            "dataType": "OPTIONS",
+                            "selectFromOptions": true,
+                            "selectMultiple": true,
+                            "options": [
+                                {
+                                    "name": "4 años",
+                                    "value": "4 años"
+                                },
+                                {
+                                    "name": " 5 años",
+                                    "value": " 5 años"
+                                },
+                                {
+                                    "name": "6 años",
+                                    "value": "6 años"
+                                },
+                                {
+                                    "name": "7 años",
+                                    "value": "7 años"
+                                },
+                                {
+                                    "name": "8 años",
+                                    "value": "8 años"
+                                },
+                                {
+                                    "name": "9 años",
+                                    "value": "9 años"
+                                },
+                                {
+                                    "name": "10 años",
+                                    "value": "10 años"
+                                },
+                                {
+                                    "name": "11 años",
+                                    "value": "11 años"
+                                },
+                                {
+                                    "name": "12 años",
+                                    "value": "12 años"
+                                },
+                                {
+                                    "name": "13 años",
+                                    "value": "13 años"
+                                },
+                                {
+                                    "name": "14 años",
+                                    "value": "14 años"
+                                },
+                                {
+                                    "name": "15 años",
+                                    "value": "15 años"
+                                },
+                                {
+                                    "name": "16 años",
+                                    "value": "16 años"
+                                },
+                                {
+                                    "name": "17 años",
+                                    "value": "17 años"
+                                }
+                            ],
+                            "flags": [],
+                            "context": "BOOKING",
+                            "pricingCategoryTriggerSelection": "SELECTED_ONLY",
+                            "pricingCategoryTriggers": [
+                                {
+                                    "value": 165042,
+                                    "label": "4 a 17 años"
+                                }
+                            ],
+                            "rateTriggerSelection": "ANY",
+                            "extraTriggerSelection": "ANY",
+                            "requiredBeforeDeparture": false
+                        }
+                    ],
+                    "passengerFields": [
+                        {
+                            "field": "FIRST_NAME",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        },
+                        {
+                            "field": "LAST_NAME",
+                            "required": true,
+                            "requiredBeforeDeparture": false
+                        }
+                    ],
+                    "inclusions": [],
+                    "included": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Guía en español.</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Entradas sin hacer colas a los sitios arqueológicos del Coliseo y Foro Romano.</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Auriculares.</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Regalos y pistas.</p>",
+                    "exclusions": [],
+                    "excluded": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Comida y bebidas</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Propinas</p>",
+                    "requirements": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Es obligatorio llevar consigo un documento de identidad válido para mostrarlo en los controles de seguridad. Si no se tiene el documento, el riesgo es no poder entrar al Parque Arqueológico del Coliseo.</p>",
+                    "knowBeforeYouGoItems": [],
+                    "attention": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">No se puede acceder a los lugares de la visita con paraguas grandes, mochilas de gran tamaño ni objetos punzantes.<br /><br /> </p>",
+                    "locationCode": null,
+                    "googlePlace": {
+                        "id": 173945,
+                        "country": "Italy",
+                        "countryCode": "IT",
+                        "city": "Rome",
+                        "cityCode": "Rome",
+                        "geoLocationCenter": {
+                            "lat": 41.90278349999999,
+                            "lng": 12.4963655
+                        },
+                        "addressTypes": []
+                    },
+                    "tripadvisorReview": null,
+                    "resourceSlots": [],
+                    "bookingCutoffMinutes": 0,
+                    "bookingCutoffHours": 8,
+                    "bookingCutoffDays": 0,
+                    "bookingCutoffWeeks": 0,
+                    "requestDeadlineMinutes": 0,
+                    "requestDeadlineHours": 0,
+                    "requestDeadlineDays": 2,
+                    "requestDeadlineWeeks": 0,
+                    "boxedActivityId": null,
+                    "comboActivity": false,
+                    "comboParts": [],
+                    "returnProduct": null,
+                    "offers": [
+                        {
+                            "id": 723,
+                            "ownerId": 27164,
+                            "discount": 12,
+                            "activities": [
+                                {
+                                    "id": 221221,
+                                    "title": "Tour Coliseo y Foro Romano adaptado a niños – Tour de grupo",
+                                    "excerpt": "",
+                                    "keyPhoto": {
+                                        "id": 6372579,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "1414",
+                                        "width": "2121",
+                                        "fileName": "/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/a2b16a0c-5606-4c56-a59a-10c868cbbc03.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": 221226,
+                                    "title": "Viaje al Centro del Mundo: Tour de grupo centro de Roma para niños",
+                                    "excerpt": "",
+                                    "keyPhoto": {
+                                        "id": 6372583,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "4032",
+                                        "width": "3024",
+                                        "fileName": "/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/49e16145-d63e-44f2-9be0-16fa2b6e5ecf.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": 812355,
+                                    "title": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                    "excerpt": "Tour Museos Vaticanos y Capilla Sixtina adaptado a niños: en grupo",
+                                    "keyPhoto": {
+                                        "id": 6375470,
+                                        "originalUrl": "https://bokun.s3.amazonaws.com/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                        "description": null,
+                                        "alternateText": null,
+                                        "height": "3000",
+                                        "width": "4000",
+                                        "fileName": "/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg",
+                                        "flags": [],
+                                        "derived": [
+                                            {
+                                                "name": "thumbnail",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=80&h=80&mode=crop"
+                                            },
+                                            {
+                                                "name": "preview",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=300&h=300"
+                                            },
+                                            {
+                                                "name": "large",
+                                                "url": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660",
+                                                "cleanUrl": "https://imgcdn.bokun.tools/d5d13a31-a870-4267-a388-e9a2662412a7.jpeg?w=660&h=660"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "requireAllActivities": false,
+                            "applyToExtras": false,
+                            "applyToPickUpAndDropOff": false
+                        }
+                    ],
+                    "ticketPerComboComponent": false,
+                    "ticketComboComponents": [],
+                    "pickupActivityId": null,
+                    "allowCustomizedBookings": false,
+                    "reservationTimeout": null,
+                    "vendorReservationTimeout": null,
+                    "dayBasedAvailability": false,
+                    "selectFromDayOptions": false,
+                    "dayOptions": [],
+                    "activityCategories": [
+                        "ARTS_AND_CULTURE",
+                        "CITY_TOURS",
+                        "CULTURAL_AND_THEME_TOURS",
+                        "EDUCATIONAL_TOUR",
+                        "SKIP_THE_LINE"
+                    ],
+                    "activityAttributes": [
+                        "FAMILY_FRIENDLY",
+                        "YOUTH",
+                        "SKIP_THE_LINE"
+                    ],
+                    "guidanceTypes": [
+                        {
+                            "id": null,
+                            "created": [
+                                2025,
+                                10,
+                                7,
+                                9,
+                                41,
+                                47,
+                                463879583
+                            ],
+                            "guidanceType": "GUIDED",
+                            "languages": [
+                                "es"
+                            ],
+                            "displayLanguages": [
+                                "español"
+                            ]
+                        },
+                        {
+                            "id": null,
+                            "created": [
+                                2025,
+                                10,
+                                7,
+                                9,
+                                41,
+                                47,
+                                463887357
+                            ],
+                            "guidanceType": "HEADPHONES",
+                            "languages": [
+                                "es"
+                            ],
+                            "displayLanguages": [
+                                "español"
+                            ]
+                        }
+                    ],
+                    "defaultRateId": 558114,
+                    "rates": [
+                        {
+                            "id": 558114,
+                            "title": "Coliseo - adaptado a niños en grupo",
+                            "description": "",
+                            "index": 0,
+                            "rateCode": null,
+                            "pricedPerPerson": true,
+                            "minPerBooking": 1,
+                            "maxPerBooking": 15,
+                            "cancellationPolicy": {
+                                "id": 194044,
+                                "title": "Vaticano y Coliseo",
+                                "penaltyRules": [
+                                    {
+                                        "id": 211690,
+                                        "cutoffHours": 168,
+                                        "charge": 100,
+                                        "chargeType": "percentage",
+                                        "percentage": 100
+                                    }
+                                ],
+                                "tax": null,
+                                "defaultPolicy": false,
+                                "policyType": "ADVANCED",
+                                "simpleCutoffHours": null,
+                                "policyTypeEnum": "ADVANCED"
+                            },
+                            "fixedPassExpiryDate": null,
+                            "passValidForDays": null,
+                            "pickupSelectionType": "UNAVAILABLE",
+                            "pickupPricingType": "PRICED_SEPARATELY",
+                            "pickupPricedPerPerson": true,
+                            "dropoffSelectionType": "UNAVAILABLE",
+                            "dropoffPricingType": "INCLUDED_IN_PRICE",
+                            "dropoffPricedPerPerson": false,
+                            "extraConfigs": [],
+                            "startTimeIds": [],
+                            "allStartTimes": true,
+                            "tieredPricingEnabled": false,
+                            "tiers": [],
+                            "pricingCategoryIds": [
+                                161601,
+                                165042,
+                                165041
+                            ],
+                            "allPricingCategories": true,
+                            "details": [],
+                            "textItems": [
+                                {
+                                    "id": 558114,
+                                    "created": [
+                                        2025,
+                                        10,
+                                        7,
+                                        9,
+                                        41,
+                                        47,
+                                        465941888
+                                    ],
+                                    "language": "es_ES",
+                                    "title": "Coliseo - adaptado a niños en grupo",
+                                    "activityRateId": 558114,
+                                    "description": ""
+                                }
+                            ]
+                        }
+                    ],
+                    "ticketPerPerson": false,
+                    "durationType": "HOURS",
+                    "duration": 3,
+                    "durationMinutes": 0,
+                    "durationHours": 3,
+                    "durationDays": 0,
+                    "durationWeeks": 0,
+                    "durationText": "3 horas",
+                    "minAge": 0,
+                    "originalDefaultPrice": null,
+                    "nextDefaultPrice": null,
+                    "nextDefaultPriceMoney": null,
+                    "pickupService": false,
+                    "pickupAllotment": false,
+                    "pickupAllotmentType": "NO_ALLOTMENT",
+                    "useComponentPickupAllotments": false,
+                    "pickupFlags": [],
+                    "customPickupAllowed": true,
+                    "pickupMinutesBefore": 45,
+                    "pickupTimeWindowInMinutes": 0,
+                    "pickupTimeLocationBased": false,
+                    "pickupTimeByLocations": [],
+                    "noPickupMsg": null,
+                    "ticketMsg": null,
+                    "showGlobalPickupMsg": false,
+                    "showNoPickupMsg": false,
+                    "pickupPlaceGroups": [
+                        {
+                            "id": 9853,
+                            "active": true,
+                            "title": "Tour Vat + Col",
+                            "inclusionType": "HANDPICKED",
+                            "includedFlags": "",
+                            "includedPlaces": [],
+                            "exclusionType": "NONE",
+                            "excludedFlags": "",
+                            "excludedPlaces": [],
+                            "places": []
+                        }
+                    ],
+                    "dropoffService": false,
+                    "dropoffFlags": [],
+                    "customDropoffAllowed": false,
+                    "useSameAsPickUpPlaces": false,
+                    "dropoffPlaceGroups": [],
+                    "difficultyLevel": "MODERATE",
+                    "pricingCategories": [
+                        {
+                            "id": 161601,
+                            "title": "Adulto",
+                            "ticketCategory": "ADULT",
+                            "occupancy": 1,
+                            "groupSize": null,
+                            "ageQualified": true,
+                            "minAge": 18,
+                            "maxAge": 99,
+                            "dependent": false,
+                            "masterCategoryId": null,
+                            "maxPerMaster": 0,
+                            "sumDependentCategories": false,
+                            "maxDependentSum": 0,
+                            "internalUseOnly": false,
+                            "flags": [],
+                            "defaultCategory": true,
+                            "fullTitle": "Adulto (18 - 99)"
+                        },
+                        {
+                            "id": 165042,
+                            "title": "4 a 17 años",
+                            "ticketCategory": "CHILD",
+                            "occupancy": 1,
+                            "groupSize": null,
+                            "ageQualified": true,
+                            "minAge": 4,
+                            "maxAge": 17,
+                            "dependent": false,
+                            "masterCategoryId": null,
+                            "maxPerMaster": 0,
+                            "sumDependentCategories": false,
+                            "maxDependentSum": 0,
+                            "internalUseOnly": false,
+                            "flags": [],
+                            "defaultCategory": false,
+                            "fullTitle": "4 a 17 años (4 - 17)"
+                        },
+                        {
+                            "id": 165041,
+                            "title": "0 a 3 años",
+                            "ticketCategory": "INFANT",
+                            "occupancy": 1,
+                            "groupSize": null,
+                            "ageQualified": true,
+                            "minAge": 0,
+                            "maxAge": 3,
+                            "dependent": false,
+                            "masterCategoryId": null,
+                            "maxPerMaster": 0,
+                            "sumDependentCategories": false,
+                            "maxDependentSum": 0,
+                            "internalUseOnly": false,
+                            "flags": [],
+                            "defaultCategory": false,
+                            "fullTitle": "0 a 3 años (0 - 3)"
+                        }
+                    ],
+                    "activityPriceCatalogs": [
+                        {
+                            "catalog": {
+                                "id": 30283,
+                                "title": "enroma",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": true,
+                                "currencies": [
+                                    "EUR"
+                                ]
+                            },
+                            "catalogId": 30283,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 48347,
+                                "title": "RESELLERS",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": [
+                                    "EUR"
+                                ]
+                            },
+                            "catalogId": 48347,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 87651,
+                                "title": "Musement",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": [
+                                    "EUR"
+                                ]
+                            },
+                            "catalogId": 87651,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 89723,
+                                "title": "Yoorney",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": [
+                                    "EUR"
+                                ]
+                            },
+                            "catalogId": 89723,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 90167,
+                                "title": "Excursionesporelmundo - Minube /// Prezzi Netti 2022",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 90167,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 90717,
+                                "title": "Stile Italiano Tours /// Prezzi Netti 2022",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 90717,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 90730,
+                                "title": "Veturis /// Prezzi Netti 2022",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 90730,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 96248,
+                                "title": "VIABAM",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 96248,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 103145,
+                                "title": "Destination Italia",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 103145,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 106486,
+                                "title": "CiaoFlorence",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 106486,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 106646,
+                                "title": "Headout",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 106646,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 108146,
+                                "title": "Hellotickets",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 108146,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 109589,
+                                "title": "CIVITATIS",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 109589,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        },
+                        {
+                            "catalog": {
+                                "id": 118151,
+                                "title": "GetYourGuide",
+                                "defaultCurrency": "EUR",
+                                "isVendorDefaultCatalog": false,
+                                "currencies": []
+                            },
+                            "catalogId": 118151,
+                            "currencies": [
+                                {
+                                    "currency": "EUR",
+                                    "currencyId": 2,
+                                    "default": true
+                                }
+                            ]
+                        }
+                    ],
+                    "agendaItems": [
+                        {
+                            "id": 586601,
+                            "index": 0,
+                            "title": "Coliseo",
+                            "excerpt": "El Coliseo Romano es, sin duda, el monumento – símbolo más emblemático de la Ciudad Eterna. Fue construido para celebrar la grandeza de un imperio y de una ciudad que marcó la historia mundial.",
+                            "body": "<p>El Coliseo Romano es, sin duda, el monumento – símbolo más emblemático de la Ciudad Eterna. Fue construido para celebrar la grandeza de un imperio y de una ciudad que marcó la historia mundial.</p>\n",
+                            "day": 1,
+                            "flags": [
+                                "roma antigua"
+                            ],
+                            "location": {
+                                "address": "Piazza del Colosseo",
+                                "city": "Roma",
+                                "countryCode": "IT",
+                                "postCode": "00184",
+                                "latitude": 41.8909537,
+                                "longitude": 12.4930075,
+                                "zoomLevel": 14,
+                                "origin": "GOOGLE_PLACES",
+                                "originId": "EjtQaWF6emEgZGVsIENvbG9zc2VvLCBSb21lLCBNZXRyb3BvbGl0YW4gQ2l0eSBvZiBSb21lLCBJdGFseSIuKiwKFAoSCXkgewu3YS8TEQlWd5dRaXxSEhQKEgnlqOaKsGEvExEkLRUst8qIsQ",
+                                "wholeAddress": "Piazza del Colosseo, 00184 Roma"
+                            },
+                            "address": {
+                                "id": 3187938,
+                                "created": null,
+                                "addressLine1": "Piazza del Colosseo",
+                                "addressLine2": "",
+                                "addressLine3": "",
+                                "city": "Roma",
+                                "state": "Lazio",
+                                "postalCode": "00184",
+                                "countryCode": "IT",
+                                "mapZoomLevel": 14,
+                                "geoPoint": {
+                                    "latitude": 41.8909537,
+                                    "longitude": 12.4930075
+                                },
+                                "unLocode": {
+                                    "country": "",
+                                    "city": ""
+                                },
+                                "origin": "GOOGLE_PLACES",
+                                "originId": "EjtQaWF6emEgZGVsIENvbG9zc2VvLCBSb21lLCBNZXRyb3BvbGl0YW4gQ2l0eSBvZiBSb21lLCBJdGFseSIuKiwKFAoSCXkgewu3YS8TEQlWd5dRaXxSEhQKEgnlqOaKsGEvExEkLRUst8qIsQ",
+                                "googlePlaceId": null
+                            },
+                            "keyPhoto": null,
+                            "photos": []
+                        }
+                    ],
+                    "startTimes": [
+                        {
+                            "id": 579925,
+                            "label": "",
+                            "externalLabel": null,
+                            "hour": 9,
+                            "minute": 0,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 485872,
+                            "label": "",
+                            "externalLabel": null,
+                            "hour": 9,
+                            "minute": 15,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 2808421,
+                            "label": "",
+                            "externalLabel": "",
+                            "hour": 9,
+                            "minute": 45,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 3470312,
+                            "label": "",
+                            "externalLabel": "",
+                            "hour": 10,
+                            "minute": 30,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 3666825,
+                            "label": "",
+                            "externalLabel": "",
+                            "hour": 11,
+                            "minute": 0,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 3631109,
+                            "label": "",
+                            "externalLabel": "",
+                            "hour": 15,
+                            "minute": 0,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 485873,
+                            "label": "",
+                            "externalLabel": null,
+                            "hour": 15,
+                            "minute": 30,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        },
+                        {
+                            "id": 3631110,
+                            "label": "",
+                            "externalLabel": "",
+                            "hour": 16,
+                            "minute": 0,
+                            "overrideTimeWhenPickup": false,
+                            "pickupHour": 0,
+                            "pickupMinute": 0,
+                            "durationType": "H",
+                            "voucherPickupMsg": "",
+                            "externalId": "",
+                            "duration": 3,
+                            "durationMinutes": 0,
+                            "durationHours": 3,
+                            "durationDays": 0,
+                            "durationWeeks": 0,
+                            "flags": []
+                        }
+                    ],
+                    "bookableExtras": [
+                        {
+                            "id": 160205,
+                            "externalId": "",
+                            "title": "Traslado al punto de encuentro",
+                            "information": "Ten en cuenta que, si reservas con menos de 24 horas de antelación en relación al horario de inicio del tour, no podremos confirmarte este servicio.",
+                            "included": false,
+                            "free": false,
+                            "pricingType": "PER_PERSON",
+                            "pricingTypeLabel": "por persona",
+                            "increasesCapacity": false,
+                            "maxPerBooking": 0,
+                            "limitByPax": true,
+                            "rateIds": [],
+                            "flags": [],
+                            "questions": []
+                        }
+                    ],
+                    "route": null,
+                    "widgetSettings": null,
+                    "hasOpeningHours": false,
+                    "defaultOpeningHours": null,
+                    "seasonalOpeningHours": [],
+                    "displaySettings": {
+                        "showPickupPlaces": false,
+                        "showRouteMap": false,
+                        "selectRateBasedOnStartTime": false,
+                        "customFields": []
+                    },
+                    "hasBoxes": false,
+                    "bookingLabels": [],
+                    "marketplaceVisibilityType": "PUBLIC",
+                    "bookingCutoff": 480,
+                    "requestDeadline": 172800000,
+                    "actualId": 221221,
+                    "nextDefaultPriceAsText": "",
+                    "actualVendor": {
+                        "id": 27164,
+                        "title": "EnRoma.com",
+                        "currencyCode": "EUR",
+                        "timeZone": "Europe/Rome",
+                        "showInvoiceIdOnTicket": false,
+                        "showAgentDetailsOnTicket": false,
+                        "showPaymentsOnInvoice": false,
+                        "companyEmailIsDefault": false
+                    }
+                },
+                "bookingAnswers": [
+                    {
+                        "questionId": "1021655",
+                        "values": [
+                            "10 años"
+                        ],
+                        "label": "¿Cuáles son las edades de los niños?",
+                        "options": [
+                            {
+                                "value": "4 años",
+                                "label": "4 años"
+                            },
+                            {
+                                "value": " 5 años",
+                                "label": " 5 años"
+                            },
+                            {
+                                "value": "6 años",
+                                "label": "6 años"
+                            },
+                            {
+                                "value": "7 años",
+                                "label": "7 años"
+                            },
+                            {
+                                "value": "8 años",
+                                "label": "8 años"
+                            },
+                            {
+                                "value": "9 años",
+                                "label": "9 años"
+                            },
+                            {
+                                "value": "10 años",
+                                "label": "10 años"
+                            },
+                            {
+                                "value": "11 años",
+                                "label": "11 años"
+                            },
+                            {
+                                "value": "12 años",
+                                "label": "12 años"
+                            },
+                            {
+                                "value": "13 años",
+                                "label": "13 años"
+                            },
+                            {
+                                "value": "14 años",
+                                "label": "14 años"
+                            },
+                            {
+                                "value": "15 años",
+                                "label": "15 años"
+                            },
+                            {
+                                "value": "16 años",
+                                "label": "16 años"
+                            },
+                            {
+                                "value": "17 años",
+                                "label": "17 años"
+                            }
+                        ]
+                    }
+                ],
+                "pickupAnswers": [],
+                "dropoffAnswers": [],
+                "flexible": false,
+                "customized": false,
+                "customizedDurationMinutes": 0,
+                "customizedDurationHours": 0,
+                "customizedDurationDays": 0,
+                "customizedDurationWeeks": 0,
+                "ticketPerPerson": false,
+                "offerApplied": false,
+                "pricingCategoryBookings": [
+                    {
+                        "id": 283340952,
+                        "pricingCategoryId": 161601,
+                        "pricingCategory": {
+                            "id": 161601,
+                            "title": "Adulto",
+                            "ticketCategory": "ADULT",
+                            "occupancy": 1,
+                            "groupSize": 1,
+                            "ageQualified": true,
+                            "minAge": 18,
+                            "maxAge": 99,
+                            "dependent": false,
+                            "masterCategoryId": null,
+                            "maxPerMaster": 0,
+                            "sumDependentCategories": false,
+                            "maxDependentSum": 0,
+                            "internalUseOnly": false,
+                            "flags": [],
+                            "defaultCategory": false,
+                            "fullTitle": "Adulto (18 - 99)"
+                        },
+                        "leadPassenger": false,
+                        "age": 0,
+                        "passengerInfo": {
+                            "contactDetailsHidden": false,
+                            "contactDetailsHiddenUntil": null,
+                            "id": 176572833,
+                            "created": null,
+                            "uuid": "b4abdb42-2868-4626-a63b-c85e461fca12",
+                            "email": null,
+                            "title": null,
+                            "firstName": "Maria Eugenia  ",
+                            "lastName": "BASCONNET",
+                            "personalIdNumber": null,
+                            "clcEmail": false,
+                            "language": null,
+                            "nationality": null,
+                            "sex": null,
+                            "dateOfBirth": null,
+                            "phoneNumber": null,
+                            "phoneNumberCountryCode": null,
+                            "address": null,
+                            "postCode": null,
+                            "state": null,
+                            "place": null,
+                            "country": null,
+                            "organization": null,
+                            "passportId": null,
+                            "passportExpDay": null,
+                            "passportExpMonth": null,
+                            "passportExpYear": null,
+                            "credentials": null,
+                            "acceptsMarketing": false,
+                            "tags": null,
+                            "octoNote": null,
+                            "phoneNumberLinkable": null
+                        },
+                        "bookingAnswers": [],
+                        "bookedTitle": "Adulto",
+                        "occupancy": 1,
+                        "quantity": 1,
+                        "extras": [],
+                        "answers": [],
+                        "flags": []
+                    },
+                    {
+                        "id": 283340953,
+                        "pricingCategoryId": 165042,
+                        "pricingCategory": {
+                            "id": 165042,
+                            "title": "4 a 17 años",
+                            "ticketCategory": "CHILD",
+                            "occupancy": 1,
+                            "groupSize": 1,
+                            "ageQualified": true,
+                            "minAge": 4,
+                            "maxAge": 17,
+                            "dependent": false,
+                            "masterCategoryId": null,
+                            "maxPerMaster": 0,
+                            "sumDependentCategories": false,
+                            "maxDependentSum": 0,
+                            "internalUseOnly": false,
+                            "flags": [],
+                            "defaultCategory": false,
+                            "fullTitle": "4 a 17 años (4 - 17)"
+                        },
+                        "leadPassenger": false,
+                        "age": 0,
+                        "passengerInfo": {
+                            "contactDetailsHidden": false,
+                            "contactDetailsHiddenUntil": null,
+                            "id": 176572834,
+                            "created": null,
+                            "uuid": "f700aad4-82b1-475c-9e0f-fa4be59661f2",
+                            "email": null,
+                            "title": null,
+                            "firstName": "Margarita ",
+                            "lastName": "Caballero Basconnet",
+                            "personalIdNumber": null,
+                            "clcEmail": false,
+                            "language": null,
+                            "nationality": null,
+                            "sex": null,
+                            "dateOfBirth": null,
+                            "phoneNumber": null,
+                            "phoneNumberCountryCode": null,
+                            "address": null,
+                            "postCode": null,
+                            "state": null,
+                            "place": null,
+                            "country": null,
+                            "organization": null,
+                            "passportId": null,
+                            "passportExpDay": null,
+                            "passportExpMonth": null,
+                            "passportExpYear": null,
+                            "credentials": null,
+                            "acceptsMarketing": false,
+                            "tags": null,
+                            "octoNote": null,
+                            "phoneNumberLinkable": null
+                        },
+                        "bookingAnswers": [],
+                        "bookedTitle": "4 a 17 años",
+                        "occupancy": 1,
+                        "quantity": 1,
+                        "extras": [],
+                        "answers": [],
+                        "flags": []
+                    }
+                ],
+                "extras": [],
+                "bookingFields": [],
+                "pickup": false,
+                "dropoff": false,
+                "inventoryConfirmFailed": false,
+                "channelId": "DIRECT_OFFLINE",
+                "guidedLanguages": [],
+                "quantityByPricingCategory": {
+                    "161601": 1,
+                    "165042": 1
+                },
+                "bookedPricingCategories": [
+                    {
+                        "id": 161601,
+                        "title": "Adulto",
+                        "ticketCategory": null,
+                        "occupancy": 1,
+                        "groupSize": 1,
+                        "ageQualified": false,
+                        "minAge": null,
+                        "maxAge": null,
+                        "dependent": false,
+                        "masterCategoryId": null,
+                        "maxPerMaster": 0,
+                        "sumDependentCategories": false,
+                        "maxDependentSum": 0,
+                        "internalUseOnly": false,
+                        "flags": [],
+                        "defaultCategory": false,
+                        "fullTitle": "Adulto"
+                    },
+                    {
+                        "id": 165042,
+                        "title": "4 a 17 años",
+                        "ticketCategory": null,
+                        "occupancy": 1,
+                        "groupSize": 1,
+                        "ageQualified": false,
+                        "minAge": null,
+                        "maxAge": null,
+                        "dependent": false,
+                        "masterCategoryId": null,
+                        "maxPerMaster": 0,
+                        "sumDependentCategories": false,
+                        "maxDependentSum": 0,
+                        "internalUseOnly": false,
+                        "flags": [],
+                        "defaultCategory": false,
+                        "fullTitle": "4 a 17 años"
+                    }
+                ],
+                "totalParticipants": 2,
+                "savedAmount": 0
+            }
+        ],
+        "routeBookings": [],
+        "giftCardBookings": [],
+        "bookingFields": [],
+        "action": "BOOKING_UPDATED",
+        "updateType": "ITEMS_CHANGED"
+    }
+]
