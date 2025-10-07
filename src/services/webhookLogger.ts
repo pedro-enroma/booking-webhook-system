@@ -62,7 +62,7 @@ export class WebhookLogger {
     const bookingId = data.bookingId || data.experienceId || 'UNKNOWN';
     const parentBookingId = data.parentBookingId || data.parentBooking?.bookingId;
     const confirmationCode = data.confirmationCode || data.parentBooking?.confirmationCode || 'N/A';
-    const action = data.action || this.inferAction(data);
+    const action = data.action || await this.inferAction(data);
     const status = data.status || data.parentBooking?.status || 'UNKNOWN';
 
     // Create log entry
@@ -287,11 +287,24 @@ export class WebhookLogger {
     logEntry.related_webhooks = sequence.map(e => `${e.action}:${e.status}:${e.received_at}`);
   }
 
-  private inferAction(data: any): string {
+  private async inferAction(data: any): Promise<string> {
     if (!data.action) {
       if (data.status === 'CANCELLED') {
         return 'BOOKING_ITEM_CANCELLED';
       } else if (data.status === 'CONFIRMED') {
+        // Check if booking already exists - if yes, it's an UPDATE
+        const parentBookingId = data.parentBookingId || data.parentBooking?.bookingId;
+        if (parentBookingId) {
+          const { data: existing, error } = await supabase
+            .from('bookings')
+            .select('booking_id')
+            .eq('booking_id', parentBookingId)
+            .single();
+
+          if (!error && existing) {
+            return 'BOOKING_UPDATED';
+          }
+        }
         return 'BOOKING_CONFIRMED';
       }
     }
