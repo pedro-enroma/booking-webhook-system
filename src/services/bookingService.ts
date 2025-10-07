@@ -562,27 +562,64 @@ export class BookingService {
       // Check quali partecipanti esistenti sono ancora nel webhook
       for (const existing of existingParticipants || []) {
         if (webhookParticipantMap.has(existing.pricing_category_booking_id)) {
-          toKeep.push(existing);
+          const webhookParticipant = webhookParticipantMap.get(existing.pricing_category_booking_id);
 
-          // Log MATCH
-          await this.logParticipantSync({
-            activity_booking_id: activityBookingId,
-            booking_id: parentBookingId,
-            confirmation_code: confirmationCode,
-            sync_action: 'MATCH',
-            pricing_category_booking_id: existing.pricing_category_booking_id,
-            pricing_category_id: existing.pricing_category_id,
-            pricing_category_title: existing.booked_title,
-            passenger_first_name: existing.passenger_first_name,
-            passenger_last_name: existing.passenger_last_name,
-            quantity: existing.quantity,
-            occupancy: existing.occupancy,
-            webhook_participant_count: webhookCount,
-            db_participant_count_before: existingCount,
-            db_participant_count_after: existingCount,
-            raw_participant_data: webhookParticipantMap.get(existing.pricing_category_booking_id),
-            notes: 'Participant matched in webhook - keeping'
-          });
+          // Check if passenger info changed
+          const webhookFirstName = webhookParticipant.passengerInfo?.firstName?.trim() || null;
+          const webhookLastName = webhookParticipant.passengerInfo?.lastName?.trim() || null;
+          const dbFirstName = existing.passenger_first_name;
+          const dbLastName = existing.passenger_last_name;
+
+          const namesChanged = webhookFirstName !== dbFirstName || webhookLastName !== dbLastName;
+
+          if (namesChanged) {
+            // UPDATE: Names changed, update the participant
+            await this.savePricingCategoryBooking(webhookParticipant, activityBookingId, true);
+
+            console.log(`   🔄 Aggiornato participant ${existing.pricing_category_booking_id}: "${dbFirstName} ${dbLastName}" → "${webhookFirstName || 'DA'} ${webhookLastName || 'CERCARE'}"`);
+
+            // Log UPDATE
+            await this.logParticipantSync({
+              activity_booking_id: activityBookingId,
+              booking_id: parentBookingId,
+              confirmation_code: confirmationCode,
+              sync_action: 'UPDATE',
+              pricing_category_booking_id: existing.pricing_category_booking_id,
+              pricing_category_id: existing.pricing_category_id,
+              pricing_category_title: existing.booked_title,
+              passenger_first_name: webhookFirstName || 'DA',
+              passenger_last_name: webhookLastName || 'CERCARE',
+              quantity: existing.quantity,
+              occupancy: existing.occupancy,
+              webhook_participant_count: webhookCount,
+              db_participant_count_before: existingCount,
+              db_participant_count_after: existingCount,
+              raw_participant_data: webhookParticipant,
+              notes: `Passenger info updated: "${dbFirstName} ${dbLastName}" → "${webhookFirstName || 'DA'} ${webhookLastName || 'CERCARE'}"`
+            });
+          } else {
+            // MATCH: No change, just log it
+            await this.logParticipantSync({
+              activity_booking_id: activityBookingId,
+              booking_id: parentBookingId,
+              confirmation_code: confirmationCode,
+              sync_action: 'MATCH',
+              pricing_category_booking_id: existing.pricing_category_booking_id,
+              pricing_category_id: existing.pricing_category_id,
+              pricing_category_title: existing.booked_title,
+              passenger_first_name: existing.passenger_first_name,
+              passenger_last_name: existing.passenger_last_name,
+              quantity: existing.quantity,
+              occupancy: existing.occupancy,
+              webhook_participant_count: webhookCount,
+              db_participant_count_before: existingCount,
+              db_participant_count_after: existingCount,
+              raw_participant_data: webhookParticipant,
+              notes: 'Participant matched in webhook - no changes'
+            });
+          }
+
+          toKeep.push(existing);
         } else {
           toRemove.push(existing);
 
