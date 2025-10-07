@@ -103,8 +103,15 @@ router.post('/webhook/availability', async (req: Request, res: Response) => {
 router.post('/webhook/booking', async (req: Request, res: Response): Promise<Response> => {
   console.log('🔔 Webhook ricevuto da Bokun');
 
+  // FIX: Bokun sends webhooks as array [{ ... }], extract first element
+  let webhookData = req.body;
+  if (Array.isArray(req.body) && req.body.length > 0) {
+    webhookData = req.body[0];
+    console.log('📦 Webhook è un array, estratto primo elemento');
+  }
+
   // Log webhook to our detailed logging system
-  const logEntry = await webhookLogger.logWebhookReceived(req.body, 'BOOKING');
+  const logEntry = await webhookLogger.logWebhookReceived(webhookData, 'BOOKING');
 
   try {
     // Start processing log
@@ -112,15 +119,15 @@ router.post('/webhook/booking', async (req: Request, res: Response): Promise<Res
 
     // Log dettagliati per capire la struttura
     console.log('📊 Campi principali ricevuti:');
-    console.log('- action:', req.body.action);
-    console.log('- status:', req.body.status);
-    console.log('- bookingId:', req.body.bookingId);
-    console.log('- parentBookingId:', req.body.parentBookingId);
+    console.log('- action:', webhookData.action);
+    console.log('- status:', webhookData.status);
+    console.log('- bookingId:', webhookData.bookingId);
+    console.log('- parentBookingId:', webhookData.parentBookingId);
 
-    if (req.body.parentBooking) {
+    if (webhookData.parentBooking) {
       console.log('📊 Dati parentBooking:');
-      console.log('- parentBooking.action:', req.body.parentBooking.action);
-      console.log('- parentBooking.status:', req.body.parentBooking.status);
+      console.log('- parentBooking.action:', webhookData.parentBooking.action);
+      console.log('- parentBooking.status:', webhookData.parentBooking.status);
     }
 
     // Check if this is an out-of-order webhook
@@ -156,19 +163,21 @@ router.post('/webhook/booking', async (req: Request, res: Response): Promise<Res
       }
     }
 
-    // Per ora, determiniamo l'azione basandoci sullo status
-    let action = req.body.action;
+    // FIX: Use webhookData.action (from end of webhook object)
+    let action = webhookData.action;
 
     // Se action non esiste, proviamo a dedurla dallo status
     if (!action) {
-      if (req.body.status === 'CANCELLED') {
+      if (webhookData.status === 'CANCELLED') {
         action = 'BOOKING_ITEM_CANCELLED';
-      } else if (req.body.status === 'CONFIRMED') {
+      } else if (webhookData.status === 'CONFIRMED') {
         // Controlla se è una nuova prenotazione o un aggiornamento
         // Per ora assumiamo che sia sempre CONFIRMED
         action = 'BOOKING_CONFIRMED';
       }
       console.log('🔄 Action dedotta dallo status:', action);
+    } else {
+      console.log('✅ Action trovata nel webhook:', action);
     }
 
     // Track previous status if updating
@@ -185,7 +194,7 @@ router.post('/webhook/booking', async (req: Request, res: Response): Promise<Res
 
     // Aggiungi l'action all'oggetto se non c'è
     const dataWithAction = {
-      ...req.body,
+      ...webhookData,
       action: action
     };
 
@@ -197,7 +206,7 @@ router.post('/webhook/booking', async (req: Request, res: Response): Promise<Res
       logEntry,
       'SUCCESS',
       undefined,
-      previousStatus ? { from: previousStatus, to: req.body.status } : undefined
+      previousStatus ? { from: previousStatus, to: webhookData.status } : undefined
     );
 
     return res.status(200).json({
