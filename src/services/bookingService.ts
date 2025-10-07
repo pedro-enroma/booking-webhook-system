@@ -738,8 +738,12 @@ export class BookingService {
     let passengerDateOfBirth = null;
 
     if (participant.passengerInfo) {
-      passengerFirstName = participant.passengerInfo.firstName || null;
-      passengerLastName = participant.passengerInfo.lastName || null;
+      // Trim and check for empty strings
+      const firstName = participant.passengerInfo.firstName?.trim();
+      const lastName = participant.passengerInfo.lastName?.trim();
+
+      passengerFirstName = firstName || null;
+      passengerLastName = lastName || null;
 
       // Converti data di nascita se presente
       if (participant.passengerInfo.dateOfBirth) {
@@ -748,9 +752,9 @@ export class BookingService {
     }
 
     // Se usePlaceholder è true e non ci sono dati passeggero, usa "DA CERCARE"
-    if (usePlaceholder && !passengerFirstName && !passengerLastName) {
-      passengerFirstName = 'DA';
-      passengerLastName = 'CERCARE';
+    if (usePlaceholder && (!passengerFirstName || !passengerLastName)) {
+      passengerFirstName = passengerFirstName || 'DA';
+      passengerLastName = passengerLastName || 'CERCARE';
     }
     
     const { error } = await supabase
