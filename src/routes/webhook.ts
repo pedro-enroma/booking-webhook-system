@@ -163,22 +163,9 @@ router.post('/webhook/booking', async (req: Request, res: Response): Promise<Res
       }
     }
 
-    // FIX: Use webhookData.action (from end of webhook object)
-    let action = webhookData.action;
-
-    // Se action non esiste, proviamo a dedurla dallo status
-    if (!action) {
-      if (webhookData.status === 'CANCELLED') {
-        action = 'BOOKING_ITEM_CANCELLED';
-      } else if (webhookData.status === 'CONFIRMED') {
-        // Controlla se è una nuova prenotazione o un aggiornamento
-        // Per ora assumiamo che sia sempre CONFIRMED
-        action = 'BOOKING_CONFIRMED';
-      }
-      console.log('🔄 Action dedotta dallo status:', action);
-    } else {
-      console.log('✅ Action trovata nel webhook:', action);
-    }
+    // FIX: Use action from logEntry (webhookLogger already inferred it correctly)
+    const action = logEntry.action;
+    console.log('📥 Action determinata:', action);
 
     // Track previous status if updating
     let previousStatus = null;
