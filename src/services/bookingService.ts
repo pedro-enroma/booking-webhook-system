@@ -554,17 +554,46 @@ export class BookingService {
     if (error) throw error;
   }
   
+  // Helper: Ottieni il titolo canonico dall'activities table invece che dal webhook
+  private async getCanonicalActivityTitle(activityId: string): Promise<string | null> {
+    try {
+      const { data, error } = await supabase
+        .from('activities')
+        .select('title')
+        .eq('activity_id', activityId)
+        .single();
+
+      if (error || !data) {
+        console.warn(`⚠️ Impossibile trovare title per activity_id ${activityId}, uso titolo dal webhook`);
+        return null;
+      }
+
+      return data.title;
+    } catch (error) {
+      console.warn(`⚠️ Errore recuperando title per activity_id ${activityId}:`, error);
+      return null;
+    }
+  }
+
   // Funzione per salvare l'attività dal root object (AGGIORNATA CON SELLER)
   private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
-    
+
     // Verifica se il prodotto esiste, altrimenti crealo (per prodotti Channel Manager)
     const productId = activityData.productId?.toString() || activityData.product?.id?.toString();
     if (productId) {
       await this.ensureProductExistsForChannelManager(productId, activityData);
     }
-    
+
+    // NUOVO: Usa il titolo canonico dalla tabella activities invece che dal webhook
+    const canonicalTitle = await this.getCanonicalActivityTitle(productId);
+    const productTitle = canonicalTitle || activityData.title;
+
+    if (canonicalTitle && canonicalTitle !== activityData.title) {
+      console.log(`📝 Uso titolo canonico: "${canonicalTitle}" invece di "${activityData.title}"`);
+    }
+
     const { error } = await supabase
       .from('activity_bookings')
       .upsert({
@@ -572,7 +601,7 @@ export class BookingService {
         activity_booking_id: activityData.bookingId,
         product_id: activityData.productId || activityData.product?.id,
         activity_id: productId,
-        product_title: activityData.title,
+        product_title: productTitle,  // MODIFICATO: Usa titolo canonico
         product_confirmation_code: activityData.productConfirmationCode,
         start_date_time: startDateTime.toISOString(),
         end_date_time: endDateTime.toISOString(),
@@ -587,12 +616,12 @@ export class BookingService {
         onConflict: 'activity_booking_id',
         ignoreDuplicates: false
       });
-    
+
     if (error) {
       console.error('❌ Errore salvando activity booking:', error);
       throw error;
     }
-    
+
     console.log(`✅ Activity booking salvato con seller: ${sellerName}`);
   }
   
@@ -600,13 +629,21 @@ export class BookingService {
   private async updateActivityBooking(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
-    
+
     // Assicurati che il prodotto esista anche per gli update
     const productId = activityData.productId?.toString() || activityData.product?.id?.toString();
     if (productId) {
       await this.ensureProductExistsForChannelManager(productId, activityData);
     }
-    
+
+    // NUOVO: Usa il titolo canonico dalla tabella activities invece che dal webhook
+    const canonicalTitle = await this.getCanonicalActivityTitle(productId);
+    const productTitle = canonicalTitle || activityData.title;
+
+    if (canonicalTitle && canonicalTitle !== activityData.title) {
+      console.log(`📝 Uso titolo canonico: "${canonicalTitle}" invece di "${activityData.title}"`);
+    }
+
     const { error } = await supabase
       .from('activity_bookings')
       .update({
@@ -614,18 +651,19 @@ export class BookingService {
         end_date_time: endDateTime.toISOString(),
         status: activityData.status,
         total_price: activityData.totalPrice,
+        product_title: productTitle,  // NUOVO: Aggiorna anche il titolo con quello canonico
         rate_title: activityData.rateTitle,
         start_time: activityData.startTime,
         date_string: activityData.dateString,
         activity_seller: sellerName  // NUOVO CAMPO!
       })
       .eq('activity_booking_id', activityData.bookingId);
-    
+
     if (error) {
       console.error('❌ Errore aggiornando activity booking:', error);
       throw error;
     }
-    
+
     console.log(`✅ Activity booking aggiornato con seller: ${sellerName}`);
   }
   
