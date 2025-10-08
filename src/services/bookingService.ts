@@ -93,38 +93,101 @@ export class BookingService {
   // Gestisce aggiornamenti alle prenotazioni esistenti
   private async handleBookingUpdated(bookingData: any): Promise<void> {
     console.log('🔄 Gestione BOOKING_UPDATED:', bookingData.confirmationCode);
-    
+    console.log('=' .repeat(80));
+    console.log('📋 REBOOK DEBUG - Inizio analisi webhook');
+    console.log('=' .repeat(80));
+
     try {
       if (!bookingData.parentBooking) {
         console.log('⚠️ Nessun parentBooking trovato, skip');
         return;
       }
-      
+
       const parentBooking = bookingData.parentBooking;
-      
+
+      // REBOOK DEBUG: Check se l'activity_booking_id esiste già nel DB
+      console.log('🔍 REBOOK DEBUG - Verifica esistenza activity_booking_id:', bookingData.bookingId);
+      const { data: existingActivity, error: checkError } = await supabase
+        .from('activity_bookings')
+        .select('activity_booking_id, booking_id, status, product_title, start_date_time')
+        .eq('activity_booking_id', bookingData.bookingId)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('❌ REBOOK DEBUG - Errore nella verifica:', checkError);
+      }
+
+      if (existingActivity) {
+        console.log('✅ REBOOK DEBUG - Activity trovata nel DB:');
+        console.log('   📌 activity_booking_id:', existingActivity.activity_booking_id);
+        console.log('   📌 booking_id (parent):', existingActivity.booking_id);
+        console.log('   📌 status:', existingActivity.status);
+        console.log('   📌 product_title:', existingActivity.product_title);
+        console.log('   📌 start_date_time:', existingActivity.start_date_time);
+        console.log('🔄 REBOOK DEBUG - Questo è un UPDATE di activity esistente');
+      } else {
+        console.log('🆕 REBOOK DEBUG - Activity NON trovata nel DB');
+        console.log('   📌 Questo potrebbe essere un REBOOK (nuova activity per booking esistente)');
+
+        // Check quante activities esistono per questo parent booking
+        const { data: allActivities, error: allError } = await supabase
+          .from('activity_bookings')
+          .select('activity_booking_id, status, product_title, start_date_time')
+          .eq('booking_id', parentBooking.bookingId)
+          .order('activity_booking_id', { ascending: true });
+
+        if (!allError && allActivities) {
+          console.log(`   📊 Activities esistenti per booking_id ${parentBooking.bookingId}: ${allActivities.length}`);
+          allActivities.forEach((act: any, index: number) => {
+            console.log(`      ${index + 1}. activity_booking_id: ${act.activity_booking_id}, status: ${act.status}, title: ${act.product_title}`);
+          });
+
+          const cancelledActivities = allActivities.filter((a: any) => a.status === 'CANCELLED');
+          if (cancelledActivities.length > 0) {
+            console.log('   🚨 REBOOK DETECTED! Ci sono activity CANCELLED:');
+            cancelledActivities.forEach((act: any) => {
+              console.log(`      ❌ activity_booking_id: ${act.activity_booking_id} - CANCELLED`);
+            });
+            console.log('   ➕ Stai per aggiungere una NUOVA activity a questo booking!');
+          }
+        }
+      }
+
+      console.log('=' .repeat(80));
+
       // Aggiorna solo i dati che potrebbero essere cambiati
-      
+
       // 1. Aggiorna cliente se presente
       if (parentBooking.customer) {
         await this.saveOrUpdateCustomer(parentBooking.customer);
         console.log('✅ Cliente aggiornato');
       }
-      
+
       // 2. Aggiorna prenotazione principale
       await this.updateMainBooking(parentBooking);
       console.log('✅ Prenotazione principale aggiornata');
-      
+
       // 2.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
       // Priorità: agent.title > seller.title > default 'EnRoma.com'
       const sellerName = bookingData.agent?.title || parentBooking.seller?.title || 'EnRoma.com';
       console.log('📌 Seller name per aggiornamento attività:', sellerName);
-      
-      // 3. Aggiorna attività CON IL SELLER
-      await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName);
-      console.log('✅ Attività aggiornata');
-      
+
+      // 3. REBOOK LOGIC: Se activity non esiste, creala invece di updatarla!
+      console.log('🔧 REBOOK DEBUG - Operazione da eseguire:');
+      if (existingActivity) {
+        console.log('   🔄 UPDATE di activity esistente');
+        await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName);
+        console.log('✅ Attività aggiornata');
+      } else {
+        console.log('   ➕ INSERT di NUOVA activity (REBOOK scenario)');
+        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
+        console.log('✅ Nuova attività creata (REBOOK)');
+      }
+
       // 4. NUOVO: Sincronizza partecipanti in modo intelligente
+      console.log('🔧 REBOOK DEBUG - Sincronizzazione partecipanti');
       if (bookingData.pricingCategoryBookings) {
+        console.log(`   📊 Webhook contiene ${bookingData.pricingCategoryBookings.length} partecipanti`);
         await this.syncParticipantsIntelligently(
           bookingData.bookingId,
           bookingData.pricingCategoryBookings,
@@ -148,21 +211,60 @@ export class BookingService {
   // Gestisce cancellazione di attività
   private async handleBookingItemCancelled(bookingData: any): Promise<void> {
     console.log('❌ Gestione BOOKING_ITEM_CANCELLED:', bookingData.confirmationCode);
-    
+    console.log('=' .repeat(80));
+    console.log('📋 CANCELLATION DEBUG - Dettagli cancellazione');
+    console.log('=' .repeat(80));
+
     try {
+      // CANCELLATION DEBUG: Mostra info prima della cancellazione
+      const { data: activityBefore, error: beforeError } = await supabase
+        .from('activity_bookings')
+        .select('activity_booking_id, booking_id, status, product_title, start_date_time')
+        .eq('activity_booking_id', bookingData.bookingId)
+        .single();
+
+      if (activityBefore) {
+        console.log('📋 Activity da cancellare:');
+        console.log('   📌 activity_booking_id:', activityBefore.activity_booking_id);
+        console.log('   📌 booking_id (parent):', activityBefore.booking_id);
+        console.log('   📌 status PRIMA:', activityBefore.status);
+        console.log('   📌 product_title:', activityBefore.product_title);
+        console.log('   📌 start_date_time:', activityBefore.start_date_time);
+
+        // Check altre activities per questo booking
+        const { data: allActivities } = await supabase
+          .from('activity_bookings')
+          .select('activity_booking_id, status, product_title')
+          .eq('booking_id', activityBefore.booking_id)
+          .order('activity_booking_id', { ascending: true });
+
+        if (allActivities && allActivities.length > 0) {
+          console.log(`   📊 Altre activities per booking_id ${activityBefore.booking_id}: ${allActivities.length}`);
+          allActivities.forEach((act: any, index: number) => {
+            const marker = act.activity_booking_id === activityBefore.activity_booking_id ? '👉' : '  ';
+            console.log(`      ${marker} ${index + 1}. activity_booking_id: ${act.activity_booking_id}, status: ${act.status}`);
+          });
+        }
+      } else {
+        console.log('⚠️ Activity non trovata nel DB prima della cancellazione');
+      }
+
+      console.log('=' .repeat(80));
+
       // Aggiorna solo lo status dell'attività a CANCELLED
       const { error } = await supabase
         .from('activity_bookings')
         .update({ status: 'CANCELLED' })
         .eq('activity_booking_id', bookingData.bookingId);
-      
+
       if (error) throw error;
-      
+
       console.log('✅ Attività cancellata:', bookingData.bookingId);
-      
+      console.log('   ⏩ Il prossimo BOOKING_UPDATED con nuova activity sarà un REBOOK!');
+
       // NUOVO: Sincronizza disponibilità dopo cancellazione
       await this.syncAvailabilityForBooking(bookingData);
-      
+
     } catch (error) {
       console.error('❌ Errore in BOOKING_ITEM_CANCELLED:', error);
       throw error;
