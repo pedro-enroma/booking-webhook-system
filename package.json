@@ -28,7 +28,8 @@
     "update-status": "ts-node src/update-activity-status.ts",
     "setup-webhook-logging": "ts-node src/setup-webhook-logging.ts",
     "test-webhook-logging": "ts-node src/test-webhook-logging.ts",
-    "setup-participant-sync": "ts-node src/setup-participant-sync-logging.ts"
+    "setup-participant-sync": "ts-node src/setup-participant-sync-logging.ts",
+    "setup-promotions": "ts-node src/setup-promotions-table.ts"
   },
   "keywords": [],
   "author": "",

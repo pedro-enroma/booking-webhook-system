@@ -12,7 +12,10 @@
       "Bash(npm run setup-webhook-logging:*)",
       "Bash(npm run build:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run setup-participant-sync:*)"
+      "Bash(npm run setup-participant-sync:*)",
+      "Bash(git commit:*)",
+      "Bash(railway logs:*)",
+      "Bash(vercel:*)"
     ],
     "deny": [],
     "ask": []

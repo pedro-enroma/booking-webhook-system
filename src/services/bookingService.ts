@@ -1,11 +1,14 @@
 import { supabase } from '../config/supabase';
 import { OctoService } from './octoService';
+import { PromotionService } from './promotionService';
 
 export class BookingService {
   private octoService: OctoService;
+  private promotionService: PromotionService;
 
   constructor() {
     this.octoService = new OctoService();
+    this.promotionService = new PromotionService();
   }
   
   // Funzione principale che decide cosa fare in base all'action
@@ -79,9 +82,17 @@ export class BookingService {
         console.log('✅ Partecipanti salvati:', bookingData.pricingCategoryBookings.length);
       }
       
-      // 7. NUOVO: Sincronizza disponibilità
+      // 7. NUOVO: Traccia promozioni/offerte
+      await this.promotionService.processWebhookOffers(
+        bookingData,
+        parentBooking.bookingId,
+        bookingData.confirmationCode,
+        'BOOKING_CONFIRMED'
+      );
+
+      // 8. NUOVO: Sincronizza disponibilità
       await this.syncAvailabilityForBooking(bookingData);
-      
+
       console.log('🎉 BOOKING_CONFIRMED completato!');
       
     } catch (error) {
@@ -221,8 +232,16 @@ export class BookingService {
         );
         console.log('✅ Partecipanti sincronizzati intelligentemente');
       }
-      
-      // 5. NUOVO: Sincronizza disponibilità
+
+      // 5. NUOVO: Traccia promozioni/offerte
+      await this.promotionService.processWebhookOffers(
+        bookingData,
+        parentBooking.bookingId,
+        bookingData.confirmationCode,
+        'BOOKING_UPDATED'
+      );
+
+      // 6. NUOVO: Sincronizza disponibilità
       await this.syncAvailabilityForBooking(bookingData);
 
       // Final summary
