@@ -94,7 +94,7 @@ export class BookingService {
   private async handleBookingUpdated(bookingData: any): Promise<void> {
     console.log('🔄 Gestione BOOKING_UPDATED:', bookingData.confirmationCode);
     console.log('=' .repeat(80));
-    console.log('📋 REBOOK DEBUG - Inizio analisi webhook');
+    console.log('📋 MULTI-ACTIVITY & REBOOK DEBUG - Inizio analisi webhook');
     console.log('=' .repeat(80));
 
     try {
@@ -105,8 +105,42 @@ export class BookingService {
 
       const parentBooking = bookingData.parentBooking;
 
-      // REBOOK DEBUG: Check se l'activity_booking_id esiste già nel DB
-      console.log('🔍 REBOOK DEBUG - Verifica esistenza activity_booking_id:', bookingData.bookingId);
+      console.log('📊 WEBHOOK DATA:');
+      console.log(`   activity_booking_id (bookingData.bookingId): ${bookingData.bookingId}`);
+      console.log(`   parent booking_id: ${parentBooking.bookingId}`);
+      console.log(`   confirmation_code: ${bookingData.confirmationCode}`);
+      console.log(`   product_title: ${bookingData.title}`);
+      console.log(`   product_id: ${bookingData.productId}`);
+      console.log(`   status: ${bookingData.status}`);
+
+      // MULTI-ACTIVITY CHECK: Verifica quante activities esistono per questo parent booking
+      console.log('\n🔍 MULTI-ACTIVITY CHECK - Verifica activities per parent booking');
+      const { data: allActivities, error: allError } = await supabase
+        .from('activity_bookings')
+        .select('activity_booking_id, status, product_title, product_id, start_date_time')
+        .eq('booking_id', parentBooking.bookingId)
+        .order('activity_booking_id', { ascending: true });
+
+      if (!allError && allActivities) {
+        console.log(`   📊 Activities esistenti per booking_id ${parentBooking.bookingId}: ${allActivities.length}`);
+        if (allActivities.length > 0) {
+          allActivities.forEach((act: any, index: number) => {
+            console.log(`      ${index + 1}. activity_booking_id: ${act.activity_booking_id}`);
+            console.log(`         product_id: ${act.product_id}, status: ${act.status}`);
+            console.log(`         title: ${act.product_title}`);
+          });
+        } else {
+          console.log('   ⚠️  Nessuna activity trovata per questo booking - strano per un UPDATE!');
+        }
+
+        if (allActivities.length >= 1) {
+          console.log('\n   🎯 MULTI-ACTIVITY BOOKING DETECTED!');
+          console.log(`   📌 Questo booking ha ${allActivities.length} activities`);
+        }
+      }
+
+      // REBOOK DEBUG: Check se l'activity_booking_id del webhook esiste già nel DB
+      console.log(`\n🔍 REBOOK DEBUG - Verifica esistenza activity_booking_id: ${bookingData.bookingId}`);
       const { data: existingActivity, error: checkError } = await supabase
         .from('activity_bookings')
         .select('activity_booking_id, booking_id, status, product_title, start_date_time')
@@ -118,38 +152,29 @@ export class BookingService {
       }
 
       if (existingActivity) {
-        console.log('✅ REBOOK DEBUG - Activity trovata nel DB:');
+        console.log('✅ SCENARIO: UPDATE di activity esistente');
         console.log('   📌 activity_booking_id:', existingActivity.activity_booking_id);
         console.log('   📌 booking_id (parent):', existingActivity.booking_id);
         console.log('   📌 status:', existingActivity.status);
         console.log('   📌 product_title:', existingActivity.product_title);
         console.log('   📌 start_date_time:', existingActivity.start_date_time);
-        console.log('🔄 REBOOK DEBUG - Questo è un UPDATE di activity esistente');
       } else {
-        console.log('🆕 REBOOK DEBUG - Activity NON trovata nel DB');
-        console.log('   📌 Questo potrebbe essere un REBOOK (nuova activity per booking esistente)');
+        console.log('🆕 SCENARIO: INSERT di nuova activity');
+        console.log('   📌 activity_booking_id dal webhook: ' + bookingData.bookingId + ' NON esiste nel DB');
 
-        // Check quante activities esistono per questo parent booking
-        const { data: allActivities, error: allError } = await supabase
-          .from('activity_bookings')
-          .select('activity_booking_id, status, product_title, start_date_time')
-          .eq('booking_id', parentBooking.bookingId)
-          .order('activity_booking_id', { ascending: true });
-
-        if (!allError && allActivities) {
-          console.log(`   📊 Activities esistenti per booking_id ${parentBooking.bookingId}: ${allActivities.length}`);
-          allActivities.forEach((act: any, index: number) => {
-            console.log(`      ${index + 1}. activity_booking_id: ${act.activity_booking_id}, status: ${act.status}, title: ${act.product_title}`);
-          });
-
+        if (allActivities && allActivities.length > 0) {
           const cancelledActivities = allActivities.filter((a: any) => a.status === 'CANCELLED');
           if (cancelledActivities.length > 0) {
-            console.log('   🚨 REBOOK DETECTED! Ci sono activity CANCELLED:');
+            console.log('   🚨 Tipo: REBOOK (sostituzione activity cancellata)');
             cancelledActivities.forEach((act: any) => {
               console.log(`      ❌ activity_booking_id: ${act.activity_booking_id} - CANCELLED`);
             });
-            console.log('   ➕ Stai per aggiungere una NUOVA activity a questo booking!');
+          } else {
+            console.log('   ➕ Tipo: MULTI-ACTIVITY (seconda/terza activity per stesso booking)');
+            console.log(`   📌 Questo sarà la activity #${allActivities.length + 1} per booking_id ${parentBooking.bookingId}`);
           }
+        } else {
+          console.log('   ⚠️  Tipo: Prima activity (strano per BOOKING_UPDATED)');
         }
       }
 
@@ -199,9 +224,26 @@ export class BookingService {
       
       // 5. NUOVO: Sincronizza disponibilità
       await this.syncAvailabilityForBooking(bookingData);
-      
+
+      // Final summary
+      console.log('\n' + '=' .repeat(80));
+      console.log('📊 BOOKING_UPDATED SUMMARY');
+      console.log('=' .repeat(80));
+      console.log(`✅ Booking: ${bookingData.confirmationCode} (booking_id: ${parentBooking.bookingId})`);
+      console.log(`✅ Activity: ${bookingData.bookingId} - ${bookingData.title}`);
+      console.log(`✅ Operation: ${existingActivity ? 'UPDATED existing' : 'INSERTED new'} activity`);
+
+      // Show final count of activities for this booking
+      const { data: finalActivities } = await supabase
+        .from('activity_bookings')
+        .select('activity_booking_id')
+        .eq('booking_id', parentBooking.bookingId);
+
+      console.log(`✅ Total activities for this booking: ${finalActivities?.length || 0}`);
+      console.log('=' .repeat(80));
+
       console.log('🎉 BOOKING_UPDATED completato!');
-      
+
     } catch (error) {
       console.error('❌ Errore in BOOKING_UPDATED:', error);
       throw error;
