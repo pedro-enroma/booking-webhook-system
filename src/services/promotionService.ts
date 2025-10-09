@@ -23,7 +23,72 @@ export interface PromotionData {
   rawOfferData: any;
 }
 
+export interface CouponData {
+  promoCodeId: number;
+  promoCode: string;
+  promoCodeDescription?: string;
+  bookingId: number;
+  confirmationCode: string;
+  firstCampaign?: string;
+  affiliateId?: string;
+  activityBookingId: number;
+  productId?: number;
+  productTitle: string;
+  discountType?: string;
+  discountValue?: number;
+  discountAmount?: number;
+  currency?: string;
+  originalPrice?: number;
+  discountedPrice?: number;
+  webhookType: string;
+  rawPromoData: any;
+}
+
 export class PromotionService {
+
+  /**
+   * Track a coupon/promo code usage with GTM campaign attribution
+   */
+  async trackCoupon(couponData: CouponData): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('booking_coupons')
+        .insert({
+          promo_code_id: couponData.promoCodeId,
+          promo_code: couponData.promoCode,
+          promo_code_description: couponData.promoCodeDescription,
+          booking_id: couponData.bookingId,
+          confirmation_code: couponData.confirmationCode,
+          first_campaign: couponData.firstCampaign,
+          affiliate_id: couponData.affiliateId,
+          activity_booking_id: couponData.activityBookingId,
+          product_id: couponData.productId,
+          product_title: couponData.productTitle,
+          discount_type: couponData.discountType,
+          discount_value: couponData.discountValue,
+          discount_amount: couponData.discountAmount,
+          currency: couponData.currency || 'EUR',
+          original_price: couponData.originalPrice,
+          discounted_price: couponData.discountedPrice,
+          webhook_type: couponData.webhookType,
+          raw_promo_data: couponData.rawPromoData,
+          applied_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('❌ Error saving coupon:', error);
+        throw error;
+      }
+
+      console.log(`✅ Coupon tracked: ${couponData.promoCode} (ID: ${couponData.promoCodeId})`);
+      if (couponData.firstCampaign) {
+        console.log(`   📊 Campaign attribution: ${couponData.firstCampaign}`);
+      }
+    } catch (error) {
+      console.error('❌ Error in trackCoupon:', error);
+      // Don't throw - coupon tracking failure shouldn't break booking processing
+    }
+  }
 
   /**
    * Track a promotion from webhook data
@@ -195,6 +260,107 @@ export class PromotionService {
     } catch (error) {
       console.error('❌ Error processing webhook offers:', error);
       // Don't throw - promotion tracking failure shouldn't break booking processing
+    }
+  }
+
+  /**
+   * Process promo codes from webhook with GTM campaign attribution
+   */
+  async processWebhookCoupons(
+    bookingData: any,
+    parentBookingId: number,
+    confirmationCode: string,
+    webhookType: string
+  ): Promise<void> {
+    try {
+      // Check for promoCode in parentBooking.invoice
+      const promoCode = bookingData.parentBooking?.invoice?.promoCode;
+
+      if (!promoCode) {
+        console.log('   📊 No promo code found in webhook');
+        return;
+      }
+
+      console.log(`\n🎟️  COUPON DETECTION`);
+      console.log(`   Promo Code: "${promoCode.code}" (ID: ${promoCode.id})`);
+      if (promoCode.description) {
+        console.log(`   Description: ${promoCode.description}`);
+      }
+
+      // Get first_campaign and affiliate_id from activity_bookings
+      const { data: activityBooking } = await supabase
+        .from('activity_bookings')
+        .select('activity_booking_id, first_campaign, affiliate_id, product_id, product_title')
+        .eq('activity_booking_id', bookingData.bookingId)
+        .single();
+
+      let firstCampaign = null;
+      let affiliateId = null;
+
+      if (activityBooking) {
+        firstCampaign = activityBooking.first_campaign;
+        affiliateId = activityBooking.affiliate_id;
+
+        console.log(`\n   🎯 GTM Campaign Attribution:`);
+        console.log(`      first_campaign: ${firstCampaign || 'N/A'}`);
+        console.log(`      affiliate_id: ${affiliateId || 'N/A'}`);
+      } else {
+        console.log(`\n   ⚠️  Activity not found in DB yet - GTM attribution will be empty`);
+        console.log(`      (Will be populated when GTM webhook arrives)`);
+      }
+
+      // Calculate discount amounts
+      let originalPrice = bookingData.totalPrice;
+      let discountedPrice = bookingData.totalPrice;
+      let discountAmount = 0;
+
+      if (bookingData.pricingCategoryBookings && bookingData.pricingCategoryBookings.length > 0) {
+        const totalBeforeDiscount = bookingData.pricingCategoryBookings.reduce(
+          (sum: number, pcb: any) => sum + (pcb.total || 0),
+          0
+        );
+        const totalAfterDiscount = bookingData.pricingCategoryBookings.reduce(
+          (sum: number, pcb: any) => sum + (pcb.totalDiscounted || pcb.total || 0),
+          0
+        );
+
+        if (totalBeforeDiscount > 0) {
+          originalPrice = totalBeforeDiscount;
+          discountedPrice = totalAfterDiscount;
+          discountAmount = originalPrice - discountedPrice;
+
+          console.log(`\n   💰 Pricing:`);
+          console.log(`      Original: €${originalPrice.toFixed(2)}`);
+          console.log(`      Discounted: €${discountedPrice.toFixed(2)}`);
+          console.log(`      Saved: €${discountAmount.toFixed(2)}`);
+        }
+      }
+
+      // Track the coupon
+      await this.trackCoupon({
+        promoCodeId: promoCode.id,
+        promoCode: promoCode.code,
+        promoCodeDescription: promoCode.description,
+        bookingId: parentBookingId,
+        confirmationCode: confirmationCode,
+        firstCampaign: firstCampaign,
+        affiliateId: affiliateId,
+        activityBookingId: bookingData.bookingId,
+        productId: bookingData.productId || bookingData.product?.id,
+        productTitle: bookingData.title,
+        discountAmount: discountAmount,
+        originalPrice: originalPrice,
+        discountedPrice: discountedPrice,
+        currency: bookingData.currency || 'EUR',
+        webhookType: webhookType,
+        rawPromoData: promoCode
+      });
+
+      console.log(`✅ Coupon processing completed`);
+
+    } catch (error) {
+      console.error('❌ Error processing webhook coupons:', error);
+      // Don't throw - coupon tracking failure shouldn't break booking processing
     }
   }
 

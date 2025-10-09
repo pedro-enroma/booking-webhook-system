@@ -102,3 +102,114 @@ COMMENT ON COLUMN booking_promotions.offer_id IS 'Bokun offer ID from webhook of
 COMMENT ON COLUMN booking_promotions.discount_percentage IS 'Percentage discount (e.g., 3 means 3% off)';
 COMMENT ON COLUMN booking_promotions.first_activity_booking_id IS 'The first activity booked that triggered this multi-activity offer';
 COMMENT ON COLUMN booking_promotions.activity_sequence_in_offer IS 'Order of this activity in the multi-activity offer (1st, 2nd, 3rd, etc.)';
+
+-- ============================================================================
+-- COUPON TRACKING TABLE (Separate from Offers)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS booking_coupons (
+  id SERIAL PRIMARY KEY,
+
+  -- Coupon/Promo Code identification
+  promo_code_id INTEGER NOT NULL,
+  promo_code VARCHAR(100) NOT NULL,
+  promo_code_description TEXT,
+
+  -- Booking relationship
+  booking_id BIGINT NOT NULL,
+  confirmation_code VARCHAR(255) NOT NULL,
+
+  -- GTM Campaign Attribution (THIS IS KEY!)
+  first_campaign VARCHAR(255), -- From activity_bookings.first_campaign
+  affiliate_id VARCHAR(100),   -- From activity_bookings.affiliate_id
+
+  -- Activity association
+  activity_booking_id BIGINT,
+  product_id INTEGER,
+  product_title VARCHAR(500),
+
+  -- Discount details
+  discount_type VARCHAR(50), -- 'PERCENTAGE', 'FIXED_AMOUNT', or from Bokun
+  discount_value DECIMAL(10,2),
+  discount_amount DECIMAL(10,2),
+  currency VARCHAR(3) DEFAULT 'EUR',
+
+  -- Original pricing (if available)
+  original_price DECIMAL(10,2),
+  discounted_price DECIMAL(10,2),
+
+  -- Metadata
+  webhook_type VARCHAR(50),
+  raw_promo_data JSONB, -- Store full promoCode object
+  applied_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  -- Foreign keys
+  FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
+  FOREIGN KEY (activity_booking_id) REFERENCES activity_bookings(activity_booking_id)
+);
+
+-- Indexes for coupon tracking
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_promo_code_id ON booking_coupons(promo_code_id);
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_promo_code ON booking_coupons(promo_code);
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_booking_id ON booking_coupons(booking_id);
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_first_campaign ON booking_coupons(first_campaign);
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_affiliate_id ON booking_coupons(affiliate_id);
+CREATE INDEX IF NOT EXISTS idx_booking_coupons_created_at ON booking_coupons(created_at);
+
+-- View: Coupon usage by campaign
+CREATE OR REPLACE VIEW v_coupon_campaign_attribution AS
+SELECT
+  bc.promo_code,
+  bc.promo_code_id,
+  bc.first_campaign,
+  bc.affiliate_id,
+  COUNT(DISTINCT bc.booking_id) as total_bookings,
+  COUNT(*) as total_uses,
+  SUM(bc.discount_amount) as total_discount_given,
+  bc.currency,
+  MIN(bc.created_at) as first_used,
+  MAX(bc.created_at) as last_used
+FROM booking_coupons bc
+WHERE bc.first_campaign IS NOT NULL
+GROUP BY bc.promo_code, bc.promo_code_id, bc.first_campaign, bc.affiliate_id, bc.currency;
+
+-- View: Combined promotions (offers + coupons)
+CREATE OR REPLACE VIEW v_all_promotions AS
+SELECT
+  'OFFER' as promotion_type,
+  offer_id::text as promotion_id,
+  NULL as promo_code,
+  booking_id,
+  confirmation_code,
+  activity_booking_id,
+  discount_percentage as discount_value,
+  discount_amount,
+  first_activity_booking_id,
+  NULL as first_campaign,
+  NULL as affiliate_id,
+  currency,
+  created_at
+FROM booking_promotions
+UNION ALL
+SELECT
+  'COUPON' as promotion_type,
+  promo_code_id::text as promotion_id,
+  promo_code,
+  booking_id,
+  confirmation_code,
+  activity_booking_id,
+  discount_value,
+  discount_amount,
+  NULL as first_activity_booking_id,
+  first_campaign,
+  affiliate_id,
+  currency,
+  created_at
+FROM booking_coupons;
+
+COMMENT ON TABLE booking_coupons IS 'Tracks promotional coupon codes (promoCode) used in bookings with GTM campaign attribution';
+COMMENT ON COLUMN booking_coupons.promo_code_id IS 'Bokun promoCode.id from invoice.promoCode';
+COMMENT ON COLUMN booking_coupons.promo_code IS 'The actual coupon code entered by customer (e.g., SUPERPEDRO)';
+COMMENT ON COLUMN booking_coupons.first_campaign IS 'GTM campaign that led to this booking - links to activity_bookings.first_campaign';
+COMMENT ON COLUMN booking_coupons.affiliate_id IS 'Affiliate that brought this customer - links to activity_bookings.affiliate_id';

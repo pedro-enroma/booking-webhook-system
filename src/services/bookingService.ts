@@ -90,6 +90,14 @@ export class BookingService {
         'BOOKING_CONFIRMED'
       );
 
+      // 7.5 NUOVO: Traccia coupon codes
+      await this.promotionService.processWebhookCoupons(
+        bookingData,
+        parentBooking.bookingId,
+        bookingData.confirmationCode,
+        'BOOKING_CONFIRMED'
+      );
+
       // 8. NUOVO: Sincronizza disponibilità
       await this.syncAvailabilityForBooking(bookingData);
 
@@ -235,6 +243,14 @@ export class BookingService {
 
       // 5. NUOVO: Traccia promozioni/offerte
       await this.promotionService.processWebhookOffers(
+        bookingData,
+        parentBooking.bookingId,
+        bookingData.confirmationCode,
+        'BOOKING_UPDATED'
+      );
+
+      // 5.5 NUOVO: Traccia coupon codes
+      await this.promotionService.processWebhookCoupons(
         bookingData,
         parentBooking.bookingId,
         bookingData.confirmationCode,
