@@ -64,8 +64,21 @@ export class BookingService {
         const sellerId = await this.saveOrUpdateSeller(parentBooking.seller);
         console.log('✅ Venditore salvato/aggiornato:', sellerId);
       }
-      
-      // 4.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
+
+      // 4.5 NUOVO: Salva anche l'agent come seller se presente
+      if (bookingData.agent && bookingData.agent.title) {
+        console.log('📌 Trovato agent nel webhook, salvo come seller:', bookingData.agent.title);
+        // Crea un oggetto seller dal agent per salvarlo
+        const agentAsSeller = {
+          id: bookingData.agent.id || 999999, // ID fittizio se non presente
+          title: bookingData.agent.title,
+          email: bookingData.agent.email || null
+        };
+        await this.saveOrUpdateSeller(agentAsSeller);
+        console.log('✅ Agent salvato come seller:', bookingData.agent.title);
+      }
+
+      // 4.6 NUOVO: Estrai il nome del seller per usarlo nelle attività
       // Priorità: agent.title > seller.title > default 'EnRoma.com'
       const sellerName = bookingData.agent?.title || parentBooking.seller?.title || 'EnRoma.com';
       console.log('📌 Seller name per le attività:', sellerName);
@@ -225,6 +238,18 @@ export class BookingService {
       // 2. Aggiorna prenotazione principale
       await this.updateMainBooking(parentBooking);
       console.log('✅ Prenotazione principale aggiornata');
+
+      // 2.3 NUOVO: Salva anche l'agent come seller se presente
+      if (bookingData.agent && bookingData.agent.title) {
+        console.log('📌 Trovato agent nel webhook, salvo come seller:', bookingData.agent.title);
+        const agentAsSeller = {
+          id: bookingData.agent.id || 999999,
+          title: bookingData.agent.title,
+          email: bookingData.agent.email || null
+        };
+        await this.saveOrUpdateSeller(agentAsSeller);
+        console.log('✅ Agent salvato come seller:', bookingData.agent.title);
+      }
 
       // 2.5 NUOVO: Estrai il nome del seller per usarlo nelle attività
       // Priorità: agent.title > seller.title > default 'EnRoma.com'
