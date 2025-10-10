@@ -69,10 +69,25 @@ export class BookingService {
       // Priorità: agent.title > seller.title > default 'EnRoma.com'
       const sellerName = bookingData.agent?.title || parentBooking.seller?.title || 'EnRoma.com';
       console.log('📌 Seller name per le attività:', sellerName);
-      
+
       // 5. Salva l'attività CON IL SELLER
-      await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
-      console.log('✅ Attività salvata:', bookingData.title);
+      console.log('🔍 DEBUG: Tentativo salvataggio activity_booking:');
+      console.log('   - activity_booking_id:', bookingData.bookingId);
+      console.log('   - booking_id:', parentBooking.bookingId);
+      console.log('   - product_id:', bookingData.productId || bookingData.product?.id);
+      console.log('   - title:', bookingData.title);
+      console.log('   - startDateTime:', bookingData.startDateTime);
+      console.log('   - status:', bookingData.status);
+
+      try {
+        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
+        console.log('✅ Attività salvata:', bookingData.title);
+      } catch (activityError: any) {
+        console.error('❌❌❌ ERRORE CRITICO salvando activity_booking:', activityError);
+        console.error('   Error message:', activityError.message);
+        console.error('   Error details:', JSON.stringify(activityError, null, 2));
+        throw activityError;
+      }
       
       // 6. Salva i partecipanti con info passeggeri
       if (bookingData.pricingCategoryBookings && bookingData.pricingCategoryBookings.length > 0) {
@@ -654,11 +669,29 @@ export class BookingService {
 
   // Funzione per salvare l'attività dal root object (AGGIORNATA CON SELLER)
   private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
+    console.log('🔧 saveActivityBookingFromRoot - Inizio');
+    console.log('   activityData.bookingId:', activityData.bookingId);
+    console.log('   parentBookingId:', parentBookingId);
+    console.log('   activityData.startDateTime:', activityData.startDateTime);
+    console.log('   activityData.endDateTime:', activityData.endDateTime);
+
+    if (!activityData.startDateTime || !activityData.endDateTime) {
+      console.error('❌ Missing required datetime fields!');
+      console.error('   startDateTime:', activityData.startDateTime);
+      console.error('   endDateTime:', activityData.endDateTime);
+      throw new Error('Missing startDateTime or endDateTime');
+    }
+
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
 
+    console.log('   Parsed startDateTime:', startDateTime.toISOString());
+    console.log('   Parsed endDateTime:', endDateTime.toISOString());
+
     // Verifica se il prodotto esiste, altrimenti crealo (per prodotti Channel Manager)
     const productId = activityData.productId?.toString() || activityData.product?.id?.toString();
+    console.log('   productId:', productId);
+
     if (productId) {
       await this.ensureProductExistsForChannelManager(productId, activityData);
     }
@@ -667,29 +700,35 @@ export class BookingService {
     const canonicalTitle = await this.getCanonicalActivityTitle(productId);
     const productTitle = canonicalTitle || activityData.title;
 
+    console.log('   productTitle finale:', productTitle);
+
     if (canonicalTitle && canonicalTitle !== activityData.title) {
       console.log(`📝 Uso titolo canonico: "${canonicalTitle}" invece di "${activityData.title}"`);
     }
 
+    const dataToUpsert = {
+      booking_id: parentBookingId,
+      activity_booking_id: activityData.bookingId,
+      product_id: activityData.productId || activityData.product?.id,
+      activity_id: productId,
+      product_title: productTitle,
+      product_confirmation_code: activityData.productConfirmationCode,
+      start_date_time: startDateTime.toISOString(),
+      end_date_time: endDateTime.toISOString(),
+      status: activityData.status,
+      total_price: activityData.totalPrice,
+      rate_id: activityData.rateId,
+      rate_title: activityData.rateTitle,
+      start_time: activityData.startTime,
+      date_string: activityData.dateString,
+      activity_seller: sellerName
+    };
+
+    console.log('📦 Dati da inserire in activity_bookings:', JSON.stringify(dataToUpsert, null, 2));
+
     const { error } = await supabase
       .from('activity_bookings')
-      .upsert({
-        booking_id: parentBookingId,
-        activity_booking_id: activityData.bookingId,
-        product_id: activityData.productId || activityData.product?.id,
-        activity_id: productId,
-        product_title: productTitle,  // MODIFICATO: Usa titolo canonico
-        product_confirmation_code: activityData.productConfirmationCode,
-        start_date_time: startDateTime.toISOString(),
-        end_date_time: endDateTime.toISOString(),
-        status: activityData.status,
-        total_price: activityData.totalPrice,
-        rate_id: activityData.rateId,
-        rate_title: activityData.rateTitle,
-        start_time: activityData.startTime,
-        date_string: activityData.dateString,
-        activity_seller: sellerName  // NUOVO CAMPO!
-      }, {
+      .upsert(dataToUpsert, {
         onConflict: 'activity_booking_id',
         ignoreDuplicates: false
       });
