@@ -129,8 +129,11 @@ export class BookingService {
       // 8. NUOVO: Sincronizza disponibilità
       await this.syncAvailabilityForBooking(bookingData);
 
+      // 9. NUOVO: Valida età partecipanti e auto-fix swap OTA
+      await this.validateBookingAges(bookingData.bookingId);
+
       console.log('🎉 BOOKING_CONFIRMED completato!');
-      
+
     } catch (error) {
       console.error('❌ Errore in BOOKING_CONFIRMED:', error);
       throw error;
@@ -316,6 +319,9 @@ export class BookingService {
 
       console.log(`✅ Total activities for this booking: ${finalActivities?.length || 0}`);
       console.log('=' .repeat(80));
+
+      // 7. NUOVO: Valida età partecipanti e auto-fix swap OTA
+      await this.validateBookingAges(bookingData.bookingId);
 
       console.log('🎉 BOOKING_UPDATED completato!');
 
@@ -1094,5 +1100,29 @@ export class BookingService {
       });
     
     if (error) throw error;
+  }
+
+  // NUOVO: Valida età partecipanti e auto-fix swap OTA
+  private async validateBookingAges(activityBookingId: number): Promise<void> {
+    try {
+      console.log(`🔍 Validazione età partecipanti per booking ${activityBookingId}...`);
+
+      // Chiama la funzione PostgreSQL che valida le età
+      const { error } = await supabase.rpc('validate_booking_ages_for_booking', {
+        p_booking_id: activityBookingId
+      });
+
+      if (error) {
+        console.warn(`⚠️ Errore validazione età booking ${activityBookingId}:`, error.message);
+        // Non propagare l'errore per non bloccare il webhook
+        return;
+      }
+
+      console.log(`✅ Validazione età completata per booking ${activityBookingId}`);
+
+    } catch (error) {
+      console.warn('⚠️ Errore nella validazione età partecipanti:', error);
+      // Non propagare l'errore per non bloccare il webhook
+    }
   }
 }
