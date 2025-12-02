@@ -1054,6 +1054,13 @@ export class BookingService {
     if (error) throw error;
   }
   
+  // Helper: Sanitize name by replacing hyphens with spaces
+  private sanitizeName(name: string | null | undefined): string | null {
+    if (!name) return null;
+    // Replace hyphens with spaces (e.g., "Fernández-Caballero" → "Fernández Caballero")
+    return name.trim().replace(/-/g, ' ');
+  }
+
   // Funzione aggiornata per salvare i partecipanti CON info passeggeri
   private async savePricingCategoryBooking(participant: any, activityBookingId: number, usePlaceholder: boolean = false): Promise<void> {
     // Estrai info passeggero se esiste
@@ -1062,9 +1069,9 @@ export class BookingService {
     let passengerDateOfBirth = null;
 
     if (participant.passengerInfo) {
-      // Trim and check for empty strings
-      const firstName = participant.passengerInfo.firstName?.trim();
-      const lastName = participant.passengerInfo.lastName?.trim();
+      // Trim, sanitize (remove hyphens), and check for empty strings
+      const firstName = this.sanitizeName(participant.passengerInfo.firstName);
+      const lastName = this.sanitizeName(participant.passengerInfo.lastName);
 
       passengerFirstName = firstName || null;
       passengerLastName = lastName || null;
