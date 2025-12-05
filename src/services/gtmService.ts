@@ -9,6 +9,16 @@ export class GTMService {
 
   constructor() {
     console.log('🏷️ GTM Service initialized with 5-second safety delay');
+
+    // Log GA4 and Affiliate Reset configuration on startup
+    const ga4MeasurementId = process.env.GA4_MEASUREMENT_ID;
+    const ga4ApiSecret = process.env.GA4_API_SECRET;
+    const resetEnabled = process.env.AFFILIATE_RESET_ENABLED === 'true';
+    const resetRate = process.env.AFFILIATE_RESET_RATE || '0.25';
+
+    console.log('📊 [CONFIG] Affiliate Reset:', resetEnabled ? `ENABLED (${parseFloat(resetRate) * 100}% rate)` : 'DISABLED');
+    console.log('📊 [CONFIG] GA4 Measurement ID:', ga4MeasurementId ? `${ga4MeasurementId.substring(0, 5)}...` : 'NOT SET');
+    console.log('📊 [CONFIG] GA4 API Secret:', ga4ApiSecret ? 'SET' : 'NOT SET');
   }
 
   /**
