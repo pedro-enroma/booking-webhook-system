@@ -39,6 +39,12 @@ export class GTMService {
 
       if (resetResult.shouldReset) {
         console.log(`[AFFILIATE RESET] Transaction: ${transactionId}, Original: ${affiliateId} -> null (${(resetResult.hashValue * 100).toFixed(2)}%)`);
+
+        // Send affiliate_true event to GA4 for tracking original affiliate
+        this.sendGA4AffiliateEvent(transactionId, affiliateId, firstCampaign).catch(err => {
+          console.warn('Could not send GA4 affiliate_true event:', err.message);
+        });
+
         affiliateId = undefined;
         firstCampaign = undefined;
         wasReset = true;
@@ -401,6 +407,59 @@ export class GTMService {
       }
     } catch {
       // Silently fail - logging should not break the main flow
+    }
+  }
+
+  /**
+   * Send affiliate_true event to GA4 via Measurement Protocol
+   * This records the original affiliate when a reset happens
+   */
+  private async sendGA4AffiliateEvent(
+    transactionId: string,
+    affiliateId: string,
+    campaign?: string
+  ): Promise<void> {
+    const measurementId = process.env.GA4_MEASUREMENT_ID;
+    const apiSecret = process.env.GA4_API_SECRET;
+
+    if (!measurementId || !apiSecret) {
+      console.warn('GA4 credentials not configured - skipping affiliate_true event');
+      return;
+    }
+
+    const url = `https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`;
+
+    const payload = {
+      client_id: `server_${transactionId}`, // Use transaction as client identifier
+      events: [
+        {
+          name: 'affiliate_true',
+          params: {
+            transaction_id: transactionId,
+            affiliate_id: affiliateId,
+            first_campaign: campaign || '',
+            reset_by_system: true
+          }
+        }
+      ]
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        console.log(`[GA4] affiliate_true event sent for transaction ${transactionId}`);
+      } else {
+        console.warn(`[GA4] Failed to send event: ${response.status} ${response.statusText}`);
+      }
+    } catch (error: any) {
+      console.warn(`[GA4] Error sending affiliate_true event: ${error.message}`);
     }
   }
 }
