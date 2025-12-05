@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase';
 import { GTMWebhookPayload, GTMProcessingResult, GTMLogEntry } from '../types/gtm.types';
+import * as crypto from 'crypto';
 
 export class GTMService {
   private readonly PROCESSING_DELAY_MS = 5000; // 5 seconds delay for Bokun to create records first
@@ -16,13 +17,46 @@ export class GTMService {
   async processGTMWebhook(payload: GTMWebhookPayload): Promise<GTMProcessingResult> {
     const startTime = Date.now();
     const transactionId = payload.ecommerce?.transaction_id;
-    let affiliateId = payload.variables?.['TH - url - affiliate_id'];
-    const firstCampaign = payload.variables?.['TH - url - first_campaign_id'];
-    
+    let affiliateId: string | undefined = payload.variables?.['TH - url - affiliate_id'];
+    let firstCampaign: string | undefined = payload.variables?.['TH - url - first_campaign_id'];
+
     // RULE: Convert specific affiliate_id to "il-colosseo"
     if (affiliateId === '8463d56e1b524f509d8a3698feebcd0c') {
       console.log('🔄 Converting affiliate_id from 8463d56e1b524f509d8a3698feebcd0c to il-colosseo');
       affiliateId = 'il-colosseo';
+    }
+
+    // ===== AFFILIATE RESET LOGIC FOR CONTROL GROUP ANALYSIS =====
+    const resetEnabled = process.env.AFFILIATE_RESET_ENABLED === 'true';
+    const resetRate = parseFloat(process.env.AFFILIATE_RESET_RATE || '0.25');
+
+    const originalAffiliateId = affiliateId;
+    const originalCampaign = firstCampaign;
+    let wasReset = false;
+
+    if (resetEnabled && affiliateId && affiliateId !== '' && transactionId) {
+      const resetResult = this.shouldResetAffiliate(transactionId, affiliateId, resetRate);
+
+      if (resetResult.shouldReset) {
+        console.log(`[AFFILIATE RESET] Transaction: ${transactionId}, Original: ${affiliateId} -> null (${(resetResult.hashValue * 100).toFixed(2)}%)`);
+        affiliateId = undefined;
+        firstCampaign = undefined;
+        wasReset = true;
+      } else {
+        console.log(`[AFFILIATE KEPT] Transaction: ${transactionId}, Affiliate: ${affiliateId} (${(resetResult.hashValue * 100).toFixed(2)}%)`);
+      }
+
+      // Log to database for analysis (fire and forget)
+      this.logAffiliateReset({
+        transactionId,
+        originalAffiliateId,
+        originalCampaign,
+        hashValue: resetResult.hashValue,
+        threshold: resetRate,
+        wasReset
+      }).catch(err => {
+        console.warn('Could not log affiliate reset:', err.message);
+      });
     }
     
     // Initial validation
@@ -119,8 +153,9 @@ export class GTMService {
         success: found,
         booking_id: bookingId,
         activity_booking_updated: found,
-        affiliate_id: affiliateId,
-        first_campaign: firstCampaign,
+        // Return ORIGINAL values in response to hide the reset from external observers
+        affiliate_id: originalAffiliateId,
+        first_campaign: originalCampaign,
         records_updated: recordsUpdated,
         processing_time_ms: processingTime,
         delay_applied_ms: this.PROCESSING_DELAY_MS,
@@ -303,10 +338,66 @@ export class GTMService {
           details: logEntry.details,
           duration_ms: logEntry.duration_ms
         });
-      
+
       // Silently fail if table doesn't exist
       if (error && !error.message.includes('relation "gtm_logs" does not exist')) {
         console.warn('GTM log save error:', error.message);
+      }
+    } catch {
+      // Silently fail - logging should not break the main flow
+    }
+  }
+
+  /**
+   * Determine if affiliate should be reset for control group analysis
+   * Uses deterministic MD5 hash so same transaction always gets same result
+   */
+  private shouldResetAffiliate(
+    transactionId: string,
+    affiliateId: string,
+    threshold: number
+  ): { shouldReset: boolean; hashValue: number } {
+    const secretSalt = 'pedro_salt_2024_dicembre';
+
+    const hash = crypto
+      .createHash('md5')
+      .update(transactionId + affiliateId + secretSalt)
+      .digest('hex');
+
+    // Convert first 8 hex chars to number between 0 and 1
+    const hashValue = parseInt(hash.substring(0, 8), 16) / 0xffffffff;
+
+    return {
+      shouldReset: hashValue < threshold,
+      hashValue
+    };
+  }
+
+  /**
+   * Log affiliate reset decision to database for analysis
+   */
+  private async logAffiliateReset(data: {
+    transactionId: string;
+    originalAffiliateId?: string;
+    originalCampaign?: string;
+    hashValue: number;
+    threshold: number;
+    wasReset: boolean;
+  }): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('affiliate_reset_log')
+        .insert({
+          transaction_id: data.transactionId,
+          original_affiliate_id: data.originalAffiliateId,
+          original_campaign: data.originalCampaign,
+          reset_value: data.hashValue,
+          threshold: data.threshold,
+          was_reset: data.wasReset
+        });
+
+      if (error && !error.message.includes('relation "affiliate_reset_log" does not exist')) {
+        console.warn('Affiliate reset log save error:', error.message);
       }
     } catch {
       // Silently fail - logging should not break the main flow
