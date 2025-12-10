@@ -45,7 +45,7 @@ export class GTMService {
     let wasReset = false;
 
     if (resetEnabled && affiliateId && affiliateId !== '' && transactionId) {
-      const resetResult = this.shouldResetAffiliate(transactionId, affiliateId, resetRate);
+      const resetResult = GTMService.shouldResetAffiliate(transactionId, affiliateId, resetRate);
 
       if (resetResult.shouldReset) {
         console.log(`[AFFILIATE RESET] Transaction: ${transactionId}, Original: ${affiliateId} -> null (${(resetResult.hashValue * 100).toFixed(2)}%)`);
@@ -367,8 +367,9 @@ export class GTMService {
   /**
    * Determine if affiliate should be reset for control group analysis
    * Uses deterministic MD5 hash so same transaction always gets same result
+   * Made public static so it can be used by the transform endpoint
    */
-  private shouldResetAffiliate(
+  public static shouldResetAffiliate(
     transactionId: string,
     affiliateId: string,
     threshold: number

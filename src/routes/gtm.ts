@@ -145,6 +145,89 @@ router.post('/webhook/gtm', authenticateGTMWebhook, async (req: Request, res: Re
 });
 
 /**
+ * POST /webhook/gtm-transform
+ * Fast endpoint for GTM Server to determine affiliate reset BEFORE firing GA4 tag
+ * This must be called synchronously before the GA4 purchase event is sent
+ * Returns transformed affiliate_id (null if reset) in ~50ms
+ */
+router.post('/webhook/gtm-transform', authenticateGTMWebhook, (req: Request, res: Response) => {
+  const startTime = Date.now();
+
+  try {
+    const { transaction_id, affiliate_id, first_campaign } = req.body;
+
+    console.log(`🔄 [GTM-TRANSFORM] Request for transaction: ${transaction_id}, affiliate: ${affiliate_id}`);
+
+    // Validate required fields
+    if (!transaction_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required field: transaction_id'
+      });
+    }
+
+    // Read configuration
+    const resetEnabled = process.env.AFFILIATE_RESET_ENABLED === 'true';
+    const resetRate = parseFloat(process.env.AFFILIATE_RESET_RATE || '0.25');
+
+    // Default response (no reset)
+    let transformedAffiliateId: string | null = affiliate_id || null;
+    let transformedCampaign: string | null = first_campaign || null;
+    let wasReset = false;
+    let hashValue = 0;
+
+    // Apply affiliate_id conversion rule (same as main webhook)
+    if (transformedAffiliateId === '8463d56e1b524f509d8a3698feebcd0c') {
+      console.log('🔄 [GTM-TRANSFORM] Converting affiliate_id to il-colosseo');
+      transformedAffiliateId = 'il-colosseo';
+    }
+
+    // Apply reset logic if enabled and affiliate exists
+    if (resetEnabled && transformedAffiliateId && transformedAffiliateId !== '') {
+      const resetResult = GTMService.shouldResetAffiliate(transaction_id, transformedAffiliateId, resetRate);
+      hashValue = resetResult.hashValue;
+
+      if (resetResult.shouldReset) {
+        console.log(`🎯 [GTM-TRANSFORM] RESET: ${transaction_id} (${transformedAffiliateId} -> null, hash: ${(hashValue * 100).toFixed(2)}%)`);
+        transformedAffiliateId = null;
+        transformedCampaign = null;
+        wasReset = true;
+      } else {
+        console.log(`✅ [GTM-TRANSFORM] KEPT: ${transaction_id} (${transformedAffiliateId}, hash: ${(hashValue * 100).toFixed(2)}%)`);
+      }
+    }
+
+    const processingTime = Date.now() - startTime;
+
+    // Return fast response for GTM to use
+    return res.status(200).json({
+      success: true,
+      transaction_id,
+      affiliate_id: transformedAffiliateId,
+      first_campaign: transformedCampaign,
+      was_reset: wasReset,
+      hash_value: hashValue,
+      reset_enabled: resetEnabled,
+      reset_rate: resetRate,
+      processing_time_ms: processingTime
+    });
+
+  } catch (error: any) {
+    console.error('❌ [GTM-TRANSFORM] Error:', error.message);
+
+    // On error, return original values to avoid blocking GA4
+    return res.status(200).json({
+      success: false,
+      error: error.message,
+      transaction_id: req.body?.transaction_id,
+      affiliate_id: req.body?.affiliate_id || null,
+      first_campaign: req.body?.first_campaign || null,
+      was_reset: false
+    });
+  }
+});
+
+/**
  * GET /webhook/gtm/health
  * Health check endpoint for GTM webhook
  */
