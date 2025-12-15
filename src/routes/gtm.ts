@@ -188,9 +188,9 @@ router.post('/webhook/gtm-transform', authenticateGTMWebhook, (req: Request, res
       hashValue = resetResult.hashValue;
 
       if (resetResult.shouldReset) {
-        console.log(`🎯 [GTM-TRANSFORM] RESET: ${transaction_id} (${transformedAffiliateId} -> "", hash: ${(hashValue * 100).toFixed(2)}%)`);
-        transformedAffiliateId = '';  // Empty string instead of null - GTM treats null as "no value"
-        transformedCampaign = '';     // Empty string instead of null
+        console.log(`🎯 [GTM-TRANSFORM] RESET: ${transaction_id} (${transformedAffiliateId} -> "(none)", hash: ${(hashValue * 100).toFixed(2)}%)`);
+        transformedAffiliateId = '(none)';  // Placeholder value - GTM ignores empty strings
+        transformedCampaign = '(none)';     // Placeholder value
         wasReset = true;
       } else {
         console.log(`✅ [GTM-TRANSFORM] KEPT: ${transaction_id} (${transformedAffiliateId}, hash: ${(hashValue * 100).toFixed(2)}%)`);
