@@ -197,23 +197,38 @@ router.post('/webhook/gtm-transform', authenticateGTMWebhook, (req: Request, res
         console.log(`✅ [GTM-TRANSFORM] KEPT: ${transaction_id} (${transformedAffiliateId}, hash: ${(hashValue * 100).toFixed(2)}%)`);
       }
 
-      // Log reset decision to database for analysis (fire and forget)
+      // Log reset decision to database (only if not already logged for this transaction)
       supabase
         .from('affiliate_reset_log')
-        .insert({
-          transaction_id: transaction_id,
-          original_affiliate_id: affiliate_id,
-          original_campaign: first_campaign,
-          reset_value: hashValue,
-          threshold: resetRate,
-          was_reset: wasReset
-        })
-        .then(({ error }) => {
-          if (error && !error.message.includes('relation "affiliate_reset_log" does not exist')) {
-            console.warn('[GTM-TRANSFORM] Log save error:', error.message);
-          } else if (!error) {
-            console.log(`[GTM-TRANSFORM] Logged reset decision for ${transaction_id}`);
+        .select('id')
+        .eq('transaction_id', transaction_id)
+        .limit(1)
+        .then(({ data: existing }) => {
+          if (existing && existing.length > 0) {
+            console.log(`[GTM-TRANSFORM] Already logged for ${transaction_id}, skipping duplicate`);
+            return;
           }
+
+          // Insert new log entry
+          supabase
+            .from('affiliate_reset_log')
+            .insert({
+              transaction_id: transaction_id,
+              original_affiliate_id: affiliate_id,
+              original_campaign: first_campaign,
+              reset_value: hashValue,
+              threshold: resetRate,
+              was_reset: wasReset
+            })
+            .then(({ error }) => {
+              if (error && !error.message.includes('relation "affiliate_reset_log" does not exist')) {
+                console.warn('[GTM-TRANSFORM] Log save error:', error.message);
+              } else if (!error) {
+                console.log(`[GTM-TRANSFORM] Logged reset decision for ${transaction_id}`);
+              }
+            }, () => {
+              // Silently fail
+            });
         }, () => {
           // Silently fail - logging should not block the response
         });
