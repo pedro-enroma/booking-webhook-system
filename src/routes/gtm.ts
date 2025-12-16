@@ -214,8 +214,7 @@ router.post('/webhook/gtm-transform', authenticateGTMWebhook, (req: Request, res
           } else if (!error) {
             console.log(`[GTM-TRANSFORM] Logged reset decision for ${transaction_id}`);
           }
-        })
-        .catch(() => {
+        }, () => {
           // Silently fail - logging should not block the response
         });
     }
