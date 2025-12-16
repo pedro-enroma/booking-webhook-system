@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { GTMService } from '../services/gtmService';
 import { GTMWebhookPayload } from '../types/gtm.types';
+import { supabase } from '../config/supabase';
 import * as crypto from 'crypto';
 
 const router = Router();
@@ -195,6 +196,28 @@ router.post('/webhook/gtm-transform', authenticateGTMWebhook, (req: Request, res
       } else {
         console.log(`✅ [GTM-TRANSFORM] KEPT: ${transaction_id} (${transformedAffiliateId}, hash: ${(hashValue * 100).toFixed(2)}%)`);
       }
+
+      // Log reset decision to database for analysis (fire and forget)
+      supabase
+        .from('affiliate_reset_log')
+        .insert({
+          transaction_id: transaction_id,
+          original_affiliate_id: affiliate_id,
+          original_campaign: first_campaign,
+          reset_value: hashValue,
+          threshold: resetRate,
+          was_reset: wasReset
+        })
+        .then(({ error }) => {
+          if (error && !error.message.includes('relation "affiliate_reset_log" does not exist')) {
+            console.warn('[GTM-TRANSFORM] Log save error:', error.message);
+          } else if (!error) {
+            console.log(`[GTM-TRANSFORM] Logged reset decision for ${transaction_id}`);
+          }
+        })
+        .catch(() => {
+          // Silently fail - logging should not block the response
+        });
     }
 
     const processingTime = Date.now() - startTime;
