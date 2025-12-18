@@ -321,6 +321,64 @@ export interface PSHydraCollection<T> {
   'hydra:member': T[];
 }
 
+// Account (Anagrafica) payload for Partner Solution
+export type PSAccountStatus = 'INS' | 'MOD' | 'CANC';
+
+export interface PSAccountPayload {
+  // Required fields
+  cognome: string;                  // Last name or company name
+  flagpersonafisica: number;        // 1 = natural person, 0 = company
+  codicefiscale: string;            // Tax code (required, max 20 chars) - for foreigners use {COUNTRY}-{ID}
+  iscliente: number;                // 1 = is customer
+  isfornitore: number;              // 1 = is supplier
+  ispromotore: number;              // 1 = is promoter
+  codiceagenzia: string;            // Agency code
+  stato: PSAccountStatus;           // INS/MOD/CANC
+  tipocattura: string;              // Capture type (e.g., 'API')
+
+  // Optional fields
+  nome?: string;                    // First name
+  partitaiva?: string;              // VAT number
+  externalid?: string;              // External ID (our customer_id)
+  datanascita?: string;             // Birth date (ISO format)
+  sesso?: 'm' | 'f';                // Gender
+  nazione?: string;                 // Country of residence (ISO 3-letter)
+  nazionenascita?: string;          // Birth country (ISO 3-letter)
+  cap?: string;                     // Postal code
+  localitaresidenzacitta?: string;  // City
+  indirizzo1?: string;              // Address line 1
+  numerocivico?: string;            // Street number
+  telefono?: string;                // Phone
+  cellulare?: string;               // Mobile
+  emailcomunicazioni?: string;      // Email
+  provincia?: string;               // Province
+}
+
+export interface PSAccountResponse {
+  '@context': string;
+  '@id': string;                    // IRI of account (e.g., "/accounts/abc-123")
+  '@type': string;
+  id: string;                       // UUID
+  cognome: string;
+  nome: string | null;
+  codicefiscale: string;
+  partitaiva: string | null;
+  externalid: string | null;
+  flagpersonafisica: number;
+  iscliente: number;
+  isfornitore: number;
+  ispromotore: string;              // Note: API returns string "0" or "1"
+  nazione: string | null;
+  emailcomunicazioni: string | null;
+  cellulare: string | null;
+  telefono: string | null;
+  stato: PSAccountStatus;
+  codiceagenzia: string;
+  tipocattura: string;
+  creazione: string;
+  user: string;                     // User IRI
+}
+
 // ============================================
 // SERVICE RESPONSES
 // ============================================

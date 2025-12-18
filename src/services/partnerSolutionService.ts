@@ -19,7 +19,10 @@ import {
   PSPasseggeroResponse,
   PSHydraCollection,
   PSStatus,
+  PSAccountPayload,
+  PSAccountResponse,
 } from '../types/invoice.types';
+import { getCountryFromPhone, generateForeignFiscalCode } from '../utils/phoneCountry';
 
 interface CachedConfig {
   config: PartnerSolutionConfig;
@@ -378,6 +381,144 @@ export class PartnerSolutionService {
         }`
       );
     }
+  }
+
+  // ============================================
+  // ACCOUNT (ANAGRAFICA) OPERATIONS
+  // ============================================
+
+  /**
+   * Search for an account by external ID (our customer_id)
+   */
+  async findAccountByExternalId(externalId: string): Promise<PSAccountResponse | null> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get('/accounts', {
+        params: { externalid: externalId },
+      });
+
+      const accounts = response.data['hydra:member'] as PSAccountResponse[];
+      // API may return non-matching results, verify client-side
+      const match = accounts.find(a => a.externalid === externalId);
+      return match || null;
+    } catch (error) {
+      const axiosError = error as any;
+      if (axiosError.response?.status === 404) return null;
+      throw new Error(`Failed to search accounts: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Search for an account by email
+   */
+  async findAccountByEmail(email: string): Promise<PSAccountResponse | null> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get('/accounts', {
+        params: { emailcomunicazioni: email },
+      });
+
+      const accounts = response.data['hydra:member'] as PSAccountResponse[];
+      return accounts.length > 0 ? accounts[0] : null;
+    } catch (error) {
+      const axiosError = error as any;
+      if (axiosError.response?.status === 404) return null;
+      throw new Error(`Failed to search accounts by email: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Create a new Account (Anagrafica) in Partner Solution
+   */
+  async createAccount(payload: PSAccountPayload): Promise<PSAccountResponse> {
+    const client = await this.getClient();
+
+    console.log('Creating account in Partner Solution:', {
+      cognome: payload.cognome,
+      nome: payload.nome,
+      codicefiscale: payload.codicefiscale,
+      externalid: payload.externalid,
+    });
+
+    try {
+      const response = await client.post('/accounts', payload);
+      console.log('Account created successfully:', response.data['@id']);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      const errorData = axiosError.response?.data;
+      throw new Error(
+        `Failed to create account: ${
+          typeof errorData === 'object' ? JSON.stringify(errorData) : axiosError.message
+        }`
+      );
+    }
+  }
+
+  /**
+   * Get or create an account for a customer
+   * Uses externalid (customer_id) to find existing, or creates new
+   * For foreign customers, generates codicefiscale from phone country + customer_id
+   */
+  async getOrCreateAccount(customer: {
+    customer_id: number;
+    first_name: string;
+    last_name: string;
+    email?: string | null;
+    phone_number?: string | null;
+  }): Promise<PSAccountResponse> {
+    const externalId = `CUST-${customer.customer_id}`;
+
+    // Try to find existing account by externalid
+    const existing = await this.findAccountByExternalId(externalId);
+    if (existing) {
+      console.log(`Found existing account for customer ${customer.customer_id}:`, existing['@id']);
+      return existing;
+    }
+
+    // Determine country from phone number
+    const countryCode = getCountryFromPhone(customer.phone_number);
+    const codicefiscale = generateForeignFiscalCode(countryCode, customer.customer_id);
+
+    // Create new account
+    const payload: PSAccountPayload = {
+      cognome: customer.last_name || 'N/A',
+      nome: customer.first_name || undefined,
+      flagpersonafisica: 1,
+      codicefiscale: codicefiscale,
+      iscliente: 1,
+      isfornitore: 0,
+      ispromotore: 0,
+      codiceagenzia: 'demo2', // TODO: make configurable
+      stato: 'INS',
+      tipocattura: 'API',
+      externalid: externalId,
+      nazione: countryCode.length === 2 ? this.iso2ToIso3(countryCode) : undefined,
+      emailcomunicazioni: customer.email || undefined,
+      cellulare: customer.phone_number || undefined,
+    };
+
+    return this.createAccount(payload);
+  }
+
+  /**
+   * Convert ISO 2-letter country code to ISO 3-letter
+   * (Partner Solution uses 3-letter codes)
+   */
+  private iso2ToIso3(iso2: string): string {
+    const map: Record<string, string> = {
+      'ES': 'ESP', 'IT': 'ITA', 'US': 'USA', 'GB': 'GBR', 'FR': 'FRA',
+      'DE': 'DEU', 'NL': 'NLD', 'BE': 'BEL', 'PT': 'PRT', 'BR': 'BRA',
+      'AR': 'ARG', 'MX': 'MEX', 'CO': 'COL', 'CL': 'CHL', 'PE': 'PER',
+      'AU': 'AUS', 'NZ': 'NZL', 'JP': 'JPN', 'CN': 'CHN', 'KR': 'KOR',
+      'IN': 'IND', 'RU': 'RUS', 'CH': 'CHE', 'AT': 'AUT', 'PL': 'POL',
+      'SE': 'SWE', 'NO': 'NOR', 'DK': 'DNK', 'FI': 'FIN', 'IE': 'IRL',
+      'GR': 'GRC', 'TR': 'TUR', 'IL': 'ISR', 'AE': 'ARE', 'SA': 'SAU',
+      'ZA': 'ZAF', 'EG': 'EGY', 'MA': 'MAR', 'CA': 'CAN', 'VE': 'VEN',
+    };
+    return map[iso2.toUpperCase()] || iso2.toUpperCase();
   }
 
   // ============================================

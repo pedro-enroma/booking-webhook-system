@@ -5,7 +5,8 @@ async function testBooking() {
   partnerSolutionService.clearConfigCache();
   partnerSolutionService.invalidateToken();
 
-  const confirmationCode = 'ENRO-80419985';
+  // Use a recent booking with Spanish phone for this test
+  const confirmationCode = 'CIV-80430700';
   const yearMonth = '2025-12';
 
   console.log('=== TEST: Send booking to Partner Solution ===\n');
@@ -29,9 +30,11 @@ async function testBooking() {
       ),
       booking_customers (
         customers (
+          customer_id,
           first_name,
           last_name,
-          email
+          email,
+          phone_number
         )
       )
     `)
@@ -45,10 +48,25 @@ async function testBooking() {
 
   const customer = booking.booking_customers?.[0]?.customers as any;
   console.log('   Customer:', customer?.first_name, customer?.last_name);
+  console.log('   Email:', customer?.email);
+  console.log('   Phone:', customer?.phone_number);
   console.log('   Activities:', booking.activity_bookings?.length);
 
-  // 2. Check if monthly pratica exists (in our DB)
-  console.log('\n2. Checking for existing monthly pratica...');
+  // 2. Get or create customer account (anagrafica)
+  console.log('\n2. Getting/creating customer account...');
+  const account = await partnerSolutionService.getOrCreateAccount({
+    customer_id: customer.customer_id,
+    first_name: customer.first_name,
+    last_name: customer.last_name,
+    email: customer.email,
+    phone_number: customer.phone_number,
+  });
+  console.log('   Account:', account['@id']);
+  console.log('   Codice Fiscale:', account.codicefiscale);
+  console.log('   Country:', account.nazione);
+
+  // 3. Check if monthly pratica exists (in our DB)
+  console.log('\n3. Checking for existing monthly pratica...');
   const { data: existingPratica } = await supabase
     .from('monthly_praticas')
     .select('*')
@@ -60,8 +78,25 @@ async function testBooking() {
   if (existingPratica?.partner_pratica_id) {
     console.log('   Found existing pratica:', existingPratica.partner_pratica_id);
     praticaIri = existingPratica.partner_pratica_id;
+
+    // Update pratica with customer account link
+    console.log('   Linking customer account to pratica...');
+    const client = await (partnerSolutionService as any).getClient();
+    const currentPratica = await partnerSolutionService.getPratica(praticaIri);
+    await client.put(praticaIri, {
+      codiceagenzia: currentPratica.codiceagenzia,
+      tipocattura: (currentPratica as any).tipocattura || 'API',
+      stato: currentPratica.stato,
+      datacreazione: currentPratica.datacreazione,
+      datamodifica: new Date().toISOString(),
+      cognomecliente: customer?.last_name || 'N/A',
+      nomecliente: customer?.first_name || 'N/A',
+      codicecliente: account.id,
+      externalid: currentPratica.externalid,
+    });
+    console.log('   Customer linked!');
   } else {
-    // 3. Create new monthly pratica in Partner Solution
+    // Create new monthly pratica in Partner Solution
     console.log('   No pratica found, creating new one for', yearMonth);
 
     const now = new Date().toISOString();
@@ -73,7 +108,8 @@ async function testBooking() {
       datamodifica: now,
       cognomecliente: customer?.last_name || 'N/A',
       nomecliente: customer?.first_name || 'N/A',
-      descrizionepratica: 'Monthly invoice ' + yearMonth,
+      codicecliente: account.id,  // Link customer account
+      descrizionepratica: 'Pratica Mensile ' + yearMonth,
       externalid: 'MONTHLY-' + yearMonth,
     });
 
@@ -92,13 +128,14 @@ async function testBooking() {
   }
 
   // 4. Add Servizio + Quota for each activity_booking
-  console.log('\n3. Adding services for each activity...');
+  console.log('\n4. Adding services for each activity...');
 
   for (const activity of (booking.activity_bookings || [])) {
     const activityDate = activity.start_date_time?.split('T')[0] || new Date().toISOString().split('T')[0];
     const now = new Date().toISOString();
 
     console.log('\n   Activity:', activity.activity_booking_id);
+    console.log('   Product:', activity.product_title);
     console.log('   Revenue:', activity.total_price, 'EUR');
 
     // Create Servizio
@@ -143,9 +180,13 @@ async function testBooking() {
     console.log('   Quota created:', quota['@id']);
   }
 
-  console.log('\n=== SUCCESS ===');
-  console.log('Booking', confirmationCode, 'sent to Partner Solution');
+  console.log('\n' + '='.repeat(60));
+  console.log('SUCCESS!');
+  console.log('='.repeat(60));
+  console.log('Booking:', confirmationCode);
+  console.log('Customer Account:', account['@id']);
   console.log('Monthly Pratica:', praticaIri);
+  console.log('='.repeat(60));
 }
 
 testBooking().catch(e => console.error('ERROR:', e.message));

@@ -382,6 +382,201 @@ router.post('/api/invoices/create-batch', validateApiKey, async (req: Request, r
 });
 
 /**
+ * POST /api/invoices/send-to-partner
+ * Send booking directly to Partner Solution with all fields
+ * This is for manual invoice creation with full control over the data sent
+ */
+router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const {
+      confirmation_code,
+      year_month,
+      customer,          // { customer_id, first_name, last_name, email, phone_number }
+      activities,        // [{ activity_booking_id, product_title, revenue, activity_date }]
+      description,       // Optional custom pratica description
+    } = req.body;
+
+    if (!confirmation_code || !year_month || !activities || activities.length === 0) {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required fields: confirmation_code, year_month, activities',
+      });
+      return;
+    }
+
+    console.log(`\n=== Sending ${confirmation_code} to Partner Solution ===`);
+
+    // 1. Get or create customer account
+    let account = null;
+    if (customer && customer.customer_id) {
+      console.log('1. Creating/getting customer account...');
+      account = await partnerSolutionService.getOrCreateAccount({
+        customer_id: customer.customer_id,
+        first_name: customer.first_name || 'N/A',
+        last_name: customer.last_name || 'N/A',
+        email: customer.email,
+        phone_number: customer.phone_number,
+      });
+      console.log('   Account:', account['@id']);
+    }
+
+    // 2. Get or create monthly pratica
+    console.log('2. Getting/creating monthly pratica for', year_month);
+    let { data: monthlyPratica } = await supabase
+      .from('monthly_praticas')
+      .select('*')
+      .eq('year_month', year_month)
+      .single();
+
+    let praticaIri: string;
+
+    if (monthlyPratica?.partner_pratica_id) {
+      praticaIri = monthlyPratica.partner_pratica_id;
+      console.log('   Found existing pratica:', praticaIri);
+
+      // Update pratica with customer if provided
+      if (account) {
+        const client = await (partnerSolutionService as any).getClient();
+        const currentPratica = await partnerSolutionService.getPratica(praticaIri);
+        await client.put(praticaIri, {
+          codiceagenzia: currentPratica.codiceagenzia,
+          tipocattura: (currentPratica as any).tipocattura || 'API',
+          stato: currentPratica.stato,
+          datacreazione: currentPratica.datacreazione,
+          datamodifica: new Date().toISOString(),
+          cognomecliente: customer?.last_name || (currentPratica as any).cognomecliente,
+          nomecliente: customer?.first_name || (currentPratica as any).nomecliente,
+          codicecliente: account.id,
+          externalid: currentPratica.externalid,
+          descrizionepratica: (currentPratica as any).descrizionepratica,
+        });
+      }
+    } else {
+      // Create new pratica
+      const now = new Date().toISOString();
+      const pratica = await partnerSolutionService.createPratica({
+        codiceagenzia: 'demo2',
+        tipocattura: 'API',
+        stato: 'WP',
+        datacreazione: now,
+        datamodifica: now,
+        cognomecliente: customer?.last_name || 'N/A',
+        nomecliente: customer?.first_name || 'N/A',
+        codicecliente: account?.id,
+        descrizionepratica: description || `Pratica Mensile ${year_month}`,
+        externalid: `MONTHLY-${year_month}`,
+      });
+
+      praticaIri = pratica['@id'];
+      console.log('   Created pratica:', praticaIri);
+
+      // Save to our DB
+      const { data: newPratica } = await supabase
+        .from('monthly_praticas')
+        .insert({
+          year_month,
+          partner_pratica_id: praticaIri,
+          ps_status: 'WP',
+          total_amount: 0,
+          booking_count: 0,
+        })
+        .select()
+        .single();
+
+      monthlyPratica = newPratica;
+    }
+
+    // 3. Create Servizio + Quota for each activity
+    console.log('3. Creating services for activities...');
+    const createdServices = [];
+
+    for (const activity of activities) {
+      const activityDate = activity.activity_date || new Date().toISOString().split('T')[0];
+      const now = new Date().toISOString();
+      const revenue = activity.revenue || activity.total_price || 0;
+
+      console.log(`   Activity ${activity.activity_booking_id}: ${revenue} EUR`);
+
+      // Create Servizio
+      const servizio = await partnerSolutionService.createServizio({
+        pratica: praticaIri,
+        tiposervizio: 'VIS',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        datainizioservizio: activityDate,
+        datafineservizio: activityDate,
+        datacreazione: now,
+        nrpaxadulti: activity.pax_adults || 1,
+        nrpaxchild: activity.pax_children || 0,
+        nrpaxinfant: activity.pax_infants || 0,
+        codicefornitore: 'ENROMA',
+        codicefilefornitore: 'ENROMA',
+        ragsocfornitore: 'EnRoma Tours',
+        tipodestinazione: 'CEENAZ',
+        duratagg: 1,
+        duratant: 0,
+        annullata: 0,
+        descrizione: activity.product_title || 'Tour Italia e Vaticano',
+      });
+
+      // Create Quota
+      const quota = await partnerSolutionService.createQuota({
+        servizio: servizio['@id'],
+        descrizionequota: `${confirmation_code} - ${activity.activity_booking_id}`,
+        datavendita: activityDate,
+        codiceisovalutacosto: 'eur',
+        codiceisovalutaricavo: 'eur',
+        quantitacosto: 1,
+        quantitaricavo: 1,
+        costovalutaprimaria: 0,
+        ricavovalutaprimaria: revenue,
+        progressivo: 1,
+        annullata: 0,
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+      });
+
+      createdServices.push({
+        activity_booking_id: activity.activity_booking_id,
+        servizio_id: servizio['@id'],
+        quota_id: quota['@id'],
+        revenue,
+      });
+    }
+
+    // 4. Update monthly pratica totals
+    const totalRevenue = createdServices.reduce((sum, s) => sum + s.revenue, 0);
+    await supabase
+      .from('monthly_praticas')
+      .update({
+        total_amount: (monthlyPratica?.total_amount || 0) + totalRevenue,
+        booking_count: (monthlyPratica?.booking_count || 0) + 1,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', monthlyPratica?.id);
+
+    console.log('=== Invoice sent successfully ===\n');
+
+    res.json({
+      success: true,
+      confirmation_code,
+      year_month,
+      pratica_id: praticaIri,
+      account_id: account?.['@id'] || null,
+      services: createdServices,
+      total_revenue: totalRevenue,
+    });
+  } catch (error) {
+    console.error('[Invoices] Error sending to Partner Solution:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send to Partner Solution',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
  * POST /api/invoices/credit-note
  * Create credit note for a cancelled booking
  */
@@ -526,6 +721,41 @@ router.get('/api/invoices/config', validateApiKey, async (req: Request, res: Res
     });
   } catch (error) {
     console.error('[Invoices] Error fetching config:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/invoices/sellers
+ * Get list of all unique suppliers for multi-select configuration
+ */
+router.get('/api/invoices/sellers', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    // Get unique activity_supplier values
+    const { data: suppliers } = await supabase
+      .from('activity_bookings')
+      .select('activity_supplier')
+      .not('activity_supplier', 'is', null);
+
+    const uniqueSuppliers = [...new Set(suppliers?.map(d => d.activity_supplier).filter(Boolean))].sort();
+
+    // Get current config
+    const { data: config } = await supabase
+      .from('partner_solution_config')
+      .select('auto_invoice_sellers, excluded_sellers')
+      .single();
+
+    res.json({
+      success: true,
+      sellers: uniqueSuppliers,
+      auto_invoice_sellers: config?.auto_invoice_sellers || [],
+      excluded_sellers: (config as any)?.excluded_sellers || [],
+    });
+  } catch (error) {
+    console.error('[Invoices] Error fetching sellers:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
