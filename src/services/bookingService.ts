@@ -1,14 +1,17 @@
 import { supabase } from '../config/supabase';
 import { OctoService } from './octoService';
 import { PromotionService } from './promotionService';
+import { InvoiceService } from './invoiceService';
 
 export class BookingService {
   private octoService: OctoService;
   private promotionService: PromotionService;
+  private invoiceService: InvoiceService;
 
   constructor() {
     this.octoService = new OctoService();
     this.promotionService = new PromotionService();
+    this.invoiceService = new InvoiceService();
   }
   
   // Funzione principale che decide cosa fare in base all'action
@@ -93,8 +96,11 @@ export class BookingService {
       console.log('   - status:', bookingData.status);
 
       try {
-        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
+        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName, parentBooking);
         console.log('✅ Attività salvata:', bookingData.title);
+
+        // Update booking-level EUR totals after saving activity
+        await this.updateBookingEurTotals(parentBooking.bookingId);
       } catch (activityError: any) {
         console.error('❌❌❌ ERRORE CRITICO salvando activity_booking:', activityError);
         console.error('   Error message:', activityError.message);
@@ -131,6 +137,21 @@ export class BookingService {
 
       // 9. NUOVO: Valida età partecipanti e auto-fix swap OTA
       await this.validateBookingAges(bookingData.bookingId);
+
+      // 10. NUOVO: Auto-fatturazione se abilitata
+      try {
+        const shouldInvoice = await this.invoiceService.shouldAutoInvoice(sellerName);
+        if (shouldInvoice) {
+          console.log('💰 Triggering auto-invoice for seller:', sellerName);
+          await this.invoiceService.createInvoiceFromBooking(
+            parentBooking.bookingId,
+            'webhook'
+          );
+        }
+      } catch (invoiceError) {
+        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError);
+        // Non propagare l'errore - la fatturazione non deve bloccare il webhook
+      }
 
       console.log('🎉 BOOKING_CONFIRMED completato!');
 
@@ -263,13 +284,16 @@ export class BookingService {
       console.log('🔧 REBOOK DEBUG - Operazione da eseguire:');
       if (existingActivity) {
         console.log('   🔄 UPDATE di activity esistente');
-        await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName);
+        await this.updateActivityBooking(bookingData, parentBooking.bookingId, sellerName, parentBooking);
         console.log('✅ Attività aggiornata');
       } else {
         console.log('   ➕ INSERT di NUOVA activity (REBOOK scenario)');
-        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName);
+        await this.saveActivityBookingFromRoot(bookingData, parentBooking.bookingId, sellerName, parentBooking);
         console.log('✅ Nuova attività creata (REBOOK)');
       }
+
+      // Update booking-level EUR totals after saving/updating activity
+      await this.updateBookingEurTotals(parentBooking.bookingId);
 
       // 4. NUOVO: Sincronizza partecipanti in modo intelligente
       console.log('🔧 REBOOK DEBUG - Sincronizzazione partecipanti');
@@ -387,6 +411,22 @@ export class BookingService {
 
       // NUOVO: Sincronizza disponibilità dopo cancellazione
       await this.syncAvailabilityForBooking(bookingData);
+
+      // NUOVO: Auto-nota di credito se abilitata
+      try {
+        const shouldCreditNote = await this.invoiceService.shouldAutoCreditNote();
+        if (shouldCreditNote && activityBefore) {
+          console.log('💸 Triggering auto credit note for cancelled activity:', bookingData.bookingId);
+          await this.invoiceService.createCreditNote(
+            activityBefore.booking_id,
+            bookingData.bookingId,
+            'webhook'
+          );
+        }
+      } catch (creditNoteError) {
+        console.error('⚠️ Errore in auto credit note (non-blocking):', creditNoteError);
+        // Non propagare l'errore - la nota di credito non deve bloccare il webhook
+      }
 
     } catch (error) {
       console.error('❌ Errore in BOOKING_ITEM_CANCELLED:', error);
@@ -658,8 +698,86 @@ export class BookingService {
         action: 'BOOKING_UPDATED'
       })
       .eq('booking_id', bookingData.bookingId);
-    
+
     if (error) throw error;
+  }
+
+  // Funzione per aggiornare i totali del booking (somma delle activity_bookings)
+  private async updateBookingPricingTotals(bookingId: number): Promise<void> {
+    try {
+      // Get all activity bookings for this booking
+      const { data: activities, error: fetchError } = await supabase
+        .from('activity_bookings')
+        .select('original_price, total_price, discount_amount, commission_amount, net_price')
+        .eq('booking_id', bookingId);
+
+      if (fetchError) {
+        console.error('❌ Error fetching activities for pricing totals:', fetchError);
+        return;
+      }
+
+      if (!activities || activities.length === 0) {
+        return;
+      }
+
+      // Calculate sums
+      let totalOriginalPrice: number | null = null;
+      let totalPrice: number | null = null;
+      let totalDiscountAmount: number | null = null;
+      let totalCommissionAmount: number | null = null;
+      let totalNetPrice: number | null = null;
+
+      for (const activity of activities) {
+        if (activity.original_price !== null) {
+          totalOriginalPrice = (totalOriginalPrice || 0) + Number(activity.original_price);
+        }
+        if (activity.total_price !== null) {
+          totalPrice = (totalPrice || 0) + Number(activity.total_price);
+        }
+        if (activity.discount_amount !== null) {
+          totalDiscountAmount = (totalDiscountAmount || 0) + Number(activity.discount_amount);
+        }
+        if (activity.commission_amount !== null) {
+          totalCommissionAmount = (totalCommissionAmount || 0) + Number(activity.commission_amount);
+        }
+        if (activity.net_price !== null) {
+          totalNetPrice = (totalNetPrice || 0) + Number(activity.net_price);
+        }
+      }
+
+      // Build update object with non-null values
+      const updateData: Record<string, any> = {};
+      if (totalOriginalPrice !== null) updateData.original_price = totalOriginalPrice;
+      if (totalPrice !== null) updateData.total_price = totalPrice;
+      if (totalDiscountAmount !== null) updateData.discount_amount = totalDiscountAmount;
+      if (totalCommissionAmount !== null) updateData.commission_amount = totalCommissionAmount;
+      if (totalNetPrice !== null) updateData.net_price = totalNetPrice;
+
+      // Only update if we have values
+      if (Object.keys(updateData).length > 0) {
+        const { error: updateError } = await supabase
+          .from('bookings')
+          .update(updateData)
+          .eq('booking_id', bookingId);
+
+        if (updateError) {
+          console.error('❌ Error updating booking pricing totals:', updateError);
+          return;
+        }
+
+        console.log(`💰 Booking ${bookingId} pricing totals updated:`);
+        console.log(`   original_price=${totalOriginalPrice}, total_price=${totalPrice}, net_price=${totalNetPrice}`);
+        console.log(`   discount_amount=${totalDiscountAmount}, commission_amount=${totalCommissionAmount}`);
+      }
+    } catch (error) {
+      console.error('❌ Error in updateBookingPricingTotals:', error);
+      // Non-blocking - don't throw
+    }
+  }
+
+  // Alias for backward compatibility
+  private async updateBookingEurTotals(bookingId: number): Promise<void> {
+    return this.updateBookingPricingTotals(bookingId);
   }
 
   // Funzione per collegare la prenotazione al cliente
@@ -699,7 +817,7 @@ export class BookingService {
   }
 
   // Funzione per salvare l'attività dal root object (AGGIORNATA CON SELLER)
-  private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
+  private async saveActivityBookingFromRoot(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com', parentBooking?: any): Promise<void> {
     console.log('🔧 saveActivityBookingFromRoot - Inizio');
     console.log('   activityData.bookingId:', activityData.bookingId);
     console.log('   parentBookingId:', parentBookingId);
@@ -737,7 +855,138 @@ export class BookingService {
       console.log(`📝 Uso titolo canonico: "${canonicalTitle}" invece di "${activityData.title}"`);
     }
 
-    const dataToUpsert = {
+    // ============================================
+    // COMPREHENSIVE PRICING EXTRACTION
+    // ============================================
+    // Two scenarios:
+    // 1. DIRECT SALES (EnRoma.com seller): Use priceWithDiscount, discountPercentage, etc.
+    // 2. RESELLER SALES (agent present): Use sellerInvoice for EUR pricing and commission
+
+    let originalPrice: number | null = null;
+    let totalPrice: number | null = null;
+    let discountPercentage: number | null = null;
+    let discountAmount: number | null = null;
+    let commissionPercentage: number | null = null;
+    let commissionAmount: number | null = null;
+    let netPrice: number | null = null;
+    const paidType: string | null = activityData.paidType || null;
+    const currency: string | null = activityData.currency || null;
+
+    // Check if this is a reseller/agent booking (has sellerInvoice or agentInvoice with EUR)
+    const sellerInvoice = activityData.sellerInvoice;
+    const agentInvoice = activityData.agentInvoice;
+    const isResellerBooking = (sellerInvoice && sellerInvoice.currency === 'EUR') ||
+                               (agentInvoice && agentInvoice.currency === 'EUR');
+
+    if (isResellerBooking) {
+      // RESELLER/AGENT SCENARIO - use whichever invoice exists
+      const invoice = (sellerInvoice && sellerInvoice.currency === 'EUR') ? sellerInvoice : agentInvoice;
+      const invoiceType = (sellerInvoice && sellerInvoice.currency === 'EUR') ? 'sellerInvoice' : 'agentInvoice';
+
+      console.log(`💼 RESELLER/AGENT BOOKING detected - extracting from ${invoiceType}`);
+
+      // For sellerInvoice: net_price = totalAsMoney (after commission)
+      // For agentInvoice: net_price = totalDiscountedAsMoney (after commission discount)
+      if (invoiceType === 'sellerInvoice') {
+        netPrice = invoice.totalAsMoney?.amount || invoice.total || null;
+      } else {
+        // agentInvoice uses totalDiscountedAsMoney for net price
+        netPrice = invoice.totalDiscountedAsMoney?.amount || invoice.totalDiscounted || null;
+      }
+
+      // Extract from line items
+      if (invoice.lineItems && invoice.lineItems.length > 0) {
+        const firstLineItem = invoice.lineItems[0];
+        commissionPercentage = firstLineItem.commission || null;
+
+        if (invoiceType === 'sellerInvoice') {
+          // For sellerInvoice: total_price = sum of totalWithoutCommission
+          totalPrice = invoice.lineItems.reduce((sum: number, item: any) => {
+            const itemTotal = item.totalWithoutCommissionAsMoney?.amount ||
+                             (item.unitPrice * (item.quantity || 1));
+            return sum + itemTotal;
+          }, 0);
+        } else {
+          // For agentInvoice: total_price = sum of totalAsMoney (retail price)
+          totalPrice = invoice.lineItems.reduce((sum: number, item: any) => {
+            const itemTotal = item.totalAsMoney?.amount || item.total ||
+                             (item.unitPrice * (item.quantity || 1));
+            return sum + itemTotal;
+          }, 0);
+        }
+
+        // Original price = same as total_price for resellers/agents
+        originalPrice = totalPrice;
+
+        // Commission amount = total_price - net_price
+        if (totalPrice !== null && netPrice !== null) {
+          commissionAmount = Number((totalPrice - netPrice).toFixed(2));
+        }
+      }
+
+      console.log(`💶 Reseller/Agent Pricing (${invoiceType}):`);
+      console.log(`   Customer paid (total_price): €${totalPrice}`);
+      console.log(`   Commission: ${commissionPercentage}% (€${commissionAmount})`);
+      console.log(`   EnRoma receives (net_price): €${netPrice}`);
+
+    } else {
+      // DIRECT SALES SCENARIO (EnRoma.com as seller)
+      console.log('🏪 DIRECT SALES detected - extracting from activity data');
+
+      // Original price = totalPrice (pre-discount)
+      originalPrice = activityData.totalPrice || null;
+
+      // Total price = priceWithDiscount (what customer should pay)
+      totalPrice = activityData.priceWithDiscount || activityData.totalPrice || null;
+
+      // Discount info
+      discountPercentage = activityData.discountPercentage || null;
+      discountAmount = activityData.discountAmount || null;
+
+      // Net price = same as total_price for direct sales (no commission)
+      netPrice = totalPrice;
+
+      console.log(`💰 Direct Sales Pricing:`);
+      console.log(`   Original price: €${originalPrice}`);
+      console.log(`   Discount: ${discountPercentage}% (€${discountAmount})`);
+      console.log(`   Customer pays (total_price): €${totalPrice}`);
+      console.log(`   EnRoma receives (net_price): €${netPrice}`);
+    }
+
+    // Calculate total_paid and total_due from parentBooking
+    // For single activity bookings, use booking values directly
+    // For multi-activity, this will be the proportion based on this activity's price
+    let activityTotalPaid: number | null = null;
+    let activityTotalDue: number | null = null;
+
+    if (parentBooking) {
+      const bookingTotalPrice = parentBooking.totalPrice || 0;
+      const bookingTotalPaid = parentBooking.totalPaid || 0;
+      const bookingTotalDue = parentBooking.totalDue || 0;
+
+      if (bookingTotalPrice > 0 && totalPrice !== null) {
+        // Calculate proportion: this activity's share of total paid/due
+        const proportion = totalPrice / bookingTotalPrice;
+        activityTotalPaid = Number((bookingTotalPaid * proportion).toFixed(2));
+        activityTotalDue = Number((bookingTotalDue * proportion).toFixed(2));
+      } else {
+        // Fallback: use booking values directly
+        activityTotalPaid = bookingTotalPaid;
+        activityTotalDue = bookingTotalDue;
+      }
+
+      console.log(`💳 Payment info from parentBooking:`);
+      console.log(`   Booking: totalPrice=${bookingTotalPrice}, totalPaid=${bookingTotalPaid}, totalDue=${bookingTotalDue}`);
+      console.log(`   Activity: totalPaid=${activityTotalPaid}, totalDue=${activityTotalDue}`);
+    }
+
+    // Extract vendor/supplier info
+    const supplierName = activityData.product?.vendor?.title || null;
+    if (supplierName) {
+      console.log(`🏭 Supplier (vendor): ${supplierName}`);
+    }
+
+    const dataToUpsert: Record<string, any> = {
       booking_id: parentBookingId,
       activity_booking_id: activityData.bookingId,
       product_id: activityData.productId || activityData.product?.id,
@@ -747,12 +996,25 @@ export class BookingService {
       start_date_time: startDateTime.toISOString(),
       end_date_time: endDateTime.toISOString(),
       status: activityData.status,
-      total_price: activityData.totalPrice,
+      // Comprehensive pricing fields
+      original_price: originalPrice,
+      total_price: totalPrice,
+      discount_percentage: discountPercentage,
+      discount_amount: discountAmount,
+      commission_percentage: commissionPercentage,
+      commission_amount: commissionAmount,
+      net_price: netPrice,
+      paid_type: paidType,
+      currency: currency,
+      total_paid: activityTotalPaid,
+      total_due: activityTotalDue,
+      // Other fields
       rate_id: activityData.rateId,
       rate_title: activityData.rateTitle,
       start_time: activityData.startTime,
       date_string: activityData.dateString,
-      activity_seller: sellerName
+      activity_seller: sellerName,
+      activity_supplier: supplierName
     };
 
     console.log('📦 Dati da inserire in activity_bookings:', JSON.stringify(dataToUpsert, null, 2));
@@ -772,8 +1034,8 @@ export class BookingService {
     console.log(`✅ Activity booking salvato con seller: ${sellerName}`);
   }
   
-  // Funzione per aggiornare l'attività (AGGIORNATA CON SELLER)
-  private async updateActivityBooking(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com'): Promise<void> {
+  // Funzione per aggiornare l'attività (AGGIORNATA CON COMPREHENSIVE PRICING)
+  private async updateActivityBooking(activityData: any, parentBookingId: number, sellerName: string = 'EnRoma.com', parentBooking?: any): Promise<void> {
     const startDateTime = new Date(activityData.startDateTime);
     const endDateTime = new Date(activityData.endDateTime);
 
@@ -791,19 +1053,131 @@ export class BookingService {
       console.log(`📝 Uso titolo canonico: "${canonicalTitle}" invece di "${activityData.title}"`);
     }
 
+    // ============================================
+    // COMPREHENSIVE PRICING EXTRACTION (UPDATE)
+    // ============================================
+    let originalPrice: number | null = null;
+    let totalPrice: number | null = null;
+    let discountPercentage: number | null = null;
+    let discountAmount: number | null = null;
+    let commissionPercentage: number | null = null;
+    let commissionAmount: number | null = null;
+    let netPrice: number | null = null;
+    const paidType: string | null = activityData.paidType || null;
+    const currency: string | null = activityData.currency || null;
+
+    // Check if this is a reseller/agent booking
+    const sellerInvoice = activityData.sellerInvoice;
+    const agentInvoice = activityData.agentInvoice;
+    const isResellerBooking = (sellerInvoice && sellerInvoice.currency === 'EUR') ||
+                               (agentInvoice && agentInvoice.currency === 'EUR');
+
+    if (isResellerBooking) {
+      // RESELLER/AGENT SCENARIO
+      const invoice = (sellerInvoice && sellerInvoice.currency === 'EUR') ? sellerInvoice : agentInvoice;
+      const invoiceType = (sellerInvoice && sellerInvoice.currency === 'EUR') ? 'sellerInvoice' : 'agentInvoice';
+      console.log(`💼 RESELLER/AGENT BOOKING (update) - extracting from ${invoiceType}`);
+
+      if (invoiceType === 'sellerInvoice') {
+        netPrice = invoice.totalAsMoney?.amount || invoice.total || null;
+      } else {
+        netPrice = invoice.totalDiscountedAsMoney?.amount || invoice.totalDiscounted || null;
+      }
+
+      if (invoice.lineItems && invoice.lineItems.length > 0) {
+        const firstLineItem = invoice.lineItems[0];
+        commissionPercentage = firstLineItem.commission || null;
+
+        if (invoiceType === 'sellerInvoice') {
+          totalPrice = invoice.lineItems.reduce((sum: number, item: any) => {
+            const itemTotal = item.totalWithoutCommissionAsMoney?.amount ||
+                             (item.unitPrice * (item.quantity || 1));
+            return sum + itemTotal;
+          }, 0);
+        } else {
+          totalPrice = invoice.lineItems.reduce((sum: number, item: any) => {
+            const itemTotal = item.totalAsMoney?.amount || item.total ||
+                             (item.unitPrice * (item.quantity || 1));
+            return sum + itemTotal;
+          }, 0);
+        }
+
+        originalPrice = totalPrice;
+
+        if (totalPrice !== null && netPrice !== null) {
+          commissionAmount = Number((totalPrice - netPrice).toFixed(2));
+        }
+      }
+
+      console.log(`💶 Reseller/Agent Pricing (update): total=${totalPrice}, commission=${commissionPercentage}%, net=${netPrice}`);
+
+    } else {
+      // DIRECT SALES SCENARIO
+      console.log('🏪 DIRECT SALES (update) - extracting from activity data');
+
+      originalPrice = activityData.totalPrice || null;
+      totalPrice = activityData.priceWithDiscount || activityData.totalPrice || null;
+      discountPercentage = activityData.discountPercentage || null;
+      discountAmount = activityData.discountAmount || null;
+      netPrice = totalPrice;
+
+      console.log(`💰 Direct Sales Pricing (update): original=${originalPrice}, total=${totalPrice}, net=${netPrice}`);
+    }
+
+    // Calculate total_paid and total_due from parentBooking
+    let activityTotalPaid: number | null = null;
+    let activityTotalDue: number | null = null;
+
+    if (parentBooking) {
+      const bookingTotalPrice = parentBooking.totalPrice || 0;
+      const bookingTotalPaid = parentBooking.totalPaid || 0;
+      const bookingTotalDue = parentBooking.totalDue || 0;
+
+      if (bookingTotalPrice > 0 && totalPrice !== null) {
+        const proportion = totalPrice / bookingTotalPrice;
+        activityTotalPaid = Number((bookingTotalPaid * proportion).toFixed(2));
+        activityTotalDue = Number((bookingTotalDue * proportion).toFixed(2));
+      } else {
+        activityTotalPaid = bookingTotalPaid;
+        activityTotalDue = bookingTotalDue;
+      }
+
+      console.log(`💳 Payment info (update): totalPaid=${activityTotalPaid}, totalDue=${activityTotalDue}`);
+    }
+
+    // Extract vendor/supplier info
+    const supplierName = activityData.product?.vendor?.title || null;
+    if (supplierName) {
+      console.log(`🏭 Supplier (vendor): ${supplierName}`);
+    }
+
+    const updateData: Record<string, any> = {
+      start_date_time: startDateTime.toISOString(),
+      end_date_time: endDateTime.toISOString(),
+      status: activityData.status,
+      product_title: productTitle,
+      rate_title: activityData.rateTitle,
+      start_time: activityData.startTime,
+      date_string: activityData.dateString,
+      activity_seller: sellerName,
+      activity_supplier: supplierName,
+      // Comprehensive pricing fields
+      original_price: originalPrice,
+      total_price: totalPrice,
+      discount_percentage: discountPercentage,
+      discount_amount: discountAmount,
+      commission_percentage: commissionPercentage,
+      commission_amount: commissionAmount,
+      net_price: netPrice,
+      paid_type: paidType,
+      currency: currency,
+      total_paid: activityTotalPaid,
+      total_due: activityTotalDue
+    };
+
     const { error } = await supabase
       .from('activity_bookings')
-      .update({
-        start_date_time: startDateTime.toISOString(),
-        end_date_time: endDateTime.toISOString(),
-        status: activityData.status,
-        total_price: activityData.totalPrice,
-        product_title: productTitle,  // NUOVO: Aggiorna anche il titolo con quello canonico
-        rate_title: activityData.rateTitle,
-        start_time: activityData.startTime,
-        date_string: activityData.dateString,
-        activity_seller: sellerName  // NUOVO CAMPO!
-      })
+      .update(updateData)
       .eq('activity_booking_id', activityData.bookingId);
 
     if (error) {
@@ -811,7 +1185,7 @@ export class BookingService {
       throw error;
     }
 
-    console.log(`✅ Activity booking aggiornato con seller: ${sellerName}`);
+    console.log(`✅ Activity booking aggiornato con seller: ${sellerName}, supplier: ${supplierName}`);
   }
   
   // NUOVO: Sincronizza partecipanti in modo intelligente (add/remove/match)

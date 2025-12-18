@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import webhookRoutes from './routes/webhook';
 import syncRoutes from './routes/sync';
 import gtmRoutes from './routes/gtm';
+import invoiceRoutes from './routes/invoices';
 // import gtmEnhancedRoutes from './routes/gtm-enhanced'; // Not needed - using existing GTM webhook
 import { initializeCronJobs } from './cronJobs';
 
@@ -47,8 +48,8 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
 };
 
 app.use(cors(corsOptions));
@@ -65,6 +66,7 @@ app.use((req, res, next) => {
 app.use(webhookRoutes);
 app.use('/api', syncRoutes);
 app.use(gtmRoutes);
+app.use(invoiceRoutes);
 // app.use(gtmEnhancedRoutes); // Not needed - using existing GTM webhook
 
 // Route principale
@@ -79,7 +81,15 @@ app.get('/', (req, res) => {
       health: 'GET /health',
       syncProducts: 'POST /api/sync/products',
       syncAvailability: 'POST /api/sync/availability',
-      getProducts: 'GET /api/sync/products'
+      getProducts: 'GET /api/sync/products',
+      // Invoicing endpoints
+      invoices_list: 'GET /api/invoices',
+      invoices_stats: 'GET /api/invoices/stats',
+      invoices_create: 'POST /api/invoices/create',
+      invoices_batch: 'POST /api/invoices/create-batch',
+      invoices_config: 'GET/PUT /api/invoices/config',
+      invoices_health: 'GET /api/invoices/health',
+      invoices_pending: 'GET /api/invoices/pending-bookings'
     },
     status: 'ready',
     environment: process.env.NODE_ENV || 'development'
