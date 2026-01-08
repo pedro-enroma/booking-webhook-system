@@ -246,38 +246,7 @@ router.get('/api/invoices/booking/:bookingId', validateApiKey, async (req: Reque
   }
 });
 
-/**
- * GET /api/invoices/:id
- * Get a single invoice by ID
- */
-router.get('/api/invoices/:id', validateApiKey, async (req: Request, res: Response) => {
-  try {
-    const { data: invoice, error } = await supabase
-      .from('invoices')
-      .select('*, invoice_line_items(*)')
-      .eq('id', req.params.id)
-      .single();
-
-    if (error || !invoice) {
-      res.status(404).json({
-        success: false,
-        error: 'Invoice not found',
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: invoice,
-    });
-  } catch (error) {
-    console.error('[Invoices] Error fetching invoice:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
+// NOTE: /api/invoices/:id route moved to end of file to avoid matching specific routes
 
 // ============================================
 // INVOICE CREATION
@@ -1145,6 +1114,43 @@ router.get('/api/invoices/:id/audit', validateApiKey, async (req: Request, res: 
     });
   } catch (error) {
     console.error('[Invoices] Error fetching audit log:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// ============================================
+// SINGLE INVOICE BY ID (must be last to avoid matching other routes)
+// ============================================
+
+/**
+ * GET /api/invoices/:id
+ * Get a single invoice by ID
+ */
+router.get('/api/invoices/:id', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const { data: invoice, error } = await supabase
+      .from('invoices')
+      .select('*, invoice_line_items(*)')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error || !invoice) {
+      res.status(404).json({
+        success: false,
+        error: 'Invoice not found',
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: invoice,
+    });
+  } catch (error) {
+    console.error('[Invoices] Error fetching invoice:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
