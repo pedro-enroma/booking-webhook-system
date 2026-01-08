@@ -743,26 +743,23 @@ export class PartnerSolutionService {
     };
 
     // Customer identification
+    // For Partner Solution API, always use partitaiva format (even for individuals)
+    // For Italian customers: use their actual partitaIva or codiceFiscale
+    // For foreign customers: use "00000000000" placeholder
     if (params.customer.partitaIva) {
-      // Company
       docfiscalePayload.partitaiva = params.customer.partitaIva;
-      docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
+    } else if (params.customer.codiceFiscale) {
+      // Italian individual with codice fiscale - use as partitaiva for simplicity
+      docfiscalePayload.partitaiva = params.customer.codiceFiscale;
     } else {
-      // Individual
-      docfiscalePayload.cognome = params.customer.lastName;
-      docfiscalePayload.nome = params.customer.firstName;
-      // Generate fiscal code if not provided (required for SDI)
-      if (params.customer.codiceFiscale) {
-        docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
-      } else {
-        // For foreign customers without fiscal code, use standard placeholder
-        // Italian SDI accepts 16 X's for foreign individuals
-        docfiscalePayload.codicefiscale = 'XXXXXXXXXXXXXXXX';
-        // Set country to identify as foreign customer
-        const country = params.customer.country || 'EE';  // EE = Estonia as generic EU
-        docfiscalePayload.nazione = country.length === 3 ? country : this.iso2ToIso3(country);
-      }
+      // Foreign customer without VAT/CF - use placeholder
+      docfiscalePayload.partitaiva = '00000000000';
+      // Set country to identify as foreign
+      const country = params.customer.country || 'EE';
+      docfiscalePayload.nazione = country.length === 3 ? country : this.iso2ToIso3(country);
     }
+    // Always use denominazione (full name) for API compatibility
+    docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
 
     // Optional fields
     if (params.customer.pec) docfiscalePayload.pec = params.customer.pec;
@@ -862,21 +859,16 @@ export class PartnerSolutionService {
         `Nota di credito per fattura ${params.booking.originalInvoiceNumber} - Booking ${params.booking.confirmationCode}`,
     };
 
-    // Customer identification
+    // Customer identification - use partitaiva format for API compatibility
     if (params.customer.partitaIva) {
       docfiscalePayload.partitaiva = params.customer.partitaIva;
-      docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
+    } else if (params.customer.codiceFiscale) {
+      docfiscalePayload.partitaiva = params.customer.codiceFiscale;
     } else {
-      docfiscalePayload.cognome = params.customer.lastName;
-      docfiscalePayload.nome = params.customer.firstName;
-      // Generate fiscal code if not provided (required for SDI)
-      if (params.customer.codiceFiscale) {
-        docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
-      } else {
-        // For foreign customers without fiscal code, use standard placeholder
-        docfiscalePayload.codicefiscale = 'XXXXXXXXXXXXXXXX';
-      }
+      // Foreign customer placeholder
+      docfiscalePayload.partitaiva = '00000000000';
     }
+    docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
 
     if (params.customer.pec) docfiscalePayload.pec = params.customer.pec;
     if (params.customer.codicesdi) docfiscalePayload.codicesdi = params.customer.codicesdi;
