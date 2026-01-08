@@ -787,6 +787,230 @@ router.put('/api/invoices/config', validateApiKey, async (req: Request, res: Res
 });
 
 // ============================================
+// SDI (DOCFISCALE) ENDPOINTS
+// ============================================
+
+/**
+ * POST /api/invoices/sdi/create
+ * Create SDI electronic invoice (Docfiscale) for a booking
+ * This creates: Docfiscale -> Dettaglio -> XML (send to SDI)
+ */
+router.post('/api/invoices/sdi/create', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const { bookingId, praticaIri, sendToSdi, triggeredBy } = req.body;
+
+    if (!bookingId) {
+      res.status(400).json({
+        success: false,
+        error: 'bookingId is required',
+      });
+      return;
+    }
+
+    const result = await invoiceService.createSdiInvoiceFromBooking(bookingId, {
+      praticaIri,
+      sendToSdi: sendToSdi !== false,
+      triggeredBy: triggeredBy || 'manual',
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        docfiscaleId: result.docfiscaleId,
+        docfiscaleIri: result.docfiscaleIri,
+        invoiceNumber: result.invoiceNumber,
+        docfiscalexmlId: result.docfiscalexmlId,
+        message: `SDI invoice created for booking ${bookingId}`,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    console.error('[Invoices] Error creating SDI invoice:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/invoices/sdi/create-batch
+ * Create SDI invoices for multiple bookings
+ */
+router.post('/api/invoices/sdi/create-batch', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const { bookingIds, sendToSdi, triggeredBy } = req.body;
+
+    if (!bookingIds || !Array.isArray(bookingIds) || bookingIds.length === 0) {
+      res.status(400).json({
+        success: false,
+        error: 'bookingIds array is required and must not be empty',
+      });
+      return;
+    }
+
+    const results = {
+      success: [] as Array<{ bookingId: number; invoiceNumber: string }>,
+      failed: [] as Array<{ bookingId: number; error: string }>,
+    };
+
+    for (const bookingId of bookingIds) {
+      const result = await invoiceService.createSdiInvoiceFromBooking(bookingId, {
+        sendToSdi: sendToSdi !== false,
+        triggeredBy: triggeredBy || 'batch',
+      });
+
+      if (result.success) {
+        results.success.push({
+          bookingId,
+          invoiceNumber: result.invoiceNumber || 'N/A',
+        });
+      } else {
+        results.failed.push({
+          bookingId,
+          error: result.error || 'Unknown error',
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      results,
+      summary: {
+        total: bookingIds.length,
+        succeeded: results.success.length,
+        failed: results.failed.length,
+      },
+    });
+  } catch (error) {
+    console.error('[Invoices] Error creating batch SDI invoices:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/invoices/sdi/credit-note
+ * Create SDI credit note (Nota di Credito) for a booking
+ */
+router.post('/api/invoices/sdi/credit-note', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const { bookingId, creditAmount, sendToSdi, triggeredBy } = req.body;
+
+    if (!bookingId) {
+      res.status(400).json({
+        success: false,
+        error: 'bookingId is required',
+      });
+      return;
+    }
+
+    const result = await invoiceService.createSdiCreditNote(bookingId, {
+      creditAmount,
+      sendToSdi: sendToSdi !== false,
+      triggeredBy: triggeredBy || 'manual',
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        docfiscaleId: result.docfiscaleId,
+        docfiscaleIri: result.docfiscaleIri,
+        creditNoteNumber: result.creditNoteNumber,
+        message: `SDI credit note created for booking ${bookingId}`,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    console.error('[Invoices] Error creating SDI credit note:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/invoices/sdi/status/:bookingId
+ * Check SDI status for a booking (get notifications)
+ */
+router.get('/api/invoices/sdi/status/:bookingId', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const bookingId = parseInt(req.params.bookingId);
+
+    if (isNaN(bookingId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid booking ID',
+      });
+      return;
+    }
+
+    const result = await invoiceService.checkSdiStatus(bookingId);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        bookingId,
+        sdiStatus: result.status,
+        notifications: result.notifications,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    console.error('[Invoices] Error checking SDI status:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * GET /api/invoices/sdi/docfiscale/:confirmationCode
+ * Get Docfiscale by confirmation code (external ID)
+ */
+router.get('/api/invoices/sdi/docfiscale/:confirmationCode', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const confirmationCode = req.params.confirmationCode;
+
+    const docfiscale = await partnerSolutionService.findDocfiscaleByExternalId(confirmationCode);
+
+    if (docfiscale) {
+      res.json({
+        success: true,
+        data: docfiscale,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        error: `No Docfiscale found for confirmation code: ${confirmationCode}`,
+      });
+    }
+  } catch (error) {
+    console.error('[Invoices] Error finding Docfiscale:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// ============================================
 // HEALTH CHECK
 // ============================================
 

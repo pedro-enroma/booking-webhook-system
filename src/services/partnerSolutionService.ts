@@ -21,6 +21,13 @@ import {
   PSStatus,
   PSAccountPayload,
   PSAccountResponse,
+  PSDocfiscalePayload,
+  PSDocfiscaleResponse,
+  PSDocfiscaleDettaglioPayload,
+  PSDocfiscaleDettaglioResponse,
+  PSDocfiscaleXMLPayload,
+  PSDocfiscaleXMLResponse,
+  PSDocfiscaleXMLNotificaResponse,
 } from '../types/invoice.types';
 import { getCountryFromPhone, generateForeignFiscalCode } from '../utils/phoneCountry';
 
@@ -519,6 +526,384 @@ export class PartnerSolutionService {
       'ZA': 'ZAF', 'EG': 'EGY', 'MA': 'MAR', 'CA': 'CAN', 'VE': 'VEN',
     };
     return map[iso2.toUpperCase()] || iso2.toUpperCase();
+  }
+
+  // ============================================
+  // DOCFISCALE (SDI ELECTRONIC INVOICE) OPERATIONS
+  // ============================================
+
+  /**
+   * Create a new Docfiscale (SDI electronic invoice header)
+   * Use for creating invoices to be sent to SDI
+   */
+  async createDocfiscale(payload: PSDocfiscalePayload): Promise<PSDocfiscaleResponse> {
+    const client = await this.getClient();
+
+    console.log('Creating docfiscale in Partner Solution:', {
+      codiceagenzia: payload.codiceagenzia,
+      tipodocumento: payload.tipodocumento,
+      denominazione: payload.denominazione,
+      cognome: payload.cognome,
+      nome: payload.nome,
+      importototaledocumento: payload.importototaledocumento,
+      externalid: payload.externalid,
+    });
+
+    try {
+      const response = await client.post('/docfiscales', payload);
+      console.log('Docfiscale created successfully:', response.data['@id']);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      const errorData = axiosError.response?.data;
+      throw new Error(
+        `Failed to create docfiscale: ${
+          typeof errorData === 'object' ? JSON.stringify(errorData) : axiosError.message
+        }`
+      );
+    }
+  }
+
+  /**
+   * Get a Docfiscale by IRI
+   */
+  async getDocfiscale(docfiscaleIri: string): Promise<PSDocfiscaleResponse> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get(docfiscaleIri);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to get docfiscale ${docfiscaleIri}: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Find Docfiscale by external ID
+   */
+  async findDocfiscaleByExternalId(externalId: string): Promise<PSDocfiscaleResponse | null> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get('/docfiscales', {
+        params: { externalid: externalId },
+      });
+
+      const docfiscales = response.data['hydra:member'] as PSDocfiscaleResponse[];
+      const match = docfiscales.find(d => d.externalid === externalId);
+      return match || null;
+    } catch (error) {
+      const axiosError = error as any;
+      if (axiosError.response?.status === 404) return null;
+      throw new Error(`Failed to search docfiscales: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Create a Docfiscale line item (Dettaglio)
+   */
+  async createDocfiscaleDettaglio(payload: PSDocfiscaleDettaglioPayload): Promise<PSDocfiscaleDettaglioResponse> {
+    const client = await this.getClient();
+
+    console.log('Creating docfiscale dettaglio:', {
+      docfiscale: payload.docfiscale,
+      numerolinea: payload.numerolinea,
+      descrizione: payload.descrizione?.substring(0, 50),
+      quantita: payload.quantita,
+      prezzounitario: payload.prezzounitario,
+    });
+
+    try {
+      const response = await client.post('/docfiscaledettaglios', payload);
+      console.log('Docfiscale dettaglio created successfully:', response.data['@id']);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      const errorData = axiosError.response?.data;
+      throw new Error(
+        `Failed to create docfiscale dettaglio: ${
+          typeof errorData === 'object' ? JSON.stringify(errorData) : axiosError.message
+        }`
+      );
+    }
+  }
+
+  /**
+   * Create DocfiscaleXML to submit to SDI
+   * This triggers the generation of the FatturaPA XML and submission to SDI
+   */
+  async createDocfiscaleXML(payload: PSDocfiscaleXMLPayload): Promise<PSDocfiscaleXMLResponse> {
+    const client = await this.getClient();
+
+    console.log('Creating docfiscalexml for SDI submission:', {
+      docfiscaleid: payload.docfiscaleid,
+      formatotrasmissione: payload.formatotrasmissione,
+      codicedestinatario: payload.codicedestinatario,
+    });
+
+    try {
+      const response = await client.post('/docfiscalexmls', payload);
+      console.log('DocfiscaleXML created successfully:', response.data['@id']);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      const errorData = axiosError.response?.data;
+      throw new Error(
+        `Failed to create docfiscalexml: ${
+          typeof errorData === 'object' ? JSON.stringify(errorData) : axiosError.message
+        }`
+      );
+    }
+  }
+
+  /**
+   * Get DocfiscaleXML by ID or IRI
+   */
+  async getDocfiscaleXML(docfiscalexmlIri: string): Promise<PSDocfiscaleXMLResponse> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get(docfiscalexmlIri);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to get docfiscalexml ${docfiscalexmlIri}: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Get notifications for a DocfiscaleXML (SDI responses)
+   */
+  async getDocfiscaleXMLNotifiche(docfiscalexmlId: number): Promise<PSDocfiscaleXMLNotificaResponse[]> {
+    const client = await this.getClient();
+
+    try {
+      const response = await client.get('/docfiscalexmlnotificas', {
+        params: { docfiscalexml: docfiscalexmlId },
+      });
+
+      return response.data['hydra:member'] || [];
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to get docfiscalexml notifications: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Create a complete SDI invoice from booking data
+   * This is the main method for creating an electronic invoice:
+   * 1. Creates Docfiscale (invoice header)
+   * 2. Creates DocfiscaleDettaglio (line item - "Tour Italia e Vaticano")
+   * 3. Creates DocfiscaleXML (submits to SDI)
+   */
+  async createSdiInvoice(params: {
+    customer: {
+      firstName: string;
+      lastName: string;
+      codiceFiscale?: string;
+      partitaIva?: string;
+      email?: string;
+      pec?: string;
+      codicesdi?: string;
+      address?: string;
+      city?: string;
+      cap?: string;
+      province?: string;
+      country?: string;
+    };
+    booking: {
+      confirmationCode: string;
+      totalAmount: number;
+      invoiceDate: string;
+      description?: string;
+    };
+    praticaIri?: string;  // Optional: link to existing Pratica
+    agencyCode?: string;
+    sendToSdi?: boolean;  // Default: true
+  }): Promise<{
+    docfiscale: PSDocfiscaleResponse;
+    dettaglio: PSDocfiscaleDettaglioResponse;
+    docfiscalexml?: PSDocfiscaleXMLResponse;
+  }> {
+    const agencyCode = params.agencyCode || 'demo2';
+
+    // Step 1: Create Docfiscale (invoice header)
+    console.log(`\n[SDI Invoice] Creating invoice for booking ${params.booking.confirmationCode}...`);
+
+    const docfiscalePayload: PSDocfiscalePayload = {
+      codiceagenzia: agencyCode,
+      stato: 'INS',  // INS = Inserted/Final
+      tipooperazione: 'A',  // A = Active (outgoing invoice)
+      tipodocumento: 'TD01',  // TD01 = Fattura (Invoice)
+      datadocfiscale: params.booking.invoiceDate,
+      importototaledocumento: params.booking.totalAmount,
+      externalid: params.booking.confirmationCode,
+      causale: params.booking.description || `Booking ${params.booking.confirmationCode}`,
+    };
+
+    // Customer identification
+    if (params.customer.partitaIva) {
+      // Company
+      docfiscalePayload.partitaiva = params.customer.partitaIva;
+      docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
+    } else {
+      // Individual
+      docfiscalePayload.cognome = params.customer.lastName;
+      docfiscalePayload.nome = params.customer.firstName;
+      if (params.customer.codiceFiscale) {
+        docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
+      }
+    }
+
+    // Optional fields
+    if (params.customer.pec) docfiscalePayload.pec = params.customer.pec;
+    if (params.customer.codicesdi) docfiscalePayload.codicesdi = params.customer.codicesdi;
+    if (params.customer.address) docfiscalePayload.indirizzo = params.customer.address;
+    if (params.customer.city) docfiscalePayload.comune = params.customer.city;
+    if (params.customer.cap) docfiscalePayload.cap = params.customer.cap;
+    if (params.customer.province) docfiscalePayload.provincia = params.customer.province;
+    if (params.customer.country) docfiscalePayload.nazione = params.customer.country;
+    if (params.praticaIri) docfiscalePayload.pratica = params.praticaIri;
+
+    const docfiscale = await this.createDocfiscale(docfiscalePayload);
+
+    // Step 2: Create DocfiscaleDettaglio (line item)
+    console.log(`[SDI Invoice] Creating line item for docfiscale ${docfiscale['@id']}...`);
+
+    const dettaglioPayload: PSDocfiscaleDettaglioPayload = {
+      docfiscale: docfiscale['@id'],
+      numerolinea: 1,
+      descrizione: 'Tour Italia e Vaticano',  // Fixed description as per user request
+      quantita: 1,
+      prezzounitario: params.booking.totalAmount.toFixed(2),
+      aliquotaiva: 22,  // 22% VAT
+      annullata: 0,
+      issoggettoritenuta: 0,
+    };
+
+    const dettaglio = await this.createDocfiscaleDettaglio(dettaglioPayload);
+
+    // Step 3: Create DocfiscaleXML (submit to SDI) - optional
+    let docfiscalexml: PSDocfiscaleXMLResponse | undefined;
+
+    if (params.sendToSdi !== false) {
+      console.log(`[SDI Invoice] Submitting to SDI...`);
+
+      const xmlPayload: PSDocfiscaleXMLPayload = {
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        docfiscaleid: docfiscale.id,
+        tipomovimento: 'E',  // E = Emission (send)
+        formatotrasmissione: 'FPR12',  // FPR12 = private clients
+        codicedestinatario: params.customer.codicesdi || '0000000',  // Default for private citizens
+      };
+
+      docfiscalexml = await this.createDocfiscaleXML(xmlPayload);
+      console.log(`[SDI Invoice] Successfully submitted to SDI. XML ID: ${docfiscalexml.id}`);
+    }
+
+    console.log(`[SDI Invoice] Invoice created successfully!`);
+    console.log(`  - Docfiscale: ${docfiscale['@id']}`);
+    console.log(`  - Invoice Number: ${docfiscale.numerodocfiscale}`);
+    console.log(`  - Total: €${params.booking.totalAmount}`);
+
+    return { docfiscale, dettaglio, docfiscalexml };
+  }
+
+  /**
+   * Create a credit note (Nota di Credito) for a refund
+   */
+  async createSdiCreditNote(params: {
+    customer: {
+      firstName: string;
+      lastName: string;
+      codiceFiscale?: string;
+      partitaIva?: string;
+      email?: string;
+      pec?: string;
+      codicesdi?: string;
+    };
+    booking: {
+      confirmationCode: string;
+      originalInvoiceNumber: string;  // Reference to original invoice
+      creditAmount: number;
+      creditDate: string;
+      description?: string;
+    };
+    agencyCode?: string;
+    sendToSdi?: boolean;
+  }): Promise<{
+    docfiscale: PSDocfiscaleResponse;
+    dettaglio: PSDocfiscaleDettaglioResponse;
+    docfiscalexml?: PSDocfiscaleXMLResponse;
+  }> {
+    const agencyCode = params.agencyCode || 'demo2';
+
+    console.log(`\n[SDI Credit Note] Creating credit note for booking ${params.booking.confirmationCode}...`);
+
+    const docfiscalePayload: PSDocfiscalePayload = {
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+      tipooperazione: 'A',
+      tipodocumento: 'TD04',  // TD04 = Nota di Credito
+      datadocfiscale: params.booking.creditDate,
+      importototaledocumento: params.booking.creditAmount,
+      externalid: `CN-${params.booking.confirmationCode}`,
+      causale: params.booking.description ||
+        `Nota di credito per fattura ${params.booking.originalInvoiceNumber} - Booking ${params.booking.confirmationCode}`,
+    };
+
+    // Customer identification
+    if (params.customer.partitaIva) {
+      docfiscalePayload.partitaiva = params.customer.partitaIva;
+      docfiscalePayload.denominazione = `${params.customer.lastName} ${params.customer.firstName}`.trim();
+    } else {
+      docfiscalePayload.cognome = params.customer.lastName;
+      docfiscalePayload.nome = params.customer.firstName;
+      if (params.customer.codiceFiscale) {
+        docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
+      }
+    }
+
+    if (params.customer.pec) docfiscalePayload.pec = params.customer.pec;
+    if (params.customer.codicesdi) docfiscalePayload.codicesdi = params.customer.codicesdi;
+
+    const docfiscale = await this.createDocfiscale(docfiscalePayload);
+
+    // Create line item
+    const dettaglioPayload: PSDocfiscaleDettaglioPayload = {
+      docfiscale: docfiscale['@id'],
+      numerolinea: 1,
+      descrizione: `Storno Tour Italia e Vaticano - Rif. Fattura ${params.booking.originalInvoiceNumber}`,
+      quantita: 1,
+      prezzounitario: params.booking.creditAmount.toFixed(2),
+      aliquotaiva: 22,
+      annullata: 0,
+      issoggettoritenuta: 0,
+    };
+
+    const dettaglio = await this.createDocfiscaleDettaglio(dettaglioPayload);
+
+    // Submit to SDI
+    let docfiscalexml: PSDocfiscaleXMLResponse | undefined;
+
+    if (params.sendToSdi !== false) {
+      const xmlPayload: PSDocfiscaleXMLPayload = {
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        docfiscaleid: docfiscale.id,
+        tipomovimento: 'E',
+        formatotrasmissione: 'FPR12',
+        codicedestinatario: params.customer.codicesdi || '0000000',
+      };
+
+      docfiscalexml = await this.createDocfiscaleXML(xmlPayload);
+      console.log(`[SDI Credit Note] Successfully submitted to SDI. XML ID: ${docfiscalexml.id}`);
+    }
+
+    console.log(`[SDI Credit Note] Credit note created successfully!`);
+    return { docfiscale, dettaglio, docfiscalexml };
   }
 
   // ============================================

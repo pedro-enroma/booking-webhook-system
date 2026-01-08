@@ -100,7 +100,13 @@ app.get('/', (req, res) => {
       invoices_batch: 'POST /api/invoices/create-batch',
       invoices_config: 'GET/PUT /api/invoices/config',
       invoices_health: 'GET /api/invoices/health',
-      invoices_pending: 'GET /api/invoices/pending-bookings'
+      invoices_pending: 'GET /api/invoices/pending-bookings',
+      // SDI (Docfiscale) endpoints
+      sdi_create: 'POST /api/invoices/sdi/create',
+      sdi_create_batch: 'POST /api/invoices/sdi/create-batch',
+      sdi_credit_note: 'POST /api/invoices/sdi/credit-note',
+      sdi_status: 'GET /api/invoices/sdi/status/:bookingId',
+      sdi_docfiscale: 'GET /api/invoices/sdi/docfiscale/:confirmationCode'
     },
     status: 'ready',
     environment: process.env.NODE_ENV || 'development'

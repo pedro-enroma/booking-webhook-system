@@ -467,3 +467,141 @@ export interface UpdateConfigRequest {
   default_account_id?: string;
   default_customer_id?: string;
 }
+
+// ============================================
+// DOCFISCALE (SDI ELECTRONIC INVOICE) TYPES
+// ============================================
+
+export type DocfiscaleStatus = 'WP' | 'INS' | 'MOD' | 'CANC';
+export type TipoOperazione = 'A' | 'P';  // A = Active (outgoing), P = Passive (incoming)
+export type TipoDocumento = 'TD01' | 'TD04' | 'TD05' | 'TD24' | 'TD25';
+// TD01 = Fattura, TD04 = Nota di credito, TD05 = Nota di debito
+// TD24 = Fattura differita, TD25 = Fattura differita beni/servizi
+
+/**
+ * Docfiscale - SDI Electronic Invoice Header
+ * Used for creating electronic invoices to be sent to SDI (Sistema di Interscambio)
+ */
+export interface PSDocfiscalePayload {
+  // Required fields
+  codiceagenzia: string;              // Agency code (e.g., 'demo2')
+  stato: DocfiscaleStatus;            // Status: WP (draft), INS (inserted/final)
+  tipooperazione: TipoOperazione;     // A = Active (outgoing invoice)
+  tipodocumento: TipoDocumento;       // TD01 = Invoice, TD04 = Credit Note
+
+  // Customer identification - use one of these
+  partitaiva?: string;                // Customer VAT number (for companies)
+  codicefiscale?: string;             // Customer fiscal code (for individuals)
+  denominazione?: string;             // Company name (for companies)
+  cognome?: string;                   // Last name (for individuals)
+  nome?: string;                      // First name (for individuals)
+
+  // Invoice metadata
+  numerodocfiscale?: string;          // Invoice number (auto-generated if not provided)
+  datadocfiscale: string;             // Invoice date (ISO format)
+  oggetto?: string;                   // Subject
+  causale?: string;                   // Description/reason for the invoice
+
+  // Amounts (calculated from line items or provided directly)
+  importototaledocumento: number;     // Total document amount
+  arrotondamento?: number;            // Rounding adjustment
+
+  // Optional fields
+  externalid?: string;                // External ID (e.g., booking confirmation code)
+  pratica?: string;                   // IRI of linked Pratica (if any)
+  pec?: string;                       // Customer PEC email
+  codicesdi?: string;                 // Customer SDI code
+  nazione?: string;                   // Customer country (ISO 3-letter)
+  cap?: string;                       // Postal code
+  comune?: string;                    // City
+  indirizzo?: string;                 // Address
+  provincia?: string;                 // Province
+}
+
+export interface PSDocfiscaleResponse {
+  '@context': string;
+  '@id': string;                      // IRI of created docfiscale
+  '@type': string;
+  id: number;
+  numerodocfiscale: string;
+  datadocfiscale: string;
+  stato: DocfiscaleStatus;
+  tipooperazione: TipoOperazione;
+  tipodocumento: TipoDocumento;
+  denominazione?: string;
+  cognome?: string;
+  nome?: string;
+  partitaiva?: string;
+  codicefiscale?: string;
+  importototaledocumento: number;
+  externalid?: string;
+  pratica?: string;
+}
+
+/**
+ * DocfiscaleDettaglio - SDI Invoice Line Item
+ */
+export interface PSDocfiscaleDettaglioPayload {
+  docfiscale: string;                 // IRI of parent docfiscale (e.g., "/docfiscales/123")
+  numerolinea: number;                // Line number (1, 2, 3...)
+  descrizione: string;                // Line item description
+  quantita: number;                   // Quantity
+  prezzounitario: string | number;    // Unit price (API accepts both)
+  aliquotaiva?: number;               // VAT rate (22 for 22%)
+  annullata?: number;                 // Cancelled flag (0 or 1)
+  issoggettoritenuta?: number;        // Subject to withholding (0 or 1)
+}
+
+export interface PSDocfiscaleDettaglioResponse {
+  '@context': string;
+  '@id': string;                      // IRI of created line item
+  '@type': string;
+  id: number;
+  descrizione: string;
+  quantita: number;
+  prezzounitario: number;
+  aliquotaiva: number;
+}
+
+/**
+ * DocfiscaleXML - SDI Transmission Record
+ * Used to generate and send the FatturaPA XML to SDI
+ */
+export interface PSDocfiscaleXMLPayload {
+  codiceagenzia: string;              // Agency code
+  stato: 'INS';                       // Status (always INS for sending)
+  docfiscaleid: number;               // ID of the docfiscale to send
+  tipomovimento: 'E' | 'R';           // E = Emission (send), R = Reception
+  formatotrasmissione: 'FPR12' | 'FPA12';  // FPR12 = private, FPA12 = public admin
+  codicedestinatario?: string;        // SDI destination code (0000000 for private)
+}
+
+export interface PSDocfiscaleXMLResponse {
+  '@context': string;
+  '@id': string;
+  '@type': string;
+  id: number;
+  docfiscaleid: number;
+  stato: string;
+  tipomovimento: string;
+  formatotrasmissione: string;
+  nomefileinviato?: string;           // Generated XML filename
+  datainvio?: string;                 // Submission date
+  esitotrasmissione?: string;         // Transmission result
+}
+
+/**
+ * DocfiscaleXMLNotifica - SDI Response Notification
+ * Received from SDI with the result of the transmission
+ */
+export interface PSDocfiscaleXMLNotificaResponse {
+  '@context': string;
+  '@id': string;
+  '@type': string;
+  id: number;
+  docfiscalexml: string;              // IRI of the docfiscalexml
+  tiponotifica: string;               // Notification type (RC, NS, MC, etc.)
+  datanotifica: string;               // Notification date
+  descrizionenotifica?: string;       // Notification description
+  nomefilenotifica?: string;          // Notification file name
+}

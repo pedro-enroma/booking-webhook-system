@@ -550,6 +550,232 @@ export class InvoiceService {
   }
 
   // ============================================
+  // SDI (DOCFISCALE) INVOICE CREATION
+  // ============================================
+
+  /**
+   * Create an SDI electronic invoice (Docfiscale) from booking data
+   * This creates:
+   * 1. Docfiscale (invoice header) with customer Anagrafica
+   * 2. DocfiscaleDettaglio with "Tour Italia e Vaticano"
+   * 3. DocfiscaleXML to send to SDI
+   *
+   * Can optionally link to an existing Pratica
+   */
+  async createSdiInvoiceFromBooking(
+    bookingId: number,
+    options?: {
+      praticaIri?: string;
+      sendToSdi?: boolean;
+      triggeredBy?: string;
+    }
+  ): Promise<{
+    success: boolean;
+    docfiscaleId?: number;
+    docfiscaleIri?: string;
+    invoiceNumber?: string;
+    docfiscalexmlId?: number;
+    error?: string;
+  }> {
+    console.log(`[InvoiceService] Creating SDI invoice for booking ${bookingId}...`);
+
+    try {
+      // Fetch booking data
+      const bookingData = await this.fetchBookingData(bookingId);
+      if (!bookingData) {
+        return { success: false, error: `Booking ${bookingId} not found` };
+      }
+
+      if (!bookingData.customer) {
+        return { success: false, error: `No customer data found for booking ${bookingId}` };
+      }
+
+      // Determine invoice date (booking creation date)
+      const invoiceDate = bookingData.creation_date.split('T')[0];
+
+      // Create SDI invoice using PartnerSolutionService
+      const result = await this.partnerSolution.createSdiInvoice({
+        customer: {
+          firstName: bookingData.customer.first_name || 'N/A',
+          lastName: bookingData.customer.last_name || 'N/A',
+          email: bookingData.customer.email,
+          // Note: codiceFiscale/partitaIva would need to be stored in customer table
+          // For now, SDI will use default codes for foreign customers
+        },
+        booking: {
+          confirmationCode: bookingData.confirmation_code,
+          totalAmount: bookingData.total_price,
+          invoiceDate: invoiceDate,
+          description: `Tour - Booking ${bookingData.confirmation_code}`,
+        },
+        praticaIri: options?.praticaIri,
+        sendToSdi: options?.sendToSdi ?? true,
+      });
+
+      console.log(`[InvoiceService] SDI invoice created successfully for booking ${bookingId}`);
+      console.log(`  - Docfiscale IRI: ${result.docfiscale['@id']}`);
+      console.log(`  - Invoice Number: ${result.docfiscale.numerodocfiscale}`);
+
+      // Update the invoices table with docfiscale info (if invoice record exists)
+      await supabase
+        .from('invoices')
+        .update({
+          docfiscale_id: result.docfiscale.id,
+          docfiscale_iri: result.docfiscale['@id'],
+          docfiscale_number: result.docfiscale.numerodocfiscale,
+          docfiscalexml_id: result.docfiscalexml?.id,
+        })
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE');
+
+      return {
+        success: true,
+        docfiscaleId: result.docfiscale.id,
+        docfiscaleIri: result.docfiscale['@id'],
+        invoiceNumber: result.docfiscale.numerodocfiscale,
+        docfiscalexmlId: result.docfiscalexml?.id,
+      };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`[InvoiceService] Error creating SDI invoice for booking ${bookingId}:`, error);
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  /**
+   * Create SDI credit note (Nota di Credito) for a refunded/cancelled booking
+   */
+  async createSdiCreditNote(
+    bookingId: number,
+    options?: {
+      creditAmount?: number;
+      triggeredBy?: string;
+      sendToSdi?: boolean;
+    }
+  ): Promise<{
+    success: boolean;
+    docfiscaleId?: number;
+    docfiscaleIri?: string;
+    creditNoteNumber?: string;
+    error?: string;
+  }> {
+    console.log(`[InvoiceService] Creating SDI credit note for booking ${bookingId}...`);
+
+    try {
+      // Find the original invoice to get docfiscale info
+      const { data: originalInvoice } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE')
+        .single();
+
+      if (!originalInvoice) {
+        return { success: false, error: `No invoice found for booking ${bookingId}` };
+      }
+
+      // Fetch booking/customer data
+      const bookingData = await this.fetchBookingData(bookingId);
+      if (!bookingData || !bookingData.customer) {
+        return { success: false, error: `No customer data found for booking ${bookingId}` };
+      }
+
+      const creditAmount = options?.creditAmount ?? originalInvoice.total_amount;
+      const originalInvoiceNumber = originalInvoice.docfiscale_number ||
+        originalInvoice.confirmation_code;
+
+      // Create SDI credit note
+      const result = await this.partnerSolution.createSdiCreditNote({
+        customer: {
+          firstName: bookingData.customer.first_name || 'N/A',
+          lastName: bookingData.customer.last_name || 'N/A',
+          email: bookingData.customer.email,
+        },
+        booking: {
+          confirmationCode: bookingData.confirmation_code,
+          originalInvoiceNumber: originalInvoiceNumber,
+          creditAmount: Math.abs(creditAmount),
+          creditDate: new Date().toISOString().split('T')[0],
+          description: `Nota di credito per Booking ${bookingData.confirmation_code}`,
+        },
+        sendToSdi: options?.sendToSdi ?? true,
+      });
+
+      console.log(`[InvoiceService] SDI credit note created for booking ${bookingId}`);
+
+      // Update the credit note record with docfiscale info
+      await supabase
+        .from('invoices')
+        .update({
+          docfiscale_id: result.docfiscale.id,
+          docfiscale_iri: result.docfiscale['@id'],
+          docfiscale_number: result.docfiscale.numerodocfiscale,
+          docfiscalexml_id: result.docfiscalexml?.id,
+        })
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'CREDIT_NOTE');
+
+      return {
+        success: true,
+        docfiscaleId: result.docfiscale.id,
+        docfiscaleIri: result.docfiscale['@id'],
+        creditNoteNumber: result.docfiscale.numerodocfiscale,
+      };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`[InvoiceService] Error creating SDI credit note for booking ${bookingId}:`, error);
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  /**
+   * Check SDI status for an invoice (get notifications)
+   */
+  async checkSdiStatus(bookingId: number): Promise<{
+    success: boolean;
+    status?: string;
+    notifications?: any[];
+    error?: string;
+  }> {
+    try {
+      // Get invoice with docfiscalexml_id
+      const { data: invoice } = await supabase
+        .from('invoices')
+        .select('docfiscalexml_id')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE')
+        .single();
+
+      if (!invoice?.docfiscalexml_id) {
+        return { success: false, error: 'No SDI submission found for this booking' };
+      }
+
+      // Get notifications from Partner Solution
+      const notifications = await this.partnerSolution.getDocfiscaleXMLNotifiche(
+        invoice.docfiscalexml_id
+      );
+
+      // Determine status based on notifications
+      let status = 'SUBMITTED';
+      if (notifications.length > 0) {
+        const latestNotifica = notifications[notifications.length - 1];
+        // RC = Ricevuta di Consegna (delivered), NS = Notifica di Scarto (rejected)
+        // MC = Mancata Consegna (delivery failed), AT = Attestazione
+        status = latestNotifica.tiponotifica;
+      }
+
+      return {
+        success: true,
+        status,
+        notifications,
+      };
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  // ============================================
   // CREDIT NOTES
   // ============================================
 
