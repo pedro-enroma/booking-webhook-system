@@ -1,0 +1,4038 @@
+{
+  "creationDate": 1765968099000,
+  "bookingId": 80363961,
+  "language": "en",
+  "confirmationCode": "ENRO-80363961",
+  "externalBookingReference": "930000",
+  "status": "CONFIRMED",
+  "currency": "EUR",
+  "totalPrice": 651,
+  "totalPaid": 651,
+  "totalDue": 0,
+  "totalDueAsText": "€0.00",
+  "totalPriceConverted": 651,
+  "customer": {
+    "contactDetailsHidden": false,
+    "contactDetailsHiddenUntil": null,
+    "id": 187078594,
+    "created": null,
+    "uuid": "f1c3f5de-abe1-42d7-ab1a-9e9ee7991146",
+    "email": "info@ciaoflorence.it",
+    "title": null,
+    "firstName": "Mileidys ",
+    "lastName": "Martinez ",
+    "personalIdNumber": null,
+    "clcEmail": false,
+    "language": null,
+    "nationality": null,
+    "sex": null,
+    "dateOfBirth": null,
+    "phoneNumber": "+39 055354044",
+    "phoneNumberCountryCode": null,
+    "address": null,
+    "postCode": null,
+    "state": null,
+    "place": null,
+    "country": null,
+    "organization": null,
+    "passportId": null,
+    "passportExpDay": null,
+    "passportExpMonth": null,
+    "passportExpYear": null,
+    "credentials": null,
+    "acceptsMarketing": false,
+    "tags": null,
+    "octoNote": null,
+    "phoneNumberLinkable": "+39055354044"
+  },
+  "invoice": {
+    "id": 462195140,
+    "issueDate": 1765968099000,
+    "currency": "EUR",
+    "includedAppliedTaxes": [],
+    "excludedAppliedTaxes": [],
+    "issuer": {
+      "id": 27164,
+      "title": "EnRoma.com",
+      "externalId": "",
+      "flags": []
+    },
+    "issuerCompany": {
+      "registrationNumber": "Licenza Provincia Roma n° 2316",
+      "vatRegistrationNumber": "IT09802381005"
+    },
+    "recipient": {
+      "contactDetailsHidden": false,
+      "contactDetailsHiddenUntil": null,
+      "id": 187078594,
+      "created": null,
+      "uuid": "f1c3f5de-abe1-42d7-ab1a-9e9ee7991146",
+      "email": "info@ciaoflorence.it",
+      "title": null,
+      "firstName": "Mileidys ",
+      "lastName": "Martinez ",
+      "personalIdNumber": null,
+      "clcEmail": false,
+      "language": null,
+      "nationality": null,
+      "sex": null,
+      "dateOfBirth": null,
+      "phoneNumber": "+39 055354044",
+      "phoneNumberCountryCode": null,
+      "address": null,
+      "postCode": null,
+      "state": null,
+      "place": null,
+      "country": null,
+      "organization": null,
+      "passportId": null,
+      "passportExpDay": null,
+      "passportExpMonth": null,
+      "passportExpYear": null,
+      "credentials": null,
+      "acceptsMarketing": false,
+      "tags": null,
+      "octoNote": null,
+      "phoneNumberLinkable": "+39055354044"
+    },
+    "customLineItems": [],
+    "productInvoices": [
+      {
+        "id": 218156823,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116163381,
+        "title": "Vatican Museums and Sistine Chapel Guided Tour - Tue, December 23 2025 - 11:15 AM",
+        "product": {
+          "id": 217949,
+          "title": "Vatican Museums and Sistine Chapel Guided Tour",
+          "flags": [],
+          "keyPhoto": {
+            "id": 8162843,
+            "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "description": "",
+            "alternateText": "",
+            "height": "1920",
+            "width": "2560",
+            "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 27164,
+            "title": "EnRoma.com",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour without pick up",
+          "offers": [
+            {
+              "id": 360,
+              "ownerId": 27164,
+              "discount": 3,
+              "activities": [
+                {
+                  "id": 217949,
+                  "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                  "excerpt": "Tour en español con entradas sin colas",
+                  "keyPhoto": {
+                    "id": 8162843,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1920",
+                    "width": "2560",
+                    "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": 220107,
+                  "title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+                  "excerpt": "",
+                  "keyPhoto": {
+                    "id": 8162860,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                    "description": null,
+                    "alternateText": null,
+                    "height": "1267",
+                    "width": "1900",
+                    "fileName": "/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "requireAllActivities": false,
+              "applyToExtras": false,
+              "applyToPickUpAndDropOff": false
+            },
+            {
+              "id": 721,
+              "ownerId": 27164,
+              "discount": 6,
+              "activities": [
+                {
+                  "id": 216954,
+                  "title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+                  "excerpt": "",
+                  "keyPhoto": {
+                    "id": 8162897,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/81168340-c613-482c-b733-d65b11902339.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1445",
+                    "width": "2560",
+                    "fileName": "/81168340-c613-482c-b733-d65b11902339.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": 217949,
+                  "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                  "excerpt": "Tour en español con entradas sin colas",
+                  "keyPhoto": {
+                    "id": 8162843,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1920",
+                    "width": "2560",
+                    "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "requireAllActivities": false,
+              "applyToExtras": false,
+              "applyToPickUpAndDropOff": false
+            }
+          ]
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "ENRO-T116163381",
+        "dates": "Tue, December 23 2025 - 11:15 AM",
+        "timestamp": 1766488500000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227911892,
+            "title": "Adulto",
+            "currency": "EUR",
+            "unitPriceDate": 1765968099000,
+            "quantity": 4,
+            "unitPrice": 99,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 161601,
+            "itemBookingId": "217949_161601",
+            "costItemId": 394842060,
+            "costItemTitle": "Adulto",
+            "costGroupTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+            "supportsDiscount": true,
+            "people": 4,
+            "total": 396,
+            "totalDiscountedAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "totalDue": 396,
+            "totalDueAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 99,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 396,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 99,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 99,
+            "totalAsText": "€396.00",
+            "totalDiscountedAsText": "€396.00",
+            "totalDueAsText": "€396.00",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€99.00",
+            "unitPriceAsText": "€99.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          },
+          {
+            "id": 227911893,
+            "title": "6 a 17 años",
+            "currency": "EUR",
+            "unitPriceDate": 1765968099000,
+            "quantity": 3,
+            "unitPrice": 85,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 166592,
+            "itemBookingId": "217949_166592",
+            "costItemId": 394842061,
+            "costItemTitle": "6 a 17 años",
+            "costGroupTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+            "supportsDiscount": true,
+            "people": 3,
+            "total": 255,
+            "totalDiscountedAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "totalDue": 255,
+            "totalDueAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 85,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 255,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 85,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 85,
+            "totalAsText": "€255.00",
+            "totalDiscountedAsText": "€255.00",
+            "totalDueAsText": "€255.00",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€85.00",
+            "unitPriceAsText": "€85.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0.00",
+        "totalDiscountedAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "free": false,
+        "totalDueAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "excludedTaxes": false,
+        "includedTaxes": false,
+        "strikeThroughTotalAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalAsText": "€651.00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€651.00",
+        "totalDiscountAsText": "€0.00",
+        "totalDueAsText": "€651.00",
+        "totalExcludedTaxAsText": "€0.00",
+        "totalIncludedTaxAsText": "€0.00",
+        "totalTaxAsText": "€0.00",
+        "strikeThroughTotalAsText": "€651.00"
+      }
+    ],
+    "payments": [],
+    "appliedFees": [],
+    "issuerName": "EnRoma.com",
+    "totalDueAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalBookingFeePercent": 0,
+    "totalFeesAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "invoiceNumber": "C-462195140",
+    "lodgingTaxes": [],
+    "totalBookingFeeAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDueWithoutExcludedTaxAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "recipientName": "Mileidys  Martinez ",
+    "totalFeesAsText": "€0.00",
+    "totalDiscountedAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "free": false,
+    "totalAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalExcludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalIncludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDiscountAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "excludedTaxes": false,
+    "includedTaxes": false,
+    "strikeThroughTotalAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalAsText": "€651.00",
+    "totalWithExcludedTaxAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalDiscountedAsText": "€651.00",
+    "totalDiscountAsText": "€0.00",
+    "totalDueAsText": "€651.00",
+    "totalExcludedTaxAsText": "€0.00",
+    "totalIncludedTaxAsText": "€0.00",
+    "totalTaxAsText": "€0.00",
+    "strikeThroughTotalAsText": "€651.00"
+  },
+  "agentInvoice": {
+    "id": 446765,
+    "issueDate": 1765968099000,
+    "currency": "EUR",
+    "includedAppliedTaxes": [],
+    "excludedAppliedTaxes": [],
+    "issuer": {
+      "id": 27164,
+      "title": "EnRoma.com",
+      "externalId": "",
+      "flags": []
+    },
+    "recipient": {
+      "id": 28916,
+      "title": "CiaoFlorence",
+      "externalId": "",
+      "flags": []
+    },
+    "lineItems": [
+      {
+        "id": 795308,
+        "title": "Adulto",
+        "currency": "EUR",
+        "unitPriceDate": 1765968099000,
+        "quantity": 4,
+        "unitPrice": 99,
+        "calculatedDiscount": 0,
+        "customDiscount": 0,
+        "calculatedDiscountAmount": 0,
+        "taxAmount": 0,
+        "taxesAsMoney": [],
+        "strikeThroughTotal": {
+          "amount": 316.8,
+          "currency": "EUR"
+        },
+        "rate": "Tour without pick up",
+        "confirmationCode": "ENRO-T116163381",
+        "dates": "Tue, December 23 2025 - 11:15 AM",
+        "productTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+        "commission": 20,
+        "totalDiscountedAsMoney": {
+          "amount": 316.8,
+          "currency": "EUR"
+        },
+        "discountedUnitPriceAsMoney": {
+          "amount": 79.2,
+          "currency": "EUR"
+        },
+        "total": 396,
+        "totalDue": 316.8,
+        "totalDueAsMoney": {
+          "amount": 316.8,
+          "currency": "EUR"
+        },
+        "unitPriceAsMoney": {
+          "amount": 99,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 396,
+          "currency": "EUR"
+        },
+        "discount": 0,
+        "totalDiscounted": 316.8,
+        "taxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "discountedUnitPrice": 79.2,
+        "totalAsText": "€396.00",
+        "totalDiscountedAsText": "€316.80",
+        "totalDueAsText": "€316.80",
+        "discountAmountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "taxAsText": "€0.00",
+        "discountedUnitPriceAsText": "€79.20",
+        "unitPriceAsText": "€99.00",
+        "calculatedDiscountAmountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "discountAmountAsText": "€0.00"
+      },
+      {
+        "id": 795309,
+        "title": "6 a 17 años",
+        "currency": "EUR",
+        "unitPriceDate": 1765968099000,
+        "quantity": 3,
+        "unitPrice": 85,
+        "calculatedDiscount": 0,
+        "customDiscount": 0,
+        "calculatedDiscountAmount": 0,
+        "taxAmount": 0,
+        "taxesAsMoney": [],
+        "strikeThroughTotal": {
+          "amount": 204,
+          "currency": "EUR"
+        },
+        "rate": "Tour without pick up",
+        "confirmationCode": "ENRO-T116163381",
+        "dates": "Tue, December 23 2025 - 11:15 AM",
+        "productTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+        "commission": 20,
+        "totalDiscountedAsMoney": {
+          "amount": 204,
+          "currency": "EUR"
+        },
+        "discountedUnitPriceAsMoney": {
+          "amount": 68,
+          "currency": "EUR"
+        },
+        "total": 255,
+        "totalDue": 204,
+        "totalDueAsMoney": {
+          "amount": 204,
+          "currency": "EUR"
+        },
+        "unitPriceAsMoney": {
+          "amount": 85,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 255,
+          "currency": "EUR"
+        },
+        "discount": 0,
+        "totalDiscounted": 204,
+        "taxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "discountedUnitPrice": 68,
+        "totalAsText": "€255.00",
+        "totalDiscountedAsText": "€204.00",
+        "totalDueAsText": "€204.00",
+        "discountAmountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "taxAsText": "€0.00",
+        "discountedUnitPriceAsText": "€68.00",
+        "unitPriceAsText": "€85.00",
+        "calculatedDiscountAmountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "discountAmountAsText": "€0.00"
+      }
+    ],
+    "customLineItems": [],
+    "issuerName": "EnRoma.com",
+    "invoiceNumber": "G-446765",
+    "recipientName": "CiaoFlorence",
+    "totalDiscountedAsMoney": {
+      "amount": 520.8,
+      "currency": "EUR"
+    },
+    "free": false,
+    "totalDueAsMoney": {
+      "amount": 520.8,
+      "currency": "EUR"
+    },
+    "totalAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalExcludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalIncludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDiscountAsMoney": {
+      "amount": 130.2,
+      "currency": "EUR"
+    },
+    "totalTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "excludedTaxes": false,
+    "includedTaxes": false,
+    "strikeThroughTotalAsMoney": {
+      "amount": 520.8,
+      "currency": "EUR"
+    },
+    "totalAsText": "€651.00",
+    "totalWithExcludedTaxAsMoney": {
+      "amount": 651,
+      "currency": "EUR"
+    },
+    "totalDiscountedAsText": "€520.80",
+    "totalDiscountAsText": "€130.20",
+    "totalDueAsText": "€520.80",
+    "totalExcludedTaxAsText": "€0.00",
+    "totalIncludedTaxAsText": "€0.00",
+    "totalTaxAsText": "€0.00",
+    "strikeThroughTotalAsText": "€520.80"
+  },
+  "customerPayments": [
+    {
+      "id": 46074535,
+      "amount": 651,
+      "currency": "EUR",
+      "comment": "Payment for booking #80363961, performed by AGENT [CiaoFlorence] from EnRoma.com: Veronica M. (veronica@ciaoflorence.it)",
+      "transactionDate": 1765968099000,
+      "activeCustomerInvoiceId": 462195140,
+      "paymentType": "CASH",
+      "isRefundable": false,
+      "totalRefundedAmount": 0,
+      "maxRefundableAmount": 651,
+      "amountAsMoney": {
+        "amount": 651,
+        "currency": "EUR"
+      },
+      "refundable": false,
+      "amountAsText": "€651.00",
+      "refundedAmountAsText": "€0.00",
+      "remainingRefundableAmount": 651
+    }
+  ],
+  "paymentType": "INVOICED",
+  "agent": {
+    "id": 28916,
+    "title": "CiaoFlorence",
+    "linkedExternalCustomers": []
+  },
+  "seller": {
+    "id": 27164,
+    "title": "EnRoma.com",
+    "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+    "logo": {
+      "id": 5260859,
+      "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "description": null,
+      "alternateText": null,
+      "height": null,
+      "width": null,
+      "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "flags": [],
+      "derived": [
+        {
+          "name": "thumbnail",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+        },
+        {
+          "name": "preview",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+        },
+        {
+          "name": "large",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+        }
+      ]
+    },
+    "currencyCode": "EUR",
+    "countryCode": "IT",
+    "phoneNumber": "+39 3429920638",
+    "emailAddress": "info@enroma.com",
+    "website": "https://www.enroma.com/",
+    "logoStyle": "",
+    "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+    "timeZone": "Europe/Rome",
+    "showInvoiceIdOnTicket": false,
+    "showAgentDetailsOnTicket": false,
+    "showPaymentsOnInvoice": false,
+    "companyEmailIsDefault": true
+  },
+  "bookingChannel": {
+    "id": 59838,
+    "uuid": "383ee764-e2dd-4948-987e-bd2229b558ef",
+    "title": "Backend",
+    "backend": true,
+    "overrideVoucherHeader": false,
+    "voucherName": "",
+    "voucherPhoneNumber": "",
+    "voucherEmailAddress": "",
+    "voucherLogoStyle": "",
+    "type": "BACKEND",
+    "voucherWebsite": "",
+    "paymentProviderAdded": true,
+    "flags": [],
+    "shoppingCartPosition": "RIGHT"
+  },
+  "accommodationBookings": [],
+  "activityBookings": [
+    {
+      "bookingId": 116163381,
+      "parentBookingId": 80363961,
+      "confirmationCode": "ENRO-80363961",
+      "productConfirmationCode": "ENRO-T116163381",
+      "barcode": {
+        "value": "ENRO-T116163381",
+        "barcodeType": "QR_CODE"
+      },
+      "hasTicket": false,
+      "boxBooking": false,
+      "startDateTime": 1766488500000,
+      "endDateTime": 1766499300000,
+      "status": "CONFIRMED",
+      "includedOnCustomerInvoice": false,
+      "title": "Vatican Museums and Sistine Chapel Guided Tour",
+      "totalPrice": 651,
+      "priceWithDiscount": 651,
+      "totalPriceAsText": "€651.00",
+      "priceWithDiscountAsText": "€651.00",
+      "discountPercentage": 0,
+      "discountAmount": 0,
+      "productCategory": "ACTIVITIES",
+      "paidType": "INVOICED",
+      "product": {
+        "id": 217949,
+        "title": "Vatican Museums and Sistine Chapel Guided Tour",
+        "flags": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "externalId": "ORI-1",
+        "productCategory": "ACTIVITIES",
+        "isPassProduct": false,
+        "excerpt": "Vatican City Tour: Sistine Chapel & Museums",
+        "offers": [
+          {
+            "id": 360,
+            "ownerId": 27164,
+            "discount": 3,
+            "activities": [
+              {
+                "id": 217949,
+                "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                "excerpt": "Tour en español con entradas sin colas",
+                "keyPhoto": {
+                  "id": 8162843,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1920",
+                  "width": "2560",
+                  "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": 220107,
+                "title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+                "excerpt": "",
+                "keyPhoto": {
+                  "id": 8162860,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                  "description": null,
+                  "alternateText": null,
+                  "height": "1267",
+                  "width": "1900",
+                  "fileName": "/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              }
+            ],
+            "requireAllActivities": false,
+            "applyToExtras": false,
+            "applyToPickUpAndDropOff": false
+          },
+          {
+            "id": 721,
+            "ownerId": 27164,
+            "discount": 6,
+            "activities": [
+              {
+                "id": 216954,
+                "title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+                "excerpt": "",
+                "keyPhoto": {
+                  "id": 8162897,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/81168340-c613-482c-b733-d65b11902339.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1445",
+                  "width": "2560",
+                  "fileName": "/81168340-c613-482c-b733-d65b11902339.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": 217949,
+                "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                "excerpt": "Tour en español con entradas sin colas",
+                "keyPhoto": {
+                  "id": 8162843,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1920",
+                  "width": "2560",
+                  "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              }
+            ],
+            "requireAllActivities": false,
+            "applyToExtras": false,
+            "applyToPickUpAndDropOff": false
+          }
+        ],
+        "cancellationPolicy": {
+          "id": 194044,
+          "title": "Vaticano y Coliseo",
+          "penaltyRules": [
+            {
+              "id": 211690,
+              "cutoffHours": 168,
+              "charge": 100,
+              "chargeType": "percentage",
+              "percentage": 100
+            }
+          ],
+          "tax": null,
+          "defaultPolicy": false,
+          "policyType": "ADVANCED",
+          "simpleCutoffHours": null,
+          "policyTypeEnum": "ADVANCED"
+        }
+      },
+      "agent": {
+        "id": 28916,
+        "title": "CiaoFlorence",
+        "linkedExternalCustomers": []
+      },
+      "productId": 217949,
+      "linksToExternalProducts": [],
+      "answers": [],
+      "invoice": {
+        "id": 218156823,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116163381,
+        "title": "Vatican Museums and Sistine Chapel Guided Tour - Tue, December 23 2025 - 11:15 AM",
+        "product": {
+          "id": 217949,
+          "title": "Vatican Museums and Sistine Chapel Guided Tour",
+          "flags": [],
+          "keyPhoto": {
+            "id": 8162843,
+            "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "description": "",
+            "alternateText": "",
+            "height": "1920",
+            "width": "2560",
+            "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 27164,
+            "title": "EnRoma.com",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour without pick up",
+          "offers": [
+            {
+              "id": 360,
+              "ownerId": 27164,
+              "discount": 3,
+              "activities": [
+                {
+                  "id": 217949,
+                  "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                  "excerpt": "Tour en español con entradas sin colas",
+                  "keyPhoto": {
+                    "id": 8162843,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1920",
+                    "width": "2560",
+                    "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": 220107,
+                  "title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+                  "excerpt": "",
+                  "keyPhoto": {
+                    "id": 8162860,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                    "description": null,
+                    "alternateText": null,
+                    "height": "1267",
+                    "width": "1900",
+                    "fileName": "/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "requireAllActivities": false,
+              "applyToExtras": false,
+              "applyToPickUpAndDropOff": false
+            },
+            {
+              "id": 721,
+              "ownerId": 27164,
+              "discount": 6,
+              "activities": [
+                {
+                  "id": 216954,
+                  "title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+                  "excerpt": "",
+                  "keyPhoto": {
+                    "id": 8162897,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/81168340-c613-482c-b733-d65b11902339.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1445",
+                    "width": "2560",
+                    "fileName": "/81168340-c613-482c-b733-d65b11902339.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": 217949,
+                  "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                  "excerpt": "Tour en español con entradas sin colas",
+                  "keyPhoto": {
+                    "id": 8162843,
+                    "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "description": "",
+                    "alternateText": "",
+                    "height": "1920",
+                    "width": "2560",
+                    "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                    "flags": [],
+                    "derived": [
+                      {
+                        "name": "thumbnail",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                      },
+                      {
+                        "name": "preview",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                      },
+                      {
+                        "name": "large",
+                        "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                        "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "requireAllActivities": false,
+              "applyToExtras": false,
+              "applyToPickUpAndDropOff": false
+            }
+          ]
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "ENRO-T116163381",
+        "dates": "Tue, December 23 2025 - 11:15 AM",
+        "timestamp": 1766488500000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227911892,
+            "title": "Adulto",
+            "currency": "EUR",
+            "unitPriceDate": 1765968099000,
+            "quantity": 4,
+            "unitPrice": 99,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 161601,
+            "itemBookingId": "217949_161601",
+            "costItemId": 394842060,
+            "costItemTitle": "Adulto",
+            "costGroupTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+            "supportsDiscount": true,
+            "people": 4,
+            "total": 396,
+            "totalDiscountedAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "totalDue": 396,
+            "totalDueAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 99,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 396,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 396,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 99,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 99,
+            "totalAsText": "€396.00",
+            "totalDiscountedAsText": "€396.00",
+            "totalDueAsText": "€396.00",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€99.00",
+            "unitPriceAsText": "€99.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          },
+          {
+            "id": 227911893,
+            "title": "6 a 17 años",
+            "currency": "EUR",
+            "unitPriceDate": 1765968099000,
+            "quantity": 3,
+            "unitPrice": 85,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 166592,
+            "itemBookingId": "217949_166592",
+            "costItemId": 394842061,
+            "costItemTitle": "6 a 17 años",
+            "costGroupTitle": "Vatican Museums and Sistine Chapel Guided Tour",
+            "supportsDiscount": true,
+            "people": 3,
+            "total": 255,
+            "totalDiscountedAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "totalDue": 255,
+            "totalDueAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 85,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 255,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 255,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 85,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 85,
+            "totalAsText": "€255.00",
+            "totalDiscountedAsText": "€255.00",
+            "totalDueAsText": "€255.00",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€85.00",
+            "unitPriceAsText": "€85.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0.00",
+        "totalDiscountedAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "free": false,
+        "totalDueAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "excludedTaxes": false,
+        "includedTaxes": false,
+        "strikeThroughTotalAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalAsText": "€651.00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 651,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€651.00",
+        "totalDiscountAsText": "€0.00",
+        "totalDueAsText": "€651.00",
+        "totalExcludedTaxAsText": "€0.00",
+        "totalIncludedTaxAsText": "€0.00",
+        "totalTaxAsText": "€0.00",
+        "strikeThroughTotalAsText": "€651.00"
+      },
+      "notes": [],
+      "supplierContractFlags": [],
+      "sellerContractFlags": [],
+      "cancellationPolicy": {
+        "id": 194044,
+        "title": "Vaticano y Coliseo",
+        "penaltyRules": [
+          {
+            "id": 211690,
+            "cutoffHours": 168,
+            "charge": 100,
+            "chargeType": "percentage",
+            "percentage": 100
+          }
+        ],
+        "tax": null,
+        "defaultPolicy": false,
+        "policyType": "ADVANCED",
+        "simpleCutoffHours": null,
+        "policyTypeEnum": "ADVANCED"
+      },
+      "bookingRoles": [
+        "NONE",
+        "SELLER",
+        "SUPPLIER"
+      ],
+      "refundProtectionSelected": false,
+      "refundProtectionOffered": false,
+      "date": 1766448000000,
+      "dateString": "Tue, December 23 2025 - 11:15 AM",
+      "startTime": "11:15",
+      "startTimeId": 481742,
+      "rateId": 612853,
+      "rateTitle": "Tour without pick up",
+      "activity": {
+        "id": 217949,
+        "externalId": "ORI-1",
+        "productGroupId": 4636,
+        "productCategory": "ACTIVITIES",
+        "box": false,
+        "inventoryLocal": true,
+        "inventorySupportsPricing": false,
+        "inventorySupportsAvailability": true,
+        "creationDate": "Wed Sep 18 09:26:57 UTC 2019",
+        "lastModified": "Tue Dec 16 11:38:09 UTC 2025",
+        "lastPublished": "Tue Dec 16 11:38:23 UTC 2025",
+        "published": true,
+        "title": "Vatican Museums and Sistine Chapel Guided Tour",
+        "description": "<h4>Vatican Tour: Explore the Vatican Museums and Sistine Chapel</h4><p></p><p>Discover the unparalleled art and history of the Vatican on our Vatican Museums and Sistine Chapel Guided Tour. An immersive experience through centuries of culture and artistry.</p><p>The tour begins in the Pio Clementino Hall, home to iconic sculptures like Laocoön and Apollo Belvedere, setting the tone for the masterpieces ahead.<br />In the Gallery of Tapestries, admire exquisite tapestries that depict biblical and historical events with remarkable craftsmanship.</p><p><br />The highlight is the Sistine Chapel, where you can marvel at Michelangelo’s “The Last Judgment” and the breathtaking ceiling frescoes of Genesis, in a space still used for papal conclaves.<br />The tour concludes in St. Peter’s Square, where you’ll view Bernini’s famous double colonnade and Michelangelo’s impressive dome dominating the Roman skyline.</p><p><br />An unforgettable journey through Christian art and architecture.<br />Next, explore the Gallery of Maps, featuring stunning 16th-century frescoes depicting Italy, and the Gallery of Candelabra, showcasing grand statues and elegant candelabras.</p>",
+        "excerpt": "Vatican City Tour: Sistine Chapel & Museums",
+        "cancellationPolicy": null,
+        "overrideBarcodeFormat": false,
+        "barcodeType": "QR_CODE",
+        "timeZone": null,
+        "mainContactFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "EMAIL",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "PHONE_NUMBER",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "requiredCustomerFields": [],
+        "keywords": [],
+        "flags": [
+          "vaticano"
+        ],
+        "slug": null,
+        "baseLanguage": "es",
+        "languages": [
+          "pt",
+          "en_US",
+          "pt_BR",
+          "es"
+        ],
+        "paymentCurrencies": [
+          "EUR"
+        ],
+        "customFields": [],
+        "tagGroups": [],
+        "categories": [],
+        "keyPhoto": {
+          "id": 8162843,
+          "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+          "description": "",
+          "alternateText": "",
+          "height": "1920",
+          "width": "2560",
+          "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+            }
+          ]
+        },
+        "photos": [
+          {
+            "id": 8162843,
+            "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "description": "",
+            "alternateText": "",
+            "height": "1920",
+            "width": "2560",
+            "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 8712235,
+            "originalUrl": "https://bokun.s3.amazonaws.com/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4004",
+            "width": "6006",
+            "fileName": "/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/4bc77610-0fad-48da-b26a-80863deacdb7.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 8712236,
+            "originalUrl": "https://bokun.s3.amazonaws.com/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "3895",
+            "width": "5843",
+            "fileName": "/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/cccbfbcc-b0c3-41fb-bd11-9bc8ebce5c48.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 8712237,
+            "originalUrl": "https://bokun.s3.amazonaws.com/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/8171aa9e-0ff7-4d61-ab1a-650a5ab28d0e.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 8712238,
+            "originalUrl": "https://bokun.s3.amazonaws.com/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/2cec62c7-f4cd-4581-996a-42b982cc93d2.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 8712239,
+            "originalUrl": "https://bokun.s3.amazonaws.com/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1200",
+            "width": "1600",
+            "fileName": "/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/543e9b99-6cff-4c3b-8d15-736a4a404051.jpeg?w=660&h=660"
+              }
+            ]
+          }
+        ],
+        "videos": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "boxedVendor": null,
+        "storedExternally": false,
+        "pluginId": null,
+        "reviewRating": null,
+        "reviewCount": null,
+        "activityType": "DAY_TOUR_OR_ACTIVITY",
+        "bookingType": "DATE_AND_TIME",
+        "scheduleType": "RECURRING",
+        "cutoffType": "RELATIVE_TO_START_TIME",
+        "cutoffReferenceHour": null,
+        "cutoffReferenceMinute": null,
+        "earlyBookingLimitType": "UNLIMITED",
+        "earlyBookingLimitSpecificDateTime": null,
+        "earlyBookingLimitDaysBefore": null,
+        "earlyBookingLimitMonthsBefore": null,
+        "earlyBookingLimitTime": null,
+        "capacityType": "LIMITED",
+        "passExpiryType": null,
+        "fixedPassExpiryDate": null,
+        "meetingType": "MEET_ON_LOCATION",
+        "privateActivity": false,
+        "passCapacity": 0,
+        "passValidForDays": null,
+        "passesAvailable": 0,
+        "affiliateHubProduct": false,
+        "dressCode": false,
+        "passportRequired": false,
+        "supportedAccessibilityTypes": [],
+        "startPoints": [
+          {
+            "id": 60985,
+            "type": null,
+            "title": "Tienda Lolita",
+            "code": null,
+            "address": {
+              "id": 502734,
+              "created": null,
+              "addressLine1": "Viale Giulio Cesare 138",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Roma",
+              "state": "Lazio",
+              "postalCode": "00192",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 41.909029,
+                "longitude": 12.455451
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJMzVUhmFgLxMR8zP87-hbOUE",
+              "googlePlaceId": null
+            },
+            "pickupTicketDescription": null,
+            "dropoffTicketDescription": null,
+            "labels": []
+          }
+        ],
+        "bookingQuestions": [
+          {
+            "id": 1303461,
+            "personalData": false,
+            "questionCode": "",
+            "label": "¿En qué horario deseas reservar?",
+            "help": " Comidas: De 12:15 hasta 14:15. Cenas: de 19:15 hasta 22:30.",
+            "placeholder": "",
+            "required": true,
+            "defaultValue": "",
+            "dataType": "SHORT_TEXT",
+            "selectFromOptions": false,
+            "selectMultiple": false,
+            "options": [],
+            "flags": [],
+            "context": "EXTRA",
+            "pricingCategoryTriggerSelection": "ANY",
+            "rateTriggerSelection": "ANY",
+            "extraTriggerSelection": "SELECTED_ONLY",
+            "extraTriggers": [
+              {
+                "value": 198485,
+                "label": "Menú en Restaurante Pietra (cerca del Vaticano)"
+              }
+            ],
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "passengerFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "inclusions": [],
+        "included": "<ul><li>Guía oficial y especializado en español</li><li>Entradas sin hacer colas </li><li>Auriculares para seguir las explicaciones del guía  </li></ul>\n",
+        "exclusions": [],
+        "excluded": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Comida y bebidas;</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Propinas</p>",
+        "requirements": "",
+        "knowBeforeYouGoItems": [],
+        "attention": "<ul><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Si has reservado plaza para menores de 18 años, por favor, recuerda que será necesario presentar un documento que acredite la edad. </li><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Visitaremos lugares de culto, por lo que es necesario llevar pantalones largos, faldas hasta las rodillas y tener los hombros cubiertos. No se pueden llevar paraguas grandes, mochilas de gran tamaño ni objetos punzantes. </li><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">El itinerario del tour en grupo no sigue el recorrido adaptado para personas con dificultades de movilidad o para niños pequeños en cochecito. </li></ul>",
+        "locationCode": null,
+        "googlePlace": {
+          "id": 171633,
+          "country": "Vatican City",
+          "countryCode": "VA",
+          "city": "Vatican City",
+          "cityCode": "Vatican City",
+          "state": "",
+          "stateCode": "",
+          "name": "Museos Vaticanos, Vatican City",
+          "placeId": "ChIJKcGbg2NgLxMRthZkUqDs4M8",
+          "geoLocationCenter": {
+            "lat": 41.9064878,
+            "lng": 12.4536413
+          },
+          "addressTypes": []
+        },
+        "tripadvisorReview": {
+          "locationId": "15777982",
+          "url": "https://www.tripadvisor.es/AttractionProductReview-g187791-d15777982-Salta_la_cola_Tour_de_Museos_Vaticanos_Capilla_Sixtina_y_Basilica_de_San_Pedro-Rom.html",
+          "name": "Guided tour of the Vatican Museums and Sistine Chapel in Spanish",
+          "rating": 4.6,
+          "numReviews": 123,
+          "description": "Groups of max. 20 people  INCLUDES:    Guide in Spanish.   Entrances without queues.   Headphones to listen more comfortably to the explanations of the guide.   SPECIAL PRICES FOR MINORS.  RULES:In places of worship wear skirts or long pants and covered shoulders. Large umbrellas, oversized backpacks and sharp objects cannot be carried. The itinerary of the group tour does not follow the route adapted for people with mobility difficulties or for young children by stroller."
+        },
+        "resourceSlots": [
+          {
+            "id": 14127,
+            "count": 8,
+            "resourceType": {
+              "id": 4179,
+              "title": "CoopCulture",
+              "resources": null
+            },
+            "cooldownMinutes": 0,
+            "assignedResources": [],
+            "active": true
+          }
+        ],
+        "bookingCutoffMinutes": 30,
+        "bookingCutoffHours": 0,
+        "bookingCutoffDays": 0,
+        "bookingCutoffWeeks": 0,
+        "requestDeadlineMinutes": 0,
+        "requestDeadlineHours": 0,
+        "requestDeadlineDays": 2,
+        "requestDeadlineWeeks": 0,
+        "boxedActivityId": null,
+        "comboActivity": false,
+        "comboParts": [],
+        "returnProduct": null,
+        "offers": [
+          {
+            "id": 360,
+            "ownerId": 27164,
+            "discount": 3,
+            "activities": [
+              {
+                "id": 217949,
+                "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                "excerpt": "Tour en español con entradas sin colas",
+                "keyPhoto": {
+                  "id": 8162843,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1920",
+                  "width": "2560",
+                  "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": 220107,
+                "title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+                "excerpt": "",
+                "keyPhoto": {
+                  "id": 8162860,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                  "description": null,
+                  "alternateText": null,
+                  "height": "1267",
+                  "width": "1900",
+                  "fileName": "/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/b6179767-ff3b-45cf-a674-7b1164f30098.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              }
+            ],
+            "requireAllActivities": false,
+            "applyToExtras": false,
+            "applyToPickUpAndDropOff": false
+          },
+          {
+            "id": 721,
+            "ownerId": 27164,
+            "discount": 6,
+            "activities": [
+              {
+                "id": 216954,
+                "title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+                "excerpt": "",
+                "keyPhoto": {
+                  "id": 8162897,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/81168340-c613-482c-b733-d65b11902339.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1445",
+                  "width": "2560",
+                  "fileName": "/81168340-c613-482c-b733-d65b11902339.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/81168340-c613-482c-b733-d65b11902339.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": 217949,
+                "title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+                "excerpt": "Tour en español con entradas sin colas",
+                "keyPhoto": {
+                  "id": 8162843,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "description": "",
+                  "alternateText": "",
+                  "height": "1920",
+                  "width": "2560",
+                  "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              }
+            ],
+            "requireAllActivities": false,
+            "applyToExtras": false,
+            "applyToPickUpAndDropOff": false
+          }
+        ],
+        "ticketPerComboComponent": false,
+        "ticketComboComponents": [],
+        "pickupActivityId": null,
+        "allowCustomizedBookings": false,
+        "reservationTimeout": 20,
+        "vendorReservationTimeout": null,
+        "dayBasedAvailability": false,
+        "selectFromDayOptions": false,
+        "dayOptions": [],
+        "activityCategories": [
+          "ARTS_AND_CULTURE",
+          "CITY_TOURS",
+          "CULTURAL_AND_THEME_TOURS",
+          "MUSEUMS_AND_EXHIBITIONS",
+          "SKIP_THE_LINE"
+        ],
+        "activityAttributes": [
+          "FAMILY_FRIENDLY",
+          "ECO_FRIENDLY",
+          "SKIP_THE_LINE",
+          "COUPLES"
+        ],
+        "guidanceTypes": [
+          {
+            "id": null,
+            "created": [
+              2025,
+              12,
+              17,
+              10,
+              41,
+              39,
+              856465189
+            ],
+            "guidanceType": "GUIDED",
+            "languages": [
+              "es"
+            ],
+            "displayLanguages": [
+              "Spanish"
+            ]
+          },
+          {
+            "id": null,
+            "created": [
+              2025,
+              12,
+              17,
+              10,
+              41,
+              39,
+              856473018
+            ],
+            "guidanceType": "HEADPHONES",
+            "languages": [
+              "es"
+            ],
+            "displayLanguages": [
+              "Spanish"
+            ]
+          }
+        ],
+        "defaultRateId": 612853,
+        "rates": [
+          {
+            "id": 612853,
+            "title": "Tour without pick up",
+            "description": "Visita guiada por la mañana en español",
+            "index": 0,
+            "rateCode": "SPA",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 194044,
+              "title": "Vaticano y Coliseo",
+              "penaltyRules": [
+                {
+                  "id": 211690,
+                  "cutoffHours": 168,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "PRICED_SEPARATELY",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [
+              {
+                "id": 482783,
+                "activityExtraId": 198485,
+                "selectionType": "OPTIONAL",
+                "pricingType": "PRICED_SEPARATELY",
+                "pricedPerPerson": true
+              }
+            ],
+            "startTimeIds": [
+              481735,
+              481736,
+              481737,
+              481738,
+              481739,
+              481741,
+              481742,
+              481744,
+              577917,
+              873272,
+              929707,
+              1161996,
+              2008947,
+              2371163,
+              2371164,
+              3149857
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              161601,
+              161726,
+              166592
+            ],
+            "allPricingCategories": false,
+            "details": [],
+            "textItems": [
+              {
+                "id": 612853,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  10,
+                  41,
+                  39,
+                  859308799
+                ],
+                "language": "es_ES",
+                "title": "Tour without pick up",
+                "activityRateId": 612853,
+                "description": "Visita guiada por la mañana en español"
+              }
+            ]
+          },
+          {
+            "id": 1608055,
+            "title": "Visita guiada por la tarde en español",
+            "description": "Visita guiada por la tarde en español",
+            "index": 1,
+            "rateCode": "SPA",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 194044,
+              "title": "Vaticano y Coliseo",
+              "penaltyRules": [
+                {
+                  "id": 211690,
+                  "cutoffHours": 168,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "PRICED_SEPARATELY",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [
+              {
+                "id": 477456,
+                "activityExtraId": 198485,
+                "selectionType": "OPTIONAL",
+                "pricingType": "PRICED_SEPARATELY",
+                "pricedPerPerson": true
+              }
+            ],
+            "startTimeIds": [
+              481746,
+              481748,
+              481749,
+              481751,
+              589496,
+              917139,
+              1007077,
+              1209052,
+              1946143,
+              1961164,
+              1989689,
+              1991515,
+              2055873,
+              2055874,
+              2129600,
+              2129601,
+              2172254,
+              2222385,
+              2314845,
+              2796340,
+              2946741,
+              3328824,
+              3472701
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              161601,
+              161726,
+              166592
+            ],
+            "allPricingCategories": false,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1608055,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  10,
+                  41,
+                  39,
+                  866379387
+                ],
+                "language": "es_ES",
+                "title": "Visita guiada por la tarde en español",
+                "activityRateId": 1608055,
+                "description": "Visita guiada por la tarde en español"
+              }
+            ]
+          }
+        ],
+        "ticketPerPerson": false,
+        "durationType": "HOURS",
+        "duration": 3,
+        "durationMinutes": 0,
+        "durationHours": 3,
+        "durationDays": 0,
+        "durationWeeks": 0,
+        "durationText": "3 hours",
+        "minAge": 0,
+        "originalDefaultPrice": null,
+        "nextDefaultPrice": null,
+        "nextDefaultPriceMoney": null,
+        "pickupService": false,
+        "pickupAllotment": false,
+        "pickupAllotmentType": "NO_ALLOTMENT",
+        "useComponentPickupAllotments": false,
+        "pickupFlags": [],
+        "customPickupAllowed": true,
+        "pickupMinutesBefore": 30,
+        "pickupTimeWindowInMinutes": 0,
+        "pickupTimeLocationBased": false,
+        "pickupTimeByLocations": [],
+        "noPickupMsg": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">El punto de encuentro será en <strong>Viale Giulio Cesare 138</strong> delante de la tienda <strong>Lolita. </strong>Nuestra guía tendrá un cartel naranja con escrito <strong>&#34;EnRoma.com&#34;</strong></p>",
+        "ticketMsg": "",
+        "showGlobalPickupMsg": true,
+        "showNoPickupMsg": true,
+        "pickupPlaceGroups": [
+          {
+            "id": 9853,
+            "active": true,
+            "title": "Tour Vat + Col",
+            "inclusionType": "HANDPICKED",
+            "includedFlags": "",
+            "includedPlaces": [],
+            "exclusionType": "NONE",
+            "excludedFlags": "",
+            "excludedPlaces": [],
+            "places": []
+          }
+        ],
+        "dropoffService": false,
+        "dropoffFlags": [],
+        "customDropoffAllowed": false,
+        "useSameAsPickUpPlaces": false,
+        "dropoffPlaceGroups": [],
+        "difficultyLevel": "MODERATE",
+        "pricingCategories": [
+          {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": true,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          {
+            "id": 166592,
+            "title": "6 a 17 años",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 6,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "6 a 17 años (6 - 17)"
+          },
+          {
+            "id": 161726,
+            "title": "0 a 5 años",
+            "ticketCategory": "INFANT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 0,
+            "maxAge": 5,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [
+              "infant"
+            ],
+            "defaultCategory": false,
+            "fullTitle": "0 a 5 años (0 - 5)"
+          }
+        ],
+        "activityPriceCatalogs": [
+          {
+            "catalog": {
+              "id": 30283,
+              "title": "enroma",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": true,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 30283,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 48347,
+              "title": "RESELLERS",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 48347,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 87651,
+              "title": "Musement",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 87651,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 106486,
+              "title": "CiaoFlorence",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 106486,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 106646,
+              "title": "Headout",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 106646,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 108146,
+              "title": "Hellotickets",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 108146,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 109589,
+              "title": "CIVITATIS",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 109589,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 114644,
+              "title": "Tiqets",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 114644,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 118151,
+              "title": "GetYourGuide",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 118151,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          }
+        ],
+        "agendaItems": [
+          {
+            "id": 153432,
+            "index": 0,
+            "title": "Museos Vaticanos",
+            "excerpt": "Grandes obras maestras de la escultura y la pintura. El maravilloso espacio de la Capilla Sixtina y la impresionante arquitectura de la Basílica de San Pedro.",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">Los <a href=\"http://web.archive.org/web/20190330093640/https://www.enroma.com/museos-roma/museos-vaticanos-capilla-sixtina/\" target=\"_blank\" rel=\"nofollow\">Museos Vaticanos</a> son una de las colecciones de arte más importantes del mundo. En nuestra <strong>Visita Vaticano </strong>recorreremos las principales&nbsp;salas y colecciones para disfrutar contemplando algunas de las obras maestras del arte universal, tanto de escultura, como de&nbsp;tapices y frescos dentro de una arquitectura que en sí misma es una joya. La escalera helicoidal del arquitecto Momo, el Patio de la Pigna en el Belvedere del Bramante, el museo Pio Clementino de escultura antigua, las Galerías de los Candelabros, de los Mapas y los tapices son algunas de las maravillas que contemplaremos. Os recordamos que el itinerario que haremos en el tour en grupo no está<br>adaptado a personas que tengan que utilizar silla de ruedas. Tampoco es posible utilizar el cochecito para&nbsp;niños pequeños.&nbsp;</p><h5 style=\"font-size: 20px; line-height: 1.6; color: #34404e; margin-top: 0.5em; margin-bottom: 0.5em\"><strong>Capilla Sixtina</strong></h5><p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">La Capilla Sixtina, por su importancia simbólica y artística, constituye el centro de la visita. Podremos contemplar los frescos de Miguel Ángel y de grandes pintores del renacimiento italiano: Perugino, Botticelli, Pinturicchio, Signorelli… Un magnífico cofre lleno a rebosar de historia y belleza que nos espera.&nbsp;</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "Viale Vaticano",
+              "city": "Roma",
+              "countryCode": "IT",
+              "postCode": "00165",
+              "latitude": 41.9064878,
+              "longitude": 12.4536413,
+              "zoomLevel": 12,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJKcGbg2NgLxMRthZkUqDs4M8",
+              "wholeAddress": "Viale Vaticano, 00165 Roma"
+            },
+            "address": {
+              "id": 1364932,
+              "created": null,
+              "addressLine1": "Viale Vaticano",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Roma",
+              "state": "",
+              "postalCode": "00165",
+              "countryCode": "IT",
+              "mapZoomLevel": 12,
+              "geoPoint": {
+                "latitude": 41.9064878,
+                "longitude": 12.4536413
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJKcGbg2NgLxMRthZkUqDs4M8",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": [
+              {
+                "id": 8162843,
+                "originalUrl": "https://bokun.s3.amazonaws.com/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                "description": "",
+                "alternateText": "",
+                "height": "1920",
+                "width": "2560",
+                "fileName": "/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg",
+                "flags": [],
+                "derived": [
+                  {
+                    "name": "thumbnail",
+                    "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop",
+                    "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=80&h=80&mode=crop"
+                  },
+                  {
+                    "name": "preview",
+                    "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300",
+                    "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=300&h=300"
+                  },
+                  {
+                    "name": "large",
+                    "url": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660",
+                    "cleanUrl": "https://imgcdn.bokun.tools/d97ad4c1-ed91-4613-bd2a-6e767b02e67b.jpeg?w=660&h=660"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "startTimes": [
+          {
+            "id": 3149857,
+            "label": "",
+            "externalLabel": "",
+            "hour": 8,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481736,
+            "label": "",
+            "externalLabel": "",
+            "hour": 8,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 929707,
+            "label": "",
+            "externalLabel": "",
+            "hour": 8,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481735,
+            "label": "",
+            "externalLabel": "",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481737,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481738,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2371164,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481739,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1161996,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2008947,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 873272,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481741,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481742,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 577917,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481744,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2371163,
+            "label": "",
+            "externalLabel": "",
+            "hour": 12,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481746,
+            "label": "",
+            "externalLabel": "",
+            "hour": 12,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2172254,
+            "label": "",
+            "externalLabel": null,
+            "hour": 12,
+            "minute": 20,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481748,
+            "label": "",
+            "externalLabel": "",
+            "hour": 12,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2314845,
+            "label": "",
+            "externalLabel": null,
+            "hour": 12,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2946741,
+            "label": "",
+            "externalLabel": "",
+            "hour": 12,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1007077,
+            "label": "",
+            "externalLabel": "",
+            "hour": 13,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481749,
+            "label": "",
+            "externalLabel": null,
+            "hour": 13,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 589496,
+            "label": "",
+            "externalLabel": "",
+            "hour": 13,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 917139,
+            "label": "",
+            "externalLabel": "",
+            "hour": 13,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 481751,
+            "label": "",
+            "externalLabel": "",
+            "hour": 14,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2129600,
+            "label": "",
+            "externalLabel": null,
+            "hour": 14,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1989689,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 14,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2796340,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": "",
+            "hour": 14,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1991515,
+            "label": "Sin Basilica San Pedro",
+            "externalLabel": null,
+            "hour": 15,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3328824,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": "",
+            "hour": 15,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1209052,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 16,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3472701,
+            "label": "",
+            "externalLabel": "",
+            "hour": 16,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2129601,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 16,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1946143,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 17,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2055873,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 17,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1961164,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 17,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2055874,
+            "label": "Sin Basilica de San Pedro",
+            "externalLabel": null,
+            "hour": 18,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2222385,
+            "label": "per prezzo più basso",
+            "externalLabel": null,
+            "hour": 18,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          }
+        ],
+        "bookableExtras": [
+          {
+            "id": 198485,
+            "externalId": "",
+            "title": "Menú en Restaurante Pietra (cerca del Vaticano)",
+            "information": "",
+            "included": false,
+            "free": false,
+            "pricingType": "PER_PERSON",
+            "pricingTypeLabel": "per person",
+            "photo": {
+              "id": 8158680,
+              "originalUrl": "https://bokun.s3.amazonaws.com/5bdc8c87-3130-4b45-a078-a3794c6cf764",
+              "description": null,
+              "alternateText": null,
+              "height": null,
+              "width": null,
+              "fileName": "/5bdc8c87-3130-4b45-a078-a3794c6cf764",
+              "flags": [],
+              "derived": [
+                {
+                  "name": "thumbnail",
+                  "url": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=80&h=80&mode=crop",
+                  "cleanUrl": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=80&h=80&mode=crop"
+                },
+                {
+                  "name": "preview",
+                  "url": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=300&h=300",
+                  "cleanUrl": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=300&h=300"
+                },
+                {
+                  "name": "large",
+                  "url": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=660&h=660",
+                  "cleanUrl": "https://imgcdn.bokun.tools/5bdc8c87-3130-4b45-a078-a3794c6cf764?w=660&h=660"
+                }
+              ]
+            },
+            "increasesCapacity": false,
+            "maxPerBooking": 0,
+            "limitByPax": false,
+            "rateIds": [
+              1608055,
+              612853
+            ],
+            "flags": [],
+            "questions": []
+          }
+        ],
+        "route": null,
+        "widgetSettings": null,
+        "hasOpeningHours": false,
+        "defaultOpeningHours": null,
+        "seasonalOpeningHours": [],
+        "displaySettings": {
+          "showPickupPlaces": true,
+          "showRouteMap": false,
+          "selectRateBasedOnStartTime": true,
+          "customFields": []
+        },
+        "hasBoxes": true,
+        "bookingLabels": [],
+        "marketplaceVisibilityType": "PUBLIC",
+        "requestDeadline": 172800000,
+        "bookingCutoff": 30,
+        "actualId": 217949,
+        "nextDefaultPriceAsText": "",
+        "actualVendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        }
+      },
+      "bookingAnswers": [],
+      "pickupAnswers": [],
+      "dropoffAnswers": [],
+      "flexible": false,
+      "customized": false,
+      "customizedDurationMinutes": 0,
+      "customizedDurationHours": 0,
+      "customizedDurationDays": 0,
+      "customizedDurationWeeks": 0,
+      "ticketPerPerson": false,
+      "offerApplied": false,
+      "pricingCategoryBookings": [
+        {
+          "id": 298037517,
+          "pricingCategoryId": 161601,
+          "pricingCategory": {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078595,
+            "created": null,
+            "uuid": "b646531c-c8f1-497b-b443-b9523d25af53",
+            "email": null,
+            "title": null,
+            "firstName": "Mileidys ",
+            "lastName": "Martinez ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037518,
+          "pricingCategoryId": 161601,
+          "pricingCategory": {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078596,
+            "created": null,
+            "uuid": "cc1b2f78-71ef-4d61-92e0-eb49a4c80b3c",
+            "email": null,
+            "title": null,
+            "firstName": "Saumel ",
+            "lastName": "Bouzon ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037519,
+          "pricingCategoryId": 161601,
+          "pricingCategory": {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078597,
+            "created": null,
+            "uuid": "140ce84d-cb3b-48a0-837d-92696bc4abbc",
+            "email": null,
+            "title": null,
+            "firstName": "Juaquin ",
+            "lastName": "Bouzon ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037520,
+          "pricingCategoryId": 161601,
+          "pricingCategory": {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078598,
+            "created": null,
+            "uuid": "67d651c8-9e19-4ac1-862a-6c6f788463e9",
+            "email": null,
+            "title": null,
+            "firstName": "Jonathan ",
+            "lastName": "Bouzon ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037521,
+          "pricingCategoryId": 166592,
+          "pricingCategory": {
+            "id": 166592,
+            "title": "6 a 17 años",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 6,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "6 a 17 años (6 - 17)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078599,
+            "created": null,
+            "uuid": "43dc8f5e-d6a6-4269-9321-d1d8aa30dfa1",
+            "email": null,
+            "title": null,
+            "firstName": "Yoani",
+            "lastName": "Mederos ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "6 a 17 años",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037522,
+          "pricingCategoryId": 166592,
+          "pricingCategory": {
+            "id": 166592,
+            "title": "6 a 17 años",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 6,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "6 a 17 años (6 - 17)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078600,
+            "created": null,
+            "uuid": "ff3d3804-d524-46a3-82bb-0affc3ef5fa2",
+            "email": null,
+            "title": null,
+            "firstName": "Felix ",
+            "lastName": "Osuna ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "6 a 17 años",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 298037523,
+          "pricingCategoryId": 166592,
+          "pricingCategory": {
+            "id": 166592,
+            "title": "6 a 17 años",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 6,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "6 a 17 años (6 - 17)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187078601,
+            "created": null,
+            "uuid": "ffe6266d-a591-4e43-b61c-e6a701e0b6d3",
+            "email": null,
+            "title": null,
+            "firstName": "Anthony ",
+            "lastName": "Osuna ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "6 a 17 años",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        }
+      ],
+      "extras": [],
+      "bookingFields": [],
+      "pickup": false,
+      "dropoff": false,
+      "inventoryConfirmFailed": false,
+      "channelId": "AGENTS_BOOKINGAREAS",
+      "guidedLanguages": [],
+      "quantityByPricingCategory": {
+        "161601": 4,
+        "166592": 3
+      },
+      "bookedPricingCategories": [
+        {
+          "id": 161601,
+          "title": "Adulto",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "Adulto"
+        },
+        {
+          "id": 166592,
+          "title": "6 a 17 años",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "6 a 17 años"
+        }
+      ],
+      "totalParticipants": 7,
+      "savedAmount": 0
+    }
+  ],
+  "routeBookings": [],
+  "giftCardBookings": [],
+  "bookingFields": [],
+  "action": "BOOKING_CONFIRMED"
+}

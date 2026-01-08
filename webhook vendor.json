@@ -1,0 +1,3729 @@
+{
+  "creationDate": 1765988092000,
+  "bookingId": 80381079,
+  "language": "es",
+  "confirmationCode": "ENRO-80381079",
+  "externalBookingReference": "",
+  "status": "CONFIRMED",
+  "currency": "EUR",
+  "totalPrice": 75,
+  "totalPaid": 0,
+  "totalDue": 75,
+  "totalDueAsText": "€75,00",
+  "totalPriceConverted": 75,
+  "customer": {
+    "contactDetailsHidden": false,
+    "contactDetailsHiddenUntil": null,
+    "id": 187119355,
+    "created": null,
+    "uuid": "6532b4f5-7c41-4cf0-b71c-e6bca6542b42",
+    "email": "visitasguiadas@enroma.com",
+    "title": null,
+    "firstName": "Juan Pedro ",
+    "lastName": "Lobeto Madrigal",
+    "personalIdNumber": null,
+    "clcEmail": false,
+    "language": null,
+    "nationality": null,
+    "sex": null,
+    "dateOfBirth": null,
+    "phoneNumber": "+34 635519718",
+    "phoneNumberCountryCode": null,
+    "address": null,
+    "postCode": null,
+    "state": null,
+    "place": null,
+    "country": null,
+    "organization": null,
+    "passportId": null,
+    "passportExpDay": null,
+    "passportExpMonth": null,
+    "passportExpYear": null,
+    "credentials": null,
+    "acceptsMarketing": false,
+    "tags": null,
+    "octoNote": null,
+    "phoneNumberLinkable": "+34635519718"
+  },
+  "invoice": {
+    "id": 461784228,
+    "issueDate": 1765988092000,
+    "currency": "EUR",
+    "includedAppliedTaxes": [],
+    "excludedAppliedTaxes": [],
+    "issuer": {
+      "id": 27164,
+      "title": "EnRoma.com",
+      "externalId": "",
+      "flags": []
+    },
+    "issuerCompany": {
+      "registrationNumber": "Licenza Provincia Roma n° 2316",
+      "vatRegistrationNumber": "IT09802381005"
+    },
+    "recipient": {
+      "contactDetailsHidden": false,
+      "contactDetailsHiddenUntil": null,
+      "id": 187119355,
+      "created": null,
+      "uuid": "6532b4f5-7c41-4cf0-b71c-e6bca6542b42",
+      "email": "visitasguiadas@enroma.com",
+      "title": null,
+      "firstName": "Juan Pedro ",
+      "lastName": "Lobeto Madrigal",
+      "personalIdNumber": null,
+      "clcEmail": false,
+      "language": null,
+      "nationality": null,
+      "sex": null,
+      "dateOfBirth": null,
+      "phoneNumber": "+34 635519718",
+      "phoneNumberCountryCode": null,
+      "address": null,
+      "postCode": null,
+      "state": null,
+      "place": null,
+      "country": null,
+      "organization": null,
+      "passportId": null,
+      "passportExpDay": null,
+      "passportExpMonth": null,
+      "passportExpYear": null,
+      "credentials": null,
+      "acceptsMarketing": false,
+      "tags": null,
+      "octoNote": null,
+      "phoneNumberLinkable": "+34635519718"
+    },
+    "customLineItems": [],
+    "productInvoices": [
+      {
+        "id": 218210223,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116183967,
+        "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia - dom, enero 04 2026 - 8:45 - Spanish",
+        "product": {
+          "id": 328339,
+          "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+          "flags": [],
+          "keyPhoto": {
+            "id": 6696879,
+            "originalUrl": "https://bokun.s3.amazonaws.com/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 10176,
+            "title": "Ciao Florence Tours & Travels Srl",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour in Spanish",
+          "offers": []
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "CIAO-T116183967",
+        "dates": "dom, enero 04 2026 - 8:45 - Spanish",
+        "timestamp": 1767516300000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227966596,
+            "title": "Adulto (13 - 99)",
+            "currency": "EUR",
+            "unitPriceDate": 1765988064000,
+            "quantity": 1,
+            "unitPrice": 75,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 120730,
+            "itemBookingId": "328339_120730",
+            "costItemId": 155748372,
+            "costItemTitle": "Adulto (13 - 99)",
+            "costGroupTitle": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+            "supportsDiscount": true,
+            "people": 1,
+            "total": 75,
+            "totalDue": 75,
+            "totalDiscountedAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalDueAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 75,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 75,
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0,00",
+            "discountedUnitPriceAsText": "€75,00",
+            "unitPriceAsText": "€75,00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0,00",
+            "totalAsText": "€75,00",
+            "totalDiscountedAsText": "€75,00",
+            "totalDueAsText": "€75,00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0,00",
+        "free": false,
+        "totalDiscountedAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalDueAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "strikeThroughTotalAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalAsText": "€75,00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€75,00",
+        "totalDiscountAsText": "€0,00",
+        "totalDueAsText": "€75,00",
+        "totalExcludedTaxAsText": "€0,00",
+        "totalIncludedTaxAsText": "€0,00",
+        "totalTaxAsText": "€0,00",
+        "strikeThroughTotalAsText": "€75,00",
+        "excludedTaxes": false,
+        "includedTaxes": false
+      }
+    ],
+    "payments": [],
+    "appliedFees": [],
+    "issuerName": "EnRoma.com",
+    "totalDueAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "totalBookingFeePercent": 0,
+    "totalFeesAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "invoiceNumber": "C-461784228",
+    "lodgingTaxes": [],
+    "totalFeesAsText": "€0,00",
+    "totalDueWithoutExcludedTaxAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "recipientName": "Juan Pedro  Lobeto Madrigal",
+    "totalBookingFeeAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "free": false,
+    "totalDiscountedAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "totalAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "totalExcludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalIncludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDiscountAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "strikeThroughTotalAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "totalAsText": "€75,00",
+    "totalWithExcludedTaxAsMoney": {
+      "amount": 75,
+      "currency": "EUR"
+    },
+    "totalDiscountedAsText": "€75,00",
+    "totalDiscountAsText": "€0,00",
+    "totalDueAsText": "€75,00",
+    "totalExcludedTaxAsText": "€0,00",
+    "totalIncludedTaxAsText": "€0,00",
+    "totalTaxAsText": "€0,00",
+    "strikeThroughTotalAsText": "€75,00",
+    "excludedTaxes": false,
+    "includedTaxes": false
+  },
+  "customerPayments": [],
+  "extranetUser": {
+    "id": 46697,
+    "username": "visitasguiadas@enroma.com",
+    "firstName": "Rachele",
+    "lastName": "Specchia",
+    "accountHolder": false,
+    "supportVendors": [],
+    "canDisguiseAsAnyVendor": false,
+    "fullNameShort": "Rachele S."
+  },
+  "paymentType": "NOT_PAID",
+  "seller": {
+    "id": 27164,
+    "title": "EnRoma.com",
+    "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+    "logo": {
+      "id": 5260859,
+      "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "description": null,
+      "alternateText": null,
+      "height": null,
+      "width": null,
+      "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "flags": [],
+      "derived": [
+        {
+          "name": "thumbnail",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+        },
+        {
+          "name": "preview",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+        },
+        {
+          "name": "large",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+        }
+      ]
+    },
+    "currencyCode": "EUR",
+    "countryCode": "IT",
+    "phoneNumber": "+39 3429920638",
+    "emailAddress": "info@enroma.com",
+    "website": "https://www.enroma.com/",
+    "logoStyle": "",
+    "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+    "timeZone": "Europe/Rome",
+    "showInvoiceIdOnTicket": false,
+    "showAgentDetailsOnTicket": false,
+    "showPaymentsOnInvoice": false,
+    "companyEmailIsDefault": true
+  },
+  "bookingChannel": {
+    "id": 59838,
+    "uuid": "383ee764-e2dd-4948-987e-bd2229b558ef",
+    "title": "Backend",
+    "backend": true,
+    "overrideVoucherHeader": false,
+    "voucherName": "",
+    "voucherPhoneNumber": "",
+    "voucherEmailAddress": "",
+    "voucherLogoStyle": "",
+    "type": "BACKEND",
+    "voucherWebsite": "",
+    "paymentProviderAdded": true,
+    "flags": [],
+    "shoppingCartPosition": "RIGHT"
+  },
+  "accommodationBookings": [],
+  "activityBookings": [
+    {
+      "bookingId": 116183967,
+      "parentBookingId": 80381079,
+      "confirmationCode": "ENRO-80381079",
+      "productConfirmationCode": "CIAO-T116183967",
+      "barcode": {
+        "value": "CIAO-T116183967",
+        "barcodeType": "CODE_128"
+      },
+      "hasTicket": false,
+      "boxBooking": false,
+      "startDateTime": 1767516300000,
+      "endDateTime": 1767554100000,
+      "status": "CONFIRMED",
+      "includedOnCustomerInvoice": false,
+      "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+      "totalPrice": 75,
+      "priceWithDiscount": 75,
+      "totalPriceAsText": "€75.00",
+      "priceWithDiscountAsText": "€75.00",
+      "discountPercentage": 0,
+      "discountAmount": 0,
+      "productCategory": "ACTIVITIES",
+      "paidType": "NOT_PAID",
+      "product": {
+        "id": 328339,
+        "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+        "flags": [],
+        "vendor": {
+          "id": 10176,
+          "title": "Ciao Florence Tours & Travels Srl",
+          "currencyCode": "EUR",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "externalId": "6367P15",
+        "productCategory": "ACTIVITIES",
+        "isPassProduct": false,
+        "excerpt": "Déjese llevar al corazón floreciente de la Toscana, descubriendo las joyas medievales de Monteriggioni, San Gimignano y Siena.",
+        "offers": [],
+        "cancellationPolicy": {
+          "id": 17894,
+          "title": "Standard Viator policy",
+          "penaltyRules": [
+            {
+              "id": 22271,
+              "cutoffHours": 48,
+              "charge": 100,
+              "chargeType": "percentage",
+              "percentage": 100
+            }
+          ],
+          "tax": null,
+          "defaultPolicy": false,
+          "policyType": "ADVANCED",
+          "simpleCutoffHours": null,
+          "policyTypeEnum": "ADVANCED"
+        }
+      },
+      "supplier": {
+        "id": 10176,
+        "title": "Ciao Florence Tours & Travels Srl",
+        "description": "Ciao Florence is the leading direct provider of shared tours, special activities, private experiences, mice and incentives in Italy. We also own an impressive fleet of 60 vehicles providing professional luxury transportation services in Italy and Europe. ",
+        "logo": {
+          "id": 3823163,
+          "originalUrl": "https://bokun.s3.amazonaws.com/photo3823163original",
+          "description": null,
+          "alternateText": null,
+          "height": null,
+          "width": null,
+          "fileName": "/photo3823163original",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/photo3823163original?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/photo3823163original?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/photo3823163original?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/photo3823163original?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/photo3823163original?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/photo3823163original?w=660&h=660"
+            }
+          ]
+        },
+        "currencyCode": "EUR",
+        "countryCode": "IT",
+        "phoneNumber": "0039055354044",
+        "emailAddress": "info@ciaoflorence.it",
+        "website": "www.ciaoflorence.it",
+        "logoStyle": "",
+        "invoiceIdNumber": "FI-578271",
+        "timeZone": "Europe/Rome",
+        "showInvoiceIdOnTicket": true,
+        "showAgentDetailsOnTicket": false,
+        "showPaymentsOnInvoice": false,
+        "companyEmailIsDefault": true,
+        "linkedExternalCustomers": []
+      },
+      "seller": {
+        "id": 27164,
+        "title": "EnRoma.com",
+        "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+        "logo": {
+          "id": 5260859,
+          "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+          "description": null,
+          "alternateText": null,
+          "height": null,
+          "width": null,
+          "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+            }
+          ]
+        },
+        "currencyCode": "EUR",
+        "countryCode": "IT",
+        "phoneNumber": "+39 3429920638",
+        "emailAddress": "info@enroma.com",
+        "website": "https://www.enroma.com/",
+        "logoStyle": "",
+        "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+        "timeZone": "Europe/Rome",
+        "showInvoiceIdOnTicket": false,
+        "showAgentDetailsOnTicket": false,
+        "showPaymentsOnInvoice": false,
+        "companyEmailIsDefault": true,
+        "linkedExternalCustomers": []
+      },
+      "productId": 328339,
+      "linksToExternalProducts": [],
+      "answers": [],
+      "invoice": {
+        "id": 218210223,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116183967,
+        "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia - dom, enero 04 2026 - 8:45 - Spanish",
+        "product": {
+          "id": 328339,
+          "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+          "flags": [],
+          "keyPhoto": {
+            "id": 6696879,
+            "originalUrl": "https://bokun.s3.amazonaws.com/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 10176,
+            "title": "Ciao Florence Tours & Travels Srl",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour in Spanish",
+          "offers": []
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "CIAO-T116183967",
+        "dates": "dom, enero 04 2026 - 8:45 - Spanish",
+        "timestamp": 1767516300000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227966596,
+            "title": "Adulto (13 - 99)",
+            "currency": "EUR",
+            "unitPriceDate": 1765988064000,
+            "quantity": 1,
+            "unitPrice": 75,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 120730,
+            "itemBookingId": "328339_120730",
+            "costItemId": 155748372,
+            "costItemTitle": "Adulto (13 - 99)",
+            "costGroupTitle": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+            "supportsDiscount": true,
+            "people": 1,
+            "total": 75,
+            "totalDue": 75,
+            "totalDiscountedAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalDueAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 75,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 75,
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0,00",
+            "discountedUnitPriceAsText": "€75,00",
+            "unitPriceAsText": "€75,00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0,00",
+            "totalAsText": "€75,00",
+            "totalDiscountedAsText": "€75,00",
+            "totalDueAsText": "€75,00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0,00",
+        "free": false,
+        "totalDiscountedAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalDueAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "strikeThroughTotalAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalAsText": "€75,00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 75,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€75,00",
+        "totalDiscountAsText": "€0,00",
+        "totalDueAsText": "€75,00",
+        "totalExcludedTaxAsText": "€0,00",
+        "totalIncludedTaxAsText": "€0,00",
+        "totalTaxAsText": "€0,00",
+        "strikeThroughTotalAsText": "€75,00",
+        "excludedTaxes": false,
+        "includedTaxes": false
+      },
+      "sellerInvoice": {
+        "id": 70464904,
+        "issueDate": 1765988092000,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "type": "SELLER",
+        "title": "Medieval Gems of Tuscany: Siena, San Gimignano and Monteriggioni from Florence (Tour in Spanish) - dom, enero 04 2026 - 8:45 - Spanish",
+        "issuer": {
+          "id": 10176,
+          "title": "Ciao Florence Tours & Travels Srl",
+          "externalId": "",
+          "flags": []
+        },
+        "recipient": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "externalId": "",
+          "flags": []
+        },
+        "reconciled": false,
+        "product": {
+          "id": 328339,
+          "title": "Medieval Gems of Tuscany: Siena, San Gimignano and Monteriggioni from Florence",
+          "externalId": "6367P15",
+          "flags": []
+        },
+        "productConfirmationCode": "CIAO-T116183967",
+        "dates": "dom, enero 04 2026 - 8:45 - Spanish",
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 33103285,
+            "title": "Adulto (13 - 99)",
+            "currency": "EUR",
+            "unitPriceDate": 1765988092000,
+            "quantity": 1,
+            "unitPrice": 75,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 52.5,
+              "currency": "EUR"
+            },
+            "commission": 30,
+            "totalWithoutCommissionAsText": "€75,00",
+            "totalDiscountedAsMoney": {
+              "amount": 52.5,
+              "currency": "EUR"
+            },
+            "totalWithoutCommissionAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 52.5,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 52.5,
+              "currency": "EUR"
+            },
+            "total": 52.5,
+            "totalDue": 52.5,
+            "unitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalDueAsMoney": {
+              "amount": 52.5,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 52.5,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 52.5,
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0,00",
+            "discountedUnitPriceAsText": "€52,50",
+            "unitPriceAsText": "€75,00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0,00",
+            "totalAsText": "€52,50",
+            "totalDiscountedAsText": "€52,50",
+            "totalDueAsText": "€52,50"
+          }
+        ],
+        "issuerName": "Ciao Florence Tours & Travels Srl",
+        "invoiceNumber": "S-70464904",
+        "recipientName": "EnRoma.com",
+        "free": false,
+        "totalDiscountedAsMoney": {
+          "amount": 52.5,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 52.5,
+          "currency": "EUR"
+        },
+        "totalDueAsMoney": {
+          "amount": 52.5,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "strikeThroughTotalAsMoney": {
+          "amount": 52.5,
+          "currency": "EUR"
+        },
+        "totalAsText": "€52,50",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 52.5,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€52,50",
+        "totalDiscountAsText": "€0,00",
+        "totalDueAsText": "€52,50",
+        "totalExcludedTaxAsText": "€0,00",
+        "totalIncludedTaxAsText": "€0,00",
+        "totalTaxAsText": "€0,00",
+        "strikeThroughTotalAsText": "€52,50",
+        "excludedTaxes": false,
+        "includedTaxes": false
+      },
+      "notes": [],
+      "supplierContractFlags": [],
+      "sellerContractFlags": [],
+      "cancellationPolicy": {
+        "id": 17894,
+        "title": "Standard Viator policy",
+        "penaltyRules": [
+          {
+            "id": 22271,
+            "cutoffHours": 48,
+            "charge": 100,
+            "chargeType": "percentage",
+            "percentage": 100
+          }
+        ],
+        "tax": null,
+        "defaultPolicy": false,
+        "policyType": "ADVANCED",
+        "simpleCutoffHours": null,
+        "policyTypeEnum": "ADVANCED"
+      },
+      "bookingRoles": [
+        "NONE",
+        "SELLER"
+      ],
+      "refundProtectionSelected": false,
+      "refundProtectionOffered": false,
+      "date": 1767484800000,
+      "dateString": "dom, enero 04 2026 - 8:45 - Spanish",
+      "startTime": "08:45",
+      "startTimeId": 841501,
+      "startTimeExternalLabel": "Spanish",
+      "rateId": 714862,
+      "rateTitle": "Tour in Spanish",
+      "activity": {
+        "id": 328339,
+        "externalId": "6367P15",
+        "productGroupId": 5036,
+        "productCategory": "ACTIVITIES",
+        "box": false,
+        "inventoryLocal": false,
+        "inventorySupportsPricing": false,
+        "inventorySupportsAvailability": true,
+        "creationDate": "Wed Feb 12 10:40:04 UTC 2020",
+        "lastModified": "Fri Dec 05 15:00:42 UTC 2025",
+        "lastPublished": "Fri Dec 05 15:01:05 UTC 2025",
+        "published": true,
+        "title": "Gemas medievales de la Toscana: Siena, San Gimignano y Monteriggioni desde Florencia",
+        "description": "<p>Cruzando las hermosas <b>colinas de Chianti</b>, llegamos a la joya medieval en lo alto de la colina de <b>MONTERIGGIONI</b>, con sus murallas aún intactas. Aquí podrás empaparte de historia y revivir la atmósfera de tiempos antiguos.</p><p>Nuestro tour del día continúa hacia la majestuosa <b>SIENA</b>, famosa por sus espléndidos ejemplos de arquitectura gótica y la tradicional carrera de caballos del Palio. Sigue a tu guía local hasta la sugerente <b>Piazza del Campo</b>, donde se encuentra el magnífico <b>Palazzo Pubblico</b>, con su <b>Torre del Mangia</b>. Visita la <b>Piazza del Duomo</b> y déjate impresionar por la imponente Catedral, una de las más grandes obras del gótico italiano. Antes de salir de Siena, tendrás tiempo libre para explorar su centro histórico a tu propio ritmo.</p><p>A continuación, nos dirigimos a <b>SAN GIMIGNANO</b>, famosa por su vino blanco, la mundialmente conocida Vernaccia, y sus rascacielos, ¡también declarados Patrimonio de la Humanidad por la UNESCO! La visita es libre para hacer turismo independiente, paseando por las estrechas calles y admirando el paisaje relajante.</p><p>   </p><p>Al final del recorrido del día, nos trasladamos a la zona de <b>CHIANTI</b>, con sus paisajes dignos de una postal. Tendrás la oportunidad de <b>degustar el mejor vino tinto Chianti</b> en una <b>finca vinícola rústica</b>, junto con aperitivos caseros y una degustación de vinos y aceite.</p>",
+        "excerpt": "Déjese llevar al corazón floreciente de la Toscana, descubriendo las joyas medievales de Monteriggioni, San Gimignano y Siena.",
+        "cancellationPolicy": null,
+        "overrideBarcodeFormat": true,
+        "barcodeType": "CODE_128",
+        "timeZone": "Europe/Rome",
+        "mainContactFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": false,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": false,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "EMAIL",
+            "required": false,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "PHONE_NUMBER",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "requiredCustomerFields": [],
+        "keywords": [
+          "Siena",
+          "Wine",
+          "Chianti",
+          "Tasting",
+          "Monteriggioni",
+          "San Gimignano"
+        ],
+        "flags": [],
+        "slug": null,
+        "baseLanguage": "en",
+        "languages": [
+          "en",
+          "it",
+          "es"
+        ],
+        "paymentCurrencies": [
+          "EUR"
+        ],
+        "customFields": [],
+        "tagGroups": [],
+        "categories": [],
+        "keyPhoto": {
+          "id": 6696879,
+          "originalUrl": "https://bokun.s3.amazonaws.com/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+          "description": null,
+          "alternateText": null,
+          "height": "1053",
+          "width": "1580",
+          "fileName": "/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660"
+            }
+          ]
+        },
+        "photos": [
+          {
+            "id": 6696879,
+            "originalUrl": "https://bokun.s3.amazonaws.com/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/89ad9894-b205-43c0-92bb-10ee64612e46.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696864,
+            "originalUrl": "https://bokun.s3.amazonaws.com/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/240ca9c3-2804-4fd2-9d2e-5f237efc2e3e.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696866,
+            "originalUrl": "https://bokun.s3.amazonaws.com/86996475-95d2-4401-8558-a4c124052366.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/86996475-95d2-4401-8558-a4c124052366.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/86996475-95d2-4401-8558-a4c124052366.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696868,
+            "originalUrl": "https://bokun.s3.amazonaws.com/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/2f3e68cc-064f-4b30-87d7-ab0e199350eb.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696867,
+            "originalUrl": "https://bokun.s3.amazonaws.com/a06b5295-b838-4647-858a-74006cbe5a34.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/a06b5295-b838-4647-858a-74006cbe5a34.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/a06b5295-b838-4647-858a-74006cbe5a34.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696878,
+            "originalUrl": "https://bokun.s3.amazonaws.com/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/7eebd62a-b60f-474a-9945-e2bb9a14a4b1.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696863,
+            "originalUrl": "https://bokun.s3.amazonaws.com/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/ead216d6-90fa-4dfa-a1da-0133ba2c87d7.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696865,
+            "originalUrl": "https://bokun.s3.amazonaws.com/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/6d20266b-627a-49ac-8cd1-b0b0673384e6.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696869,
+            "originalUrl": "https://bokun.s3.amazonaws.com/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/5a9da52b-ff2b-460e-a5a0-e506bd4a4ed1.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696870,
+            "originalUrl": "https://bokun.s3.amazonaws.com/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/86e0398e-35e5-436e-8ccd-7bc4ca1c1382.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696871,
+            "originalUrl": "https://bokun.s3.amazonaws.com/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/36e42200-9d18-4aa5-a0da-9d457a61d41c.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696872,
+            "originalUrl": "https://bokun.s3.amazonaws.com/b87c55bc-414e-400a-a147-a98c2759331f.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/b87c55bc-414e-400a-a147-a98c2759331f.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/b87c55bc-414e-400a-a147-a98c2759331f.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696873,
+            "originalUrl": "https://bokun.s3.amazonaws.com/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/8f0926c4-a123-4b8f-9d6e-fa58434f323a.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696874,
+            "originalUrl": "https://bokun.s3.amazonaws.com/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/016d6434-0546-4d91-a6f8-6c32d2071b52.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696875,
+            "originalUrl": "https://bokun.s3.amazonaws.com/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/db51005d-0032-41c8-8cda-bd836a05fa15.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696862,
+            "originalUrl": "https://bokun.s3.amazonaws.com/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/063084f6-0d69-4042-8b2d-0546f674f7cf.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696876,
+            "originalUrl": "https://bokun.s3.amazonaws.com/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/a63bd165-460b-4e08-a1f8-e9ca5557fb3b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696877,
+            "originalUrl": "https://bokun.s3.amazonaws.com/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/1c20bb36-4e9b-414a-a171-2ecbb10418d4.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696880,
+            "originalUrl": "https://bokun.s3.amazonaws.com/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/d561abff-4cb1-434d-8656-8b4a95eaa28f.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696881,
+            "originalUrl": "https://bokun.s3.amazonaws.com/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/ba1f5405-a6c9-4c87-b75d-5e56dabd5363.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696882,
+            "originalUrl": "https://bokun.s3.amazonaws.com/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/d6e83d83-ff0d-4da8-946d-c92a3453c024.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696883,
+            "originalUrl": "https://bokun.s3.amazonaws.com/cfa10423-e498-422c-90a1-4696c28d521e.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/cfa10423-e498-422c-90a1-4696c28d521e.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/cfa10423-e498-422c-90a1-4696c28d521e.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696884,
+            "originalUrl": "https://bokun.s3.amazonaws.com/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/45e21c93-94ba-4fdf-a65c-9fcada7c839b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696885,
+            "originalUrl": "https://bokun.s3.amazonaws.com/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/6efb3c05-a9d0-487d-a444-6d2fc66459ea.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696886,
+            "originalUrl": "https://bokun.s3.amazonaws.com/89463161-4c1c-45b5-8447-019526877762.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/89463161-4c1c-45b5-8447-019526877762.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/89463161-4c1c-45b5-8447-019526877762.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696887,
+            "originalUrl": "https://bokun.s3.amazonaws.com/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/8bc6716c-b196-4156-8fc7-2523d66e852e.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696888,
+            "originalUrl": "https://bokun.s3.amazonaws.com/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/dfd7041a-8c7f-420f-afa8-8c8dd35666ad.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696889,
+            "originalUrl": "https://bokun.s3.amazonaws.com/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/e3bdf9b3-ae8c-412a-a42a-9960854de0b3.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696890,
+            "originalUrl": "https://bokun.s3.amazonaws.com/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/9e41b087-51ca-480a-a555-e9fcf63a30cf.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696891,
+            "originalUrl": "https://bokun.s3.amazonaws.com/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/838d78cd-6d33-40d0-81b1-d1356481184f.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696892,
+            "originalUrl": "https://bokun.s3.amazonaws.com/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/c1f51a24-fde2-43db-8b5e-c74bac4229b4.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696893,
+            "originalUrl": "https://bokun.s3.amazonaws.com/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/36b7b276-4644-47d9-977b-b027f8cf528e.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696894,
+            "originalUrl": "https://bokun.s3.amazonaws.com/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/56d5935b-6d6c-42a2-b24a-93a6b038d956.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696895,
+            "originalUrl": "https://bokun.s3.amazonaws.com/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/5007d36e-09cb-46fa-b92e-12a33bead797.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696896,
+            "originalUrl": "https://bokun.s3.amazonaws.com/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/f5b80d38-02e6-41fc-836b-3e2f529b01c8.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 6696897,
+            "originalUrl": "https://bokun.s3.amazonaws.com/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1053",
+            "width": "1580",
+            "fileName": "/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/8db1a0a0-dbaa-422e-94b5-a5b66e50b771.jpeg?w=660&h=660"
+              }
+            ]
+          }
+        ],
+        "videos": [
+          {
+            "id": 38472,
+            "title": "A SPECIAL DAY IN TUSCANY",
+            "sourceUrl": "https://www.youtube.com/watch?v=3CnO_3HkS0Q",
+            "thumbnailUrl": "https://bokun.s3.amazonaws.com/videonullthumb",
+            "previewUrl": "https://bokun.s3.amazonaws.com/videonullpreview",
+            "html": "<iframe width=\"356\" height=\"200\" src=\"https://www.youtube.com/embed/3CnO_3HkS0Q?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" allowfullscreen title=\"A SPECIAL DAY IN TUSCANY\"></iframe>",
+            "providerName": "YouTube",
+            "value": null,
+            "itemIndex": 0,
+            "cleanPreviewUrl": "https://bokun.s3.amazonaws.com/videonullpreview",
+            "cleanThumbnailUrl": "https://bokun.s3.amazonaws.com/videonullthumb"
+          }
+        ],
+        "vendor": {
+          "id": 10176,
+          "title": "Ciao Florence Tours & Travels Srl",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "boxedVendor": null,
+        "storedExternally": false,
+        "pluginId": null,
+        "reviewRating": null,
+        "reviewCount": null,
+        "activityType": "DAY_TOUR_OR_ACTIVITY",
+        "bookingType": "DATE_AND_TIME",
+        "scheduleType": "RECURRING",
+        "cutoffType": "RELATIVE_TO_START_TIME",
+        "cutoffReferenceHour": null,
+        "cutoffReferenceMinute": null,
+        "earlyBookingLimitType": "UNLIMITED",
+        "earlyBookingLimitSpecificDateTime": null,
+        "earlyBookingLimitDaysBefore": null,
+        "earlyBookingLimitMonthsBefore": null,
+        "earlyBookingLimitTime": null,
+        "capacityType": "LIMITED",
+        "passExpiryType": null,
+        "fixedPassExpiryDate": null,
+        "meetingType": "MEET_ON_LOCATION",
+        "privateActivity": false,
+        "passCapacity": 0,
+        "passValidForDays": null,
+        "passesAvailable": 0,
+        "affiliateHubProduct": false,
+        "dressCode": false,
+        "passportRequired": false,
+        "supportedAccessibilityTypes": [],
+        "startPoints": [
+          {
+            "id": 117664,
+            "type": null,
+            "title": "TOURS & NEWS KIOSK AT PIAZZALE MONTELUNGO BUS TERMINAL - Located at 5-10 minutes walking distance from Santa Maria Novella Train Station. Look for our staff wearing a FUCHSIA CIAOFLORENCE JACKET and holding a CIAOFLORENCE CLIPBOARD!",
+            "code": null,
+            "address": {
+              "id": 2656590,
+              "created": [
+                2020,
+                2,
+                12,
+                10,
+                40,
+                4
+              ],
+              "addressLine1": "Piazzale Montelungo",
+              "addressLine2": null,
+              "addressLine3": null,
+              "city": "Firenze",
+              "state": "Toscana",
+              "postalCode": "50129",
+              "countryCode": "IT",
+              "mapZoomLevel": 13,
+              "geoPoint": {
+                "latitude": 43.7806396,
+                "longitude": 11.2466917
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "EkNQaWF6emFsZSBNb250ZWx1bmdvLCBGbG9yZW5jZSwgTWV0cm9wb2xpdGFuIENpdHkgb2YgRmxvcmVuY2UsIEl0YWx5Ii4qLAoUChIJE2RUeqZWKhMRqtJudtWp91MSFAoSCa3W0oCmVioTEQMqx-8XedWT",
+              "googlePlaceId": null
+            },
+            "pickupTicketDescription": null,
+            "dropoffTicketDescription": null,
+            "labels": []
+          }
+        ],
+        "bookingQuestions": [],
+        "passengerFields": [],
+        "inclusions": [],
+        "included": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Journey by fully-fitted GT Coach<br />Expert multilingual escort<br />Siena tour with professional guide - if optional selected<br />Visit to a Chianti winery<br />Sampling of wines, extra-virgin olive oil and regional products<br />Free visit of San Gimignano and Monteriggioni</p>",
+        "exclusions": [],
+        "excluded": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Gratuities<br />Hotel pickup and drop-off<br />Siena Cathedral tickets</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Low cost options do not include the Guided tour in Siena</p>",
+        "requirements": null,
+        "knowBeforeYouGoItems": [],
+        "attention": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\"><strong>LOW SEASON</strong> (From November, 1st until March, 31st): English and Spanish languages are always guaranteed. In order to confirm the excursion in French, Italian or Portuguese a minimum of 4 pax is required</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\"><strong>HIGH SEASON</strong> (From April 1st until October 31st): this tour is always available in English and Spanish. Other languages are confirmed as follows:</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">FRENCH: Tuesday - Friday, min 2 pax</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">PORTUGUESE: Wednesday - min 2 pax</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">ITALIAN: Saturday, Sunday - min 2 pax</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Not wheelchair accessible</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">May be operated by a multi-lingual guide</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Comfortable walking shoes are recommended   </p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">The given order of the visits may change   </p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Please show up 20 minutes before the tour departure  </p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Times are subject to change due to local traffic conditions</p><p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Low cost options do not include the guide in Siena</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Shared tour with other participants</p>",
+        "locationCode": null,
+        "googlePlace": {
+          "id": 264995,
+          "country": "Italy",
+          "countryCode": "IT",
+          "city": "Florence",
+          "geoLocationCenter": {
+            "lat": 43.7806608,
+            "lng": 11.246613
+          },
+          "addressTypes": []
+        },
+        "tripadvisorReview": {
+          "locationId": "11461488",
+          "url": "https://www.tripadvisor.it/AttractionProductReview-g187895-d11461488-Siena_San_Gimignano_Monteriggioni_and_Chianti_Wine_Tasting_Tour_from_Florence-Flor.html",
+          "name": "Medieval Gems of Tuscany: Siena, San Gimignano and Monteriggioni",
+          "rating": 4.7,
+          "numReviews": 2468,
+          "description": "Combine medieval gems, fine wines, and UNESCO-listed monuments on this full-day tour of central Tuscany from Florence. Marvel over the medieval castle of Monteriggioni; explore the architectural wonders of historic Siena; and admire the striking skyline of hilltop San Gimignano. Finish your tour with a wine tasting at a local winery in the Chianti region."
+        },
+        "resourceSlots": [],
+        "bookingCutoffMinutes": 0,
+        "bookingCutoffHours": 0,
+        "bookingCutoffDays": 0,
+        "bookingCutoffWeeks": 0,
+        "requestDeadlineMinutes": 0,
+        "requestDeadlineHours": 0,
+        "requestDeadlineDays": 2,
+        "requestDeadlineWeeks": 0,
+        "boxedActivityId": null,
+        "comboActivity": false,
+        "comboParts": [],
+        "returnProduct": null,
+        "offers": [],
+        "ticketPerComboComponent": false,
+        "ticketComboComponents": [],
+        "pickupActivityId": null,
+        "allowCustomizedBookings": false,
+        "reservationTimeout": null,
+        "vendorReservationTimeout": null,
+        "dayBasedAvailability": false,
+        "selectFromDayOptions": false,
+        "dayOptions": [],
+        "activityCategories": [
+          "CULTURAL_AND_THEME_TOURS",
+          "DAY_TRIPS_AND_EXCURSIONS",
+          "CULINARY",
+          "BUS_OR_MINIVAN_TOUR",
+          "NATURE",
+          "ARTS_AND_CULTURE"
+        ],
+        "activityAttributes": [
+          "OUTDOOR",
+          "FAMILY_FRIENDLY",
+          "GROUP_FRIENDLY"
+        ],
+        "guidanceTypes": [],
+        "defaultRateId": 714865,
+        "rates": [
+          {
+            "id": 714865,
+            "title": "Tour in English ",
+            "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 0,
+            "rateCode": "TG1",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [
+              841503
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 714865,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  375828854
+                ],
+                "language": "en_GB",
+                "title": "Tour in English ",
+                "activityRateId": 714865,
+                "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 714863,
+            "title": "Tour in French",
+            "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 1,
+            "rateCode": "TG3",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [
+              841499
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 714863,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  381697751
+                ],
+                "language": "en_GB",
+                "title": "Tour in French",
+                "activityRateId": 714863,
+                "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 714860,
+            "title": "Tour in Italian",
+            "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 2,
+            "rateCode": "TG5",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [
+              841502
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 714860,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  384622935
+                ],
+                "language": "en_GB",
+                "title": "Tour in Italian",
+                "activityRateId": 714860,
+                "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 714864,
+            "title": "Tour in Portuguese",
+            "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 3,
+            "rateCode": "TG4",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1713331
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 714864,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  384653616
+                ],
+                "language": "en_GB",
+                "title": "Tour in Portuguese",
+                "activityRateId": 714864,
+                "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 714862,
+            "title": "Tour in Spanish",
+            "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 4,
+            "rateCode": "TG6",
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [
+              841501
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 714862,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  385695285
+                ],
+                "language": "en_GB",
+                "title": "Tour in Spanish",
+                "activityRateId": 714862,
+                "description": "All inclusive tour: Including 1 hour guided tour in Siena, Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 1203175,
+            "title": "Semi independent tour-English",
+            "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 5,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1906252
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1203175,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  388381342
+                ],
+                "language": "en_GB",
+                "title": "Semi independent tour-English",
+                "activityRateId": 1203175,
+                "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 1203177,
+            "title": "Semi independent tour-Spanish",
+            "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 6,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1906253
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1203177,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  388406351
+                ],
+                "language": "en_GB",
+                "title": "Semi independent tour-Spanish",
+                "activityRateId": 1203177,
+                "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 1203178,
+            "title": "Semi independent tour-French",
+            "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 7,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1906255
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1203178,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  388430128
+                ],
+                "language": "en_GB",
+                "title": "Semi independent tour-French",
+                "activityRateId": 1203178,
+                "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 1203180,
+            "title": "Semi independent tour-Italian",
+            "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 8,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1906254
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1203180,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  388453899
+                ],
+                "language": "en_GB",
+                "title": "Semi independent tour-Italian",
+                "activityRateId": 1203180,
+                "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          },
+          {
+            "id": 1203182,
+            "title": "Semi independent tour-Portuguese",
+            "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery",
+            "index": 9,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 20,
+            "cancellationPolicy": {
+              "id": 17894,
+              "title": "Standard Viator policy",
+              "penaltyRules": [
+                {
+                  "id": 22271,
+                  "cutoffHours": 48,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [
+              1906257
+            ],
+            "allStartTimes": false,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              120730,
+              120731,
+              120732
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1203182,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  16,
+                  14,
+                  54,
+                  388478099
+                ],
+                "language": "en_GB",
+                "title": "Semi independent tour-Portuguese",
+                "activityRateId": 1203182,
+                "description": "What is not included: Local Guide in Siena. What is included: Free time in Monteriggioni, Siena, San Gimignano and wine tasting in a Chianti winery"
+              }
+            ]
+          }
+        ],
+        "ticketPerPerson": false,
+        "durationType": "HOURS",
+        "duration": 10,
+        "durationMinutes": 30,
+        "durationHours": 10,
+        "durationDays": 0,
+        "durationWeeks": 0,
+        "durationText": "10 horas y 30 minutos",
+        "minAge": 0,
+        "originalDefaultPrice": null,
+        "nextDefaultPrice": null,
+        "nextDefaultPriceMoney": null,
+        "pickupService": false,
+        "pickupAllotment": false,
+        "pickupAllotmentType": "NO_ALLOTMENT",
+        "useComponentPickupAllotments": false,
+        "pickupFlags": [],
+        "customPickupAllowed": false,
+        "pickupMinutesBefore": 0,
+        "pickupTimeWindowInMinutes": 0,
+        "pickupTimeLocationBased": false,
+        "pickupTimeByLocations": [],
+        "noPickupMsg": null,
+        "ticketMsg": "",
+        "showGlobalPickupMsg": false,
+        "showNoPickupMsg": false,
+        "pickupPlaceGroups": [],
+        "dropoffService": false,
+        "dropoffFlags": [],
+        "customDropoffAllowed": false,
+        "useSameAsPickUpPlaces": false,
+        "dropoffPlaceGroups": [],
+        "difficultyLevel": "MODERATE",
+        "pricingCategories": [
+          {
+            "id": 120730,
+            "title": "Adulto (13 - 99)",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 13,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": true,
+            "fullTitle": "Adulto (13 - 99) (13 - 99)"
+          },
+          {
+            "id": 120731,
+            "title": "Niño (4 - 12)",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 4,
+            "maxAge": 12,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Niño (4 - 12) (4 - 12)"
+          },
+          {
+            "id": 120732,
+            "title": "Bebé (0 - 3)",
+            "ticketCategory": "INFANT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 0,
+            "maxAge": 3,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Bebé (0 - 3) (0 - 3)"
+          }
+        ],
+        "activityPriceCatalogs": [
+          {
+            "catalog": {
+              "id": 11851,
+              "title": "Default",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": true,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 11851,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 98728,
+              "title": "Destination Italia",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 98728,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 103862,
+              "title": "Ranieri Viaggi",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 103862,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 135089,
+              "title": "Buen Dìa",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 135089,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 136064,
+              "title": "Tiqets",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 136064,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 136476,
+              "title": "Special OTA's ",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 136476,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          }
+        ],
+        "agendaItems": [
+          {
+            "id": 2457364,
+            "index": 0,
+            "title": "Florence",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">There is no time to waste when exploring the stunning Tuscany hills! Meet your tour guide at Piazzale Montelungo Bus Terminal early in the morning. Piazzale Montelungo is located 5-10 minutes walking distance from the Santa Maria Novella train station. Hop on the comfortable coach bus, choose your seat, and relax before departing on your journey! The drive to Monteriggioni will take about one hour. During the journey, your guide will entertain you with plenty of interesting information about Tuscany and its sights on the way. Upon arrival, your expert guide will share some interesting information and fun stories about Monteriggioni! If you have any questions, your guide will be there to assist you.&nbsp;</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "Piazzale Montelungo",
+              "city": "Firenze",
+              "countryCode": "IT",
+              "postCode": "",
+              "latitude": 43.7806396,
+              "longitude": 11.2466917,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "EkNQaWF6emFsZSBNb250ZWx1bmdvLCBGbG9yZW5jZSwgTWV0cm9wb2xpdGFuIENpdHkgb2YgRmxvcmVuY2UsIEl0YWx5Ii4qLAoUChIJE2RUeqZWKhMRqtJudtWp91MSFAoSCd9MpNOgVioTEdmXYIlopUW6",
+              "wholeAddress": "Piazzale Montelungo, Firenze"
+            },
+            "address": {
+              "id": 13723557,
+              "created": null,
+              "addressLine1": "Piazzale Montelungo",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Firenze",
+              "state": "Toscana",
+              "postalCode": "",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.7806396,
+                "longitude": 11.2466917
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "EkNQaWF6emFsZSBNb250ZWx1bmdvLCBGbG9yZW5jZSwgTWV0cm9wb2xpdGFuIENpdHkgb2YgRmxvcmVuY2UsIEl0YWx5Ii4qLAoUChIJE2RUeqZWKhMRqtJudtWp91MSFAoSCd9MpNOgVioTEdmXYIlopUW6",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 2457365,
+            "index": 1,
+            "title": "Monteriggioni, Province of Siena",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">You will have one hour of free time to explore Monteriggioni, Tuscany's hidden gem. This town is encompassed by its stunning, medieval walls. The town itself is so well preserved, you will feel as though you have travelled back in time to the Renaissance era... Explore the small cobblestone alleyways, take in the lovely views, and enjoy a cappuccino in the essence of historic Tuscany.</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Monteriggioni",
+              "countryCode": "IT",
+              "postCode": "53035",
+              "latitude": 43.39010469999999,
+              "longitude": 11.2234083,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ0YvARycuKhMRzWQ7D_I9S4Q",
+              "wholeAddress": "53035 Monteriggioni"
+            },
+            "address": {
+              "id": 13723558,
+              "created": null,
+              "addressLine1": "",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Monteriggioni",
+              "state": "Tuscany",
+              "postalCode": "53035",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.39010469999999,
+                "longitude": 11.2234083
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ0YvARycuKhMRzWQ7D_I9S4Q",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 2457366,
+            "index": 2,
+            "title": "Siena",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">Next, you will head to a truly unique, medieval city in Tuscany - Siena! The drive will take about thirty minutes, and then your guide will lead you through the picturesque, ancient streets in the heart of the city until you reach Piazza del Campo. In the largest square of the city, you will meet a local and professional city guide for your included walking tour of Siena. For about an hour, the guide will share fascinating facts about this incredible city (which is listed as a UNESCO World Heritage Site), and you will visit some of the most famous points of interest. The end of the walking tour will lead you to the Siena Cathedral, where you can enter at your own expense to see the breathtaking decorations and unique architecture.</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Siena",
+              "countryCode": "IT",
+              "postCode": "53100",
+              "latitude": 43.31880899999999,
+              "longitude": 11.3307574,
+              "zoomLevel": 13,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJE1O_NL8sKhMR40Mj8RISc10",
+              "wholeAddress": "53100 Siena"
+            },
+            "address": {
+              "id": 13723559,
+              "created": null,
+              "addressLine1": "",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Siena",
+              "state": "Tuscany",
+              "postalCode": "53100",
+              "countryCode": "IT",
+              "mapZoomLevel": 13,
+              "geoPoint": {
+                "latitude": 43.31880899999999,
+                "longitude": 11.3307574
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJE1O_NL8sKhMR40Mj8RISc10",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 512189,
+            "index": 3,
+            "title": "Piazza del Campo, Siena",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">Your walking tour will begin in Piazza del Campo, a fascinating, oval-shaped piazza in the center of Siena. Not only is this a popular spot for locals to meet up with friends and relax, but it is also home to a historic palio horse race! Every year, the different neighborhoods of Siena join for the epic and exciting horse race. Your guide will share plenty of local stories as you walk throughout the Piazza and see some of the famous monuments. Your professional guide will share information in a way which brings the history of the city to life, in a vivid, storytelling manner.&nbsp;</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "Piazza del Campo, ",
+              "city": "Siena",
+              "countryCode": "IT",
+              "postCode": "53100",
+              "latitude": 43.31847,
+              "longitude": 11.33116,
+              "zoomLevel": 1,
+              "origin": "TRIPADVISOR_API",
+              "originId": "195555",
+              "wholeAddress": "Piazza del Campo, , 53100 Siena"
+            },
+            "address": {
+              "id": 2656591,
+              "created": null,
+              "addressLine1": "Piazza del Campo, ",
+              "addressLine2": null,
+              "addressLine3": null,
+              "city": "Siena",
+              "state": null,
+              "postalCode": "53100",
+              "countryCode": "IT",
+              "mapZoomLevel": 1,
+              "geoPoint": {
+                "latitude": 43.31847,
+                "longitude": 11.33116
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "TRIPADVISOR_API",
+              "originId": "195555",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 512190,
+            "index": 4,
+            "title": "Siena's Cathedral (Duomo)",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">Your walking tour ends in front of the iconic Duomo of Siena. This absolutely stunning piece of architecture is equally as beautiful inside as outside; if you would like to enter the cathedral, you will have some free time to do so (ticket is not included). If you prefer to explore the city in your free time after the walking tour, there will be some time for independent sightseeing. One of the most beautiful Gothic-style churches in Italy, with its radiant green and white marble decorations</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "Piazza del Duomo 8",
+              "city": "Siena",
+              "countryCode": "IT",
+              "postCode": "53100",
+              "latitude": 43.3177019,
+              "longitude": 11.3289071,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJw6OmtLssKhMRRd5_XIUZ_VE",
+              "wholeAddress": "Piazza del Duomo 8, 53100 Siena"
+            },
+            "address": {
+              "id": 2656592,
+              "created": null,
+              "addressLine1": "Piazza del Duomo 8",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Siena",
+              "state": null,
+              "postalCode": "53100",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.3177019,
+                "longitude": 11.3289071
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJw6OmtLssKhMRRd5_XIUZ_VE",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 512193,
+            "index": 5,
+            "title": "San Gimignano, province of Siena",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">Your journey through Tuscany will continue to San Gimignano, known as the \"town of towers,\" because of its fascinating medieval towers still perfectly intact. The drive will take about an hour, and you will see the stunning \"medieval skyscrapers\" from a distance as your bus pulls into the historic town. Your guide will lead you past an incredible panoramic viewpoint of the Tuscan hills, then through the ancient city doors. You will have an hour to independently explore the town - walk the picturesque alleyways, visit the Duomo, or climb the tallest tower!&nbsp;</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "San Gimignano",
+              "countryCode": "IT",
+              "postCode": "53037",
+              "latitude": 43.4672085,
+              "longitude": 11.0434187,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJb2tEMTg8KhMRkUT1UlT1Tkw",
+              "wholeAddress": "53037 San Gimignano"
+            },
+            "address": {
+              "id": 2656595,
+              "created": null,
+              "addressLine1": "",
+              "addressLine2": null,
+              "addressLine3": null,
+              "city": "San Gimignano",
+              "state": null,
+              "postalCode": "53037",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.4672085,
+                "longitude": 11.0434187
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJb2tEMTg8KhMRkUT1UlT1Tkw",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 512194,
+            "index": 6,
+            "title": "Chianti Wine Region",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">After exploring these medieval Tuscan cities, you will undoubtedly be ready for some Tuscan wine! Meet back with your group, and head to a nearby wine estate in the countryside outside of San Gimignano. In about fifteen minutes, you will arrive at this characteristic wine estate, where you will be seated in a modern and beautiful tasting room built into the cellar. Enjoy the delicious wine produced at the estate: during the wine tasting, the wine producer will share the secrets of Chianti wine production with your group. At the end of the wine tasting, you will have the opportunity to purchase bottles as a high-quality souvenir of your incredible day in Tuscany!</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Poggibonsi",
+              "countryCode": "IT",
+              "postCode": "53036",
+              "latitude": 43.4728358,
+              "longitude": 11.1467374,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJN6hFaxk6KhMR9h6DkPOcOoE",
+              "wholeAddress": "53036 Poggibonsi"
+            },
+            "address": {
+              "id": 2656596,
+              "created": null,
+              "addressLine1": "",
+              "addressLine2": null,
+              "addressLine3": null,
+              "city": "Poggibonsi",
+              "state": null,
+              "postalCode": "53036",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.4728358,
+                "longitude": 11.1467374
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJN6hFaxk6KhMR9h6DkPOcOoE",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 2457368,
+            "index": 7,
+            "title": "Piazzale Montelungo, Florence",
+            "excerpt": "",
+            "body": "<p style=\"font-size: 14px; line-height: 1.6; color: #57646f; margin-top: 0.5em; margin-bottom: 0.5em\">End your journey through Tuscany with unforgettable views of the Tuscan hills as the sunsets. The drive will take about an hour, and you will arrive in Florence in early evening.&nbsp;</p>",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Florence",
+              "countryCode": "IT",
+              "postCode": "",
+              "latitude": 43.7699685,
+              "longitude": 11.2576706,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJrdbSgKZWKhMRAyrH7xd51ZM",
+              "wholeAddress": "Florence"
+            },
+            "address": {
+              "id": 13723560,
+              "created": null,
+              "addressLine1": "",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Florence",
+              "state": "Tuscany",
+              "postalCode": "",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 43.7699685,
+                "longitude": 11.2576706
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJrdbSgKZWKhMRAyrH7xd51ZM",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          }
+        ],
+        "startTimes": [
+          {
+            "id": 841499,
+            "label": "",
+            "externalLabel": "French",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "6367P15_TG3_08:45",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 841501,
+            "label": "",
+            "externalLabel": "Spanish",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "6367P15_TG6_08:45",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 841502,
+            "label": "",
+            "externalLabel": "Italian",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "6367P15_TG5_08:45",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 841503,
+            "label": "",
+            "externalLabel": "English",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "6367P15_TG1_08:45",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1713331,
+            "label": "Tour in Portuguese",
+            "externalLabel": "Portuguese",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1906252,
+            "label": "English low cost tour",
+            "externalLabel": "English Low Cost",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1906253,
+            "label": "Spanish low cost tour",
+            "externalLabel": "Spanish Low Cost",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1906254,
+            "label": "Italian low cost tour",
+            "externalLabel": "Italian Low Cost",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1906255,
+            "label": "French low cost tour",
+            "externalLabel": "French Low cost",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1906257,
+            "label": "Portuguese low cost tour",
+            "externalLabel": "Portuguese Low Cost",
+            "hour": 8,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 10,
+            "durationMinutes": 30,
+            "durationHours": 10,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          }
+        ],
+        "bookableExtras": [],
+        "route": null,
+        "widgetSettings": null,
+        "hasOpeningHours": false,
+        "defaultOpeningHours": null,
+        "seasonalOpeningHours": [],
+        "displaySettings": {
+          "showPickupPlaces": false,
+          "showRouteMap": false,
+          "selectRateBasedOnStartTime": false,
+          "customFields": []
+        },
+        "hasBoxes": true,
+        "bookingLabels": [],
+        "marketplaceVisibilityType": "PUBLIC",
+        "requestDeadline": 172800000,
+        "bookingCutoff": 0,
+        "actualId": 328339,
+        "nextDefaultPriceAsText": "",
+        "actualVendor": {
+          "id": 10176,
+          "title": "Ciao Florence Tours & Travels Srl",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        }
+      },
+      "bookingAnswers": [],
+      "pickupAnswers": [],
+      "dropoffAnswers": [],
+      "flexible": false,
+      "customized": false,
+      "customizedDurationMinutes": 0,
+      "customizedDurationHours": 0,
+      "customizedDurationDays": 0,
+      "customizedDurationWeeks": 0,
+      "inventoryServiceRefNumber": "930292",
+      "ticketPerPerson": false,
+      "offerApplied": false,
+      "pricingCategoryBookings": [
+        {
+          "id": 298092386,
+          "pricingCategoryId": 120730,
+          "pricingCategory": {
+            "id": 120730,
+            "title": "Adulto (13 - 99)",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 13,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (13 - 99) (13 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto (13 - 99)",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        }
+      ],
+      "extras": [],
+      "bookingFields": [],
+      "pickup": false,
+      "dropoff": false,
+      "inventoryConfirmFailed": false,
+      "channelId": "MARKETPLACE",
+      "guidedLanguages": [],
+      "quantityByPricingCategory": {
+        "120730": 1
+      },
+      "bookedPricingCategories": [
+        {
+          "id": 120730,
+          "title": "Adulto (13 - 99)",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "Adulto (13 - 99)"
+        }
+      ],
+      "totalParticipants": 1,
+      "savedAmount": 0
+    }
+  ],
+  "routeBookings": [],
+  "giftCardBookings": [],
+  "bookingFields": [],
+  "action": "BOOKING_CONFIRMED"
+}

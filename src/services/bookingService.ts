@@ -412,11 +412,10 @@ export class BookingService {
       // NUOVO: Sincronizza disponibilità dopo cancellazione
       await this.syncAvailabilityForBooking(bookingData);
 
-      // NUOVO: Auto-nota di credito se abilitata
+      // Always create credit note on cancellation (if invoice exists)
       try {
-        const shouldCreditNote = await this.invoiceService.shouldAutoCreditNote();
-        if (shouldCreditNote && activityBefore) {
-          console.log('💸 Triggering auto credit note for cancelled activity:', bookingData.bookingId);
+        if (activityBefore) {
+          console.log('💸 Creating credit note for cancelled activity:', bookingData.bookingId);
           await this.invoiceService.createCreditNote(
             activityBefore.booking_id,
             bookingData.bookingId,
@@ -424,7 +423,7 @@ export class BookingService {
           );
         }
       } catch (creditNoteError) {
-        console.error('⚠️ Errore in auto credit note (non-blocking):', creditNoteError);
+        console.error('⚠️ Errore in credit note (non-blocking):', creditNoteError);
         // Non propagare l'errore - la nota di credito non deve bloccare il webhook
       }
 

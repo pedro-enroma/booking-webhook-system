@@ -1,0 +1,2109 @@
+{
+  "creationDate": 1765927396000,
+  "bookingId": 80341291,
+  "language": "en",
+  "confirmationCode": "GL--80341291",
+  "externalBookingReference": "16302084208",
+  "status": "CONFIRMED",
+  "currency": "ARS",
+  "totalPrice": 268852.46,
+  "totalPaid": 0,
+  "totalDue": 268852.46,
+  "totalDueAsText": "ARS 268,852.46",
+  "totalPriceConverted": 268852.46,
+  "customer": {
+    "contactDetailsHidden": false,
+    "contactDetailsHiddenUntil": null,
+    "id": 187024788,
+    "created": null,
+    "uuid": "f2242f80-c9bc-4ee7-b75c-80cc2764b0bc",
+    "email": "encisovaldezameliitzel@gmail.com",
+    "title": null,
+    "firstName": "AMELI ITZEL",
+    "lastName": "ENCISO VALDEZ",
+    "personalIdNumber": null,
+    "clcEmail": false,
+    "language": null,
+    "nationality": null,
+    "sex": null,
+    "dateOfBirth": null,
+    "phoneNumber": "+525538615373",
+    "phoneNumberCountryCode": null,
+    "address": null,
+    "postCode": null,
+    "state": null,
+    "place": null,
+    "country": null,
+    "organization": null,
+    "passportId": null,
+    "passportExpDay": null,
+    "passportExpMonth": null,
+    "passportExpYear": null,
+    "credentials": null,
+    "acceptsMarketing": false,
+    "tags": null,
+    "octoNote": null,
+    "phoneNumberLinkable": "+525538615373"
+  },
+  "customerPayments": [],
+  "seller": {
+    "id": 32883,
+    "title": "GL-Tours",
+    "description": "Marketplace of tours, activities, transfers and attraction tickets for main OTAs of Latin America.",
+    "logo": {
+      "id": 6681623,
+      "originalUrl": "https://bokun.s3.amazonaws.com/c0a67562-0a03-450c-a20a-b46ea569ec12",
+      "description": null,
+      "alternateText": null,
+      "height": null,
+      "width": null,
+      "fileName": "/c0a67562-0a03-450c-a20a-b46ea569ec12",
+      "flags": [],
+      "derived": [
+        {
+          "name": "thumbnail",
+          "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=80&h=80&mode=crop",
+          "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=80&h=80&mode=crop"
+        },
+        {
+          "name": "preview",
+          "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=300&h=300",
+          "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=300&h=300"
+        },
+        {
+          "name": "large",
+          "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=660&h=660",
+          "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=660&h=660"
+        }
+      ]
+    },
+    "currencyCode": "USD",
+    "countryCode": "AR",
+    "phoneNumber": "+54 1141936473",
+    "emailAddress": "online@gl-tours.com",
+    "website": "gl-tours.com",
+    "logoStyle": "",
+    "invoiceIdNumber": "",
+    "timeZone": "UTC",
+    "showInvoiceIdOnTicket": true,
+    "showAgentDetailsOnTicket": false,
+    "showPaymentsOnInvoice": false,
+    "companyEmailIsDefault": true
+  },
+  "bookingChannel": {
+    "id": 72409,
+    "uuid": "7d545de5-b814-44af-895b-a6461785ee86",
+    "title": "www.gl-tours.com",
+    "backend": false,
+    "overrideVoucherHeader": false,
+    "type": "OTHER",
+    "paymentProviderAdded": false,
+    "flags": [],
+    "shoppingCartPosition": "RIGHT"
+  },
+  "accommodationBookings": [],
+  "activityBookings": [
+    {
+      "bookingId": 116133179,
+      "parentBookingId": 80341291,
+      "confirmationCode": "GL--80341291",
+      "productConfirmationCode": "ENRO-T116133179",
+      "barcode": {
+        "value": "ENRO-T116133179",
+        "barcodeType": "QR_CODE"
+      },
+      "hasTicket": false,
+      "boxBooking": false,
+      "startDateTime": 1770893100000,
+      "endDateTime": 1770903900000,
+      "status": "CONFIRMED",
+      "includedOnCustomerInvoice": false,
+      "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+      "totalPrice": 268852.46,
+      "priceWithDiscount": 268852.46,
+      "totalPriceAsText": "ARS 268,852.46",
+      "priceWithDiscountAsText": "ARS 268,852.46",
+      "discountPercentage": 0,
+      "discountAmount": 0,
+      "productCategory": "ACTIVITIES",
+      "paidType": "NOT_PAID",
+      "product": {
+        "id": 841874,
+        "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+        "flags": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "productCategory": "ACTIVITIES",
+        "isPassProduct": false,
+        "excerpt": "Colosseum with Gladiators Arena access and Ancient Rome Guided tour",
+        "offers": [],
+        "cancellationPolicy": {
+          "id": 192533,
+          "title": "Free Cancellation - until 7 days",
+          "penaltyRules": [
+            {
+              "id": 210353,
+              "cutoffHours": 168,
+              "charge": 100,
+              "chargeType": "percentage",
+              "percentage": 100
+            }
+          ],
+          "tax": null,
+          "defaultPolicy": false,
+          "policyType": "ADVANCED",
+          "simpleCutoffHours": null,
+          "policyTypeEnum": "ADVANCED"
+        }
+      },
+      "supplier": {
+        "id": 27164,
+        "title": "EnRoma.com",
+        "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+        "logo": {
+          "id": 5260859,
+          "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+          "description": null,
+          "alternateText": null,
+          "height": null,
+          "width": null,
+          "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+            }
+          ]
+        },
+        "currencyCode": "EUR",
+        "countryCode": "IT",
+        "phoneNumber": "+39 3429920638",
+        "emailAddress": "info@enroma.com",
+        "website": "https://www.enroma.com/",
+        "logoStyle": "",
+        "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+        "timeZone": "Europe/Rome",
+        "showInvoiceIdOnTicket": false,
+        "showAgentDetailsOnTicket": false,
+        "showPaymentsOnInvoice": false,
+        "companyEmailIsDefault": true,
+        "linkedExternalCustomers": []
+      },
+      "seller": {
+        "id": 32883,
+        "title": "GL-Tours",
+        "description": "Marketplace of tours, activities, transfers and attraction tickets for main OTAs of Latin America.",
+        "logo": {
+          "id": 6681623,
+          "originalUrl": "https://bokun.s3.amazonaws.com/c0a67562-0a03-450c-a20a-b46ea569ec12",
+          "description": null,
+          "alternateText": null,
+          "height": null,
+          "width": null,
+          "fileName": "/c0a67562-0a03-450c-a20a-b46ea569ec12",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/c0a67562-0a03-450c-a20a-b46ea569ec12?w=660&h=660"
+            }
+          ]
+        },
+        "currencyCode": "USD",
+        "countryCode": "AR",
+        "phoneNumber": "+54 1141936473",
+        "emailAddress": "online@gl-tours.com",
+        "website": "gl-tours.com",
+        "logoStyle": "",
+        "invoiceIdNumber": "",
+        "timeZone": "UTC",
+        "showInvoiceIdOnTicket": true,
+        "showAgentDetailsOnTicket": false,
+        "showPaymentsOnInvoice": false,
+        "companyEmailIsDefault": true,
+        "linkedExternalCustomers": []
+      },
+      "productId": 841874,
+      "linksToExternalProducts": [],
+      "answers": [],
+      "sellerInvoice": {
+        "id": 70432570,
+        "issueDate": 1765927396000,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "type": "SELLER",
+        "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour (Arena Colosseum English) - Thu, February 12 2026 - 10:45 AM",
+        "issuer": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "externalId": "",
+          "flags": []
+        },
+        "recipient": {
+          "id": 32883,
+          "title": "GL-Tours",
+          "externalId": "",
+          "flags": []
+        },
+        "reconciled": false,
+        "product": {
+          "id": 841874,
+          "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+          "flags": []
+        },
+        "productConfirmationCode": "ENRO-T116133179",
+        "dates": "Thu, February 12 2026 - 10:45 AM",
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 33091448,
+            "title": "Adult",
+            "currency": "EUR",
+            "unitPriceDate": 1765927396000,
+            "quantity": 1,
+            "unitPrice": 89,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 71.2,
+              "currency": "EUR"
+            },
+            "commission": 20,
+            "totalWithoutCommissionAsText": "€89.00",
+            "totalDiscountedAsMoney": {
+              "amount": 71.2,
+              "currency": "EUR"
+            },
+            "totalWithoutCommissionAsMoney": {
+              "amount": 89,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 71.2,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 71.2,
+              "currency": "EUR"
+            },
+            "total": 71.2,
+            "totalDue": 71.2,
+            "totalDueAsMoney": {
+              "amount": 71.2,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 89,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 71.2,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 71.2,
+            "totalAsText": "€71.20",
+            "totalDiscountedAsText": "€71.20",
+            "totalDueAsText": "€71.20",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€71.20",
+            "unitPriceAsText": "€89.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          },
+          {
+            "id": 33091449,
+            "title": "Child (3 to 17)",
+            "currency": "EUR",
+            "unitPriceDate": 1765927396000,
+            "quantity": 1,
+            "unitPrice": 75,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 60,
+              "currency": "EUR"
+            },
+            "commission": 20,
+            "totalWithoutCommissionAsText": "€75.00",
+            "totalDiscountedAsMoney": {
+              "amount": 60,
+              "currency": "EUR"
+            },
+            "totalWithoutCommissionAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "totalAsMoney": {
+              "amount": 60,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 60,
+              "currency": "EUR"
+            },
+            "total": 60,
+            "totalDue": 60,
+            "totalDueAsMoney": {
+              "amount": 60,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 75,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDiscounted": 60,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 60,
+            "totalAsText": "€60.00",
+            "totalDiscountedAsText": "€60.00",
+            "totalDueAsText": "€60.00",
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0.00",
+            "discountedUnitPriceAsText": "€60.00",
+            "unitPriceAsText": "€75.00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0.00"
+          }
+        ],
+        "issuerName": "EnRoma.com",
+        "invoiceNumber": "S-70432570",
+        "recipientName": "GL-Tours",
+        "totalDiscountedAsMoney": {
+          "amount": 131.2,
+          "currency": "EUR"
+        },
+        "free": false,
+        "totalDueAsMoney": {
+          "amount": 131.2,
+          "currency": "EUR"
+        },
+        "totalAsMoney": {
+          "amount": 131.2,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "excludedTaxes": false,
+        "includedTaxes": false,
+        "strikeThroughTotalAsMoney": {
+          "amount": 131.2,
+          "currency": "EUR"
+        },
+        "totalAsText": "€131.20",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 131.2,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€131.20",
+        "totalDiscountAsText": "€0.00",
+        "totalDueAsText": "€131.20",
+        "totalExcludedTaxAsText": "€0.00",
+        "totalIncludedTaxAsText": "€0.00",
+        "totalTaxAsText": "€0.00",
+        "strikeThroughTotalAsText": "€131.20"
+      },
+      "notes": [],
+      "supplierContractFlags": [],
+      "sellerContractFlags": [],
+      "cancellationPolicy": {
+        "id": 192533,
+        "title": "Free Cancellation - until 7 days",
+        "penaltyRules": [
+          {
+            "id": 210353,
+            "cutoffHours": 168,
+            "charge": 100,
+            "chargeType": "percentage",
+            "percentage": 100
+          }
+        ],
+        "tax": null,
+        "defaultPolicy": false,
+        "policyType": "ADVANCED",
+        "simpleCutoffHours": null,
+        "policyTypeEnum": "ADVANCED"
+      },
+      "bookingRoles": [
+        "NONE",
+        "SUPPLIER"
+      ],
+      "refundProtectionSelected": false,
+      "refundProtectionOffered": false,
+      "date": 1770854400000,
+      "dateString": "Thu, February 12 2026 - 10:45 AM",
+      "startTime": "10:45",
+      "startTimeId": 3255302,
+      "rateId": 1618455,
+      "rateTitle": "Arena Colosseum English",
+      "activity": {
+        "id": 841874,
+        "externalId": null,
+        "productGroupId": null,
+        "productCategory": "ACTIVITIES",
+        "box": false,
+        "inventoryLocal": true,
+        "inventorySupportsPricing": false,
+        "inventorySupportsAvailability": true,
+        "creationDate": "Tue Feb 13 13:43:30 UTC 2024",
+        "lastModified": "Thu Nov 20 10:02:45 UTC 2025",
+        "lastPublished": "Thu Nov 20 10:02:49 UTC 2025",
+        "published": true,
+        "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+        "description": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Step into the Arena and live this unique experience in the Colosseum. Book this guided tour at a special price, with skip the line tickets and English-speaking guide. The guided tour also includes the Roman Forum and Palatine Hill. </p>",
+        "excerpt": "Colosseum with Gladiators Arena access and Ancient Rome Guided tour",
+        "cancellationPolicy": null,
+        "overrideBarcodeFormat": false,
+        "barcodeType": "QR_CODE",
+        "timeZone": null,
+        "mainContactFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "EMAIL",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "PHONE_NUMBER",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "requiredCustomerFields": [],
+        "keywords": [],
+        "flags": [],
+        "slug": null,
+        "baseLanguage": "es",
+        "languages": [
+          "pt",
+          "en_US",
+          "pt_BR",
+          "es"
+        ],
+        "paymentCurrencies": [
+          "EUR"
+        ],
+        "customFields": [],
+        "tagGroups": [],
+        "categories": [],
+        "keyPhoto": {
+          "id": 6730940,
+          "originalUrl": "https://bokun.s3.amazonaws.com/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+          "description": null,
+          "alternateText": null,
+          "height": "1319",
+          "width": "2000",
+          "fileName": "/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660"
+            }
+          ]
+        },
+        "photos": [
+          {
+            "id": 6730940,
+            "originalUrl": "https://bokun.s3.amazonaws.com/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1319",
+            "width": "2000",
+            "fileName": "/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240394,
+            "originalUrl": "https://bokun.s3.amazonaws.com/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/dea16889-2090-443c-9b24-e128ca51dcc2.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240392,
+            "originalUrl": "https://bokun.s3.amazonaws.com/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "3892",
+            "width": "5838",
+            "fileName": "/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/0a83bbc4-171a-4e94-b1a1-a2f3ef6c2e2f.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240397,
+            "originalUrl": "https://bokun.s3.amazonaws.com/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/10ceef51-67dc-4ee7-b3ff-06fb84fde4ed.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240391,
+            "originalUrl": "https://bokun.s3.amazonaws.com/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/138db5c7-8ab8-43b0-b95d-3ab812cf59d5.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240396,
+            "originalUrl": "https://bokun.s3.amazonaws.com/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "2949",
+            "width": "4424",
+            "fileName": "/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/3287d031-0e8d-4d74-813b-d96b12788e6f.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240393,
+            "originalUrl": "https://bokun.s3.amazonaws.com/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/1ffb2efb-e1f9-4fcc-aeac-01688fea3fbf.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          {
+            "id": 7240395,
+            "originalUrl": "https://bokun.s3.amazonaws.com/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "4160",
+            "width": "6240",
+            "fileName": "/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/6cdf8aa9-bc40-4427-8681-d3d3b1086205.jpeg?w=660&h=660"
+              }
+            ]
+          }
+        ],
+        "videos": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "boxedVendor": null,
+        "storedExternally": false,
+        "pluginId": null,
+        "reviewRating": null,
+        "reviewCount": null,
+        "activityType": "DAY_TOUR_OR_ACTIVITY",
+        "bookingType": "DATE_AND_TIME",
+        "scheduleType": "RECURRING",
+        "cutoffType": "RELATIVE_TO_START_TIME",
+        "cutoffReferenceHour": null,
+        "cutoffReferenceMinute": null,
+        "earlyBookingLimitType": "UNLIMITED",
+        "earlyBookingLimitSpecificDateTime": null,
+        "earlyBookingLimitDaysBefore": null,
+        "earlyBookingLimitMonthsBefore": null,
+        "earlyBookingLimitTime": null,
+        "capacityType": "LIMITED",
+        "passExpiryType": null,
+        "fixedPassExpiryDate": null,
+        "meetingType": "MEET_ON_LOCATION",
+        "privateActivity": false,
+        "passCapacity": 0,
+        "passValidForDays": null,
+        "passesAvailable": 0,
+        "affiliateHubProduct": false,
+        "dressCode": false,
+        "passportRequired": false,
+        "supportedAccessibilityTypes": [],
+        "startPoints": [
+          {
+            "id": 383465,
+            "type": null,
+            "title": "Largo Corrado Ricci, 41 - on the sidewalk in front \"Angelino ai Fori\" restaurant",
+            "code": null,
+            "address": {
+              "id": 13454333,
+              "created": null,
+              "addressLine1": "Largo Corrado Ricci 41",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Roma",
+              "state": "Lazio",
+              "postalCode": "00184",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 41.8931365,
+                "longitude": 12.4879876
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJvVNojLNhLxMRFurg7ADCKgU",
+              "googlePlaceId": null
+            },
+            "pickupTicketDescription": null,
+            "dropoffTicketDescription": null,
+            "labels": []
+          }
+        ],
+        "bookingQuestions": [],
+        "passengerFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "inclusions": [],
+        "included": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Priority tickets to the Colosseum</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Priority tickets to the Roman Forum and Palatine Hill</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Direct access from the Galdiator&#39;s Entrance</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Headsets to hear your tour guide clearly</p><p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Live Tour Guide</p>",
+        "exclusions": [
+          "FOOD_AND_DRINKS",
+          "TIP_OR_GRATUITY"
+        ],
+        "excluded": "",
+        "requirements": "<p style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Dress code: we recommend wearing comfortable shoes.</p>",
+        "knowBeforeYouGoItems": [],
+        "attention": "<ul><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Not recommended for travelers with heart problems or other serious medical conditions</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Please provide the full names of all travelers when booking. Failure to present a voucher with all travelers&#39; full names at the ticket office prior to entry may result in denied entry to the Colosseum and Roman Forum.</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">We advise you to arrive on time. This allows us to guarantee a quality tour. By arriving on time, you will make the most of your time on the tour, respecting all the participants and with no risk of missing the tour.</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">No large umbrellas, large backpacks or sharp objects are allowed.</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">The group tour itinerary is not suitable for people with mobility difficulties or small children in strollers.</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">By booking this tour, you will avoid the long queues to enter the Colosseum.</li><li style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Each traveller must present a valid passport or identity card matching the name provided at the time of booking in order to successfully enter the Colosseum and Roman Forum.</li></ul>",
+        "locationCode": null,
+        "googlePlace": {
+          "id": 837019,
+          "country": "Italy",
+          "countryCode": "IT",
+          "city": "Roma",
+          "cityCode": "Roma",
+          "state": "Lazio",
+          "stateCode": "Lazio",
+          "name": "Colosseum, Piazza del Colosseo, Rome, Metropolitan City of Rome Capital, Italy",
+          "placeId": "ChIJrRMgU7ZhLxMRxAOFkC7I8Sg",
+          "geoLocationCenter": {
+            "lat": 41.8902102,
+            "lng": 12.4922309
+          },
+          "addressTypes": []
+        },
+        "tripadvisorReview": null,
+        "resourceSlots": [],
+        "bookingCutoffMinutes": 0,
+        "bookingCutoffHours": 0,
+        "bookingCutoffDays": 0,
+        "bookingCutoffWeeks": 1,
+        "requestDeadlineMinutes": 0,
+        "requestDeadlineHours": 0,
+        "requestDeadlineDays": 2,
+        "requestDeadlineWeeks": 0,
+        "boxedActivityId": null,
+        "comboActivity": false,
+        "comboParts": [],
+        "returnProduct": null,
+        "offers": [
+          {
+            "id": 306,
+            "ownerId": 27164,
+            "discount": 10,
+            "activities": [
+              {
+                "id": 841874,
+                "title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+                "excerpt": "Colosseum with Gladiators Arena access and Ancient Rome Guided tour",
+                "keyPhoto": {
+                  "id": 6730940,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+                  "description": null,
+                  "alternateText": null,
+                  "height": "1319",
+                  "width": "2000",
+                  "fileName": "/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": 901972,
+                "title": "Vatican Tour: Museums, Sistine Chapel, and St. Peter’s Basilica",
+                "excerpt": "Vatican Museums, Sistine Chapel & St. Peter's Basilica Guided Tour",
+                "keyPhoto": {
+                  "id": 7465550,
+                  "originalUrl": "https://bokun.s3.amazonaws.com/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg",
+                  "description": null,
+                  "alternateText": null,
+                  "height": "1365",
+                  "width": "2048",
+                  "fileName": "/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg",
+                  "flags": [],
+                  "derived": [
+                    {
+                      "name": "thumbnail",
+                      "url": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=80&h=80&mode=crop",
+                      "cleanUrl": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=80&h=80&mode=crop"
+                    },
+                    {
+                      "name": "preview",
+                      "url": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=300&h=300",
+                      "cleanUrl": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=300&h=300"
+                    },
+                    {
+                      "name": "large",
+                      "url": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=660&h=660",
+                      "cleanUrl": "https://imgcdn.bokun.tools/fa34f59f-5980-4482-aa5c-8ba8170f7e5d.jpeg?w=660&h=660"
+                    }
+                  ]
+                }
+              }
+            ],
+            "requireAllActivities": false,
+            "applyToExtras": false,
+            "applyToPickUpAndDropOff": false
+          }
+        ],
+        "ticketPerComboComponent": false,
+        "ticketComboComponents": [],
+        "pickupActivityId": null,
+        "allowCustomizedBookings": false,
+        "reservationTimeout": null,
+        "vendorReservationTimeout": null,
+        "dayBasedAvailability": false,
+        "selectFromDayOptions": false,
+        "dayOptions": [],
+        "activityCategories": [
+          "ARTS_AND_CULTURE",
+          "CITY_TOURS",
+          "CULTURAL_AND_THEME_TOURS",
+          "MUSEUMS_AND_EXHIBITIONS",
+          "SKIP_THE_LINE",
+          "VIP_AND_EXCLUSIVE"
+        ],
+        "activityAttributes": [
+          "FAMILY_FRIENDLY",
+          "ECO_FRIENDLY",
+          "GROUP_FRIENDLY",
+          "SKIP_THE_LINE"
+        ],
+        "guidanceTypes": [],
+        "defaultRateId": 1618455,
+        "rates": [
+          {
+            "id": 1618455,
+            "title": "Arena Colosseum English",
+            "description": "",
+            "index": 0,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 24,
+            "cancellationPolicy": {
+              "id": 192533,
+              "title": "Free Cancellation - until 7 days",
+              "penaltyRules": [
+                {
+                  "id": 210353,
+                  "cutoffHours": 168,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "INCLUDED_IN_PRICE",
+            "pickupPricedPerPerson": false,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "INCLUDED_IN_PRICE",
+            "dropoffPricedPerPerson": false,
+            "extraConfigs": [],
+            "startTimeIds": [],
+            "allStartTimes": true,
+            "tieredPricingEnabled": false,
+            "tiers": [],
+            "pricingCategoryIds": [
+              780302,
+              823126,
+              823124
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 1618455,
+                "created": [
+                  2025,
+                  12,
+                  16,
+                  23,
+                  23,
+                  17,
+                  800032997
+                ],
+                "language": "es_ES",
+                "title": "Arena Colosseum English",
+                "activityRateId": 1618455,
+                "description": ""
+              }
+            ]
+          }
+        ],
+        "ticketPerPerson": false,
+        "durationType": "HOURS",
+        "duration": 3,
+        "durationMinutes": 0,
+        "durationHours": 3,
+        "durationDays": 0,
+        "durationWeeks": 0,
+        "durationText": "3 hours",
+        "minAge": 0,
+        "originalDefaultPrice": null,
+        "nextDefaultPrice": null,
+        "nextDefaultPriceMoney": null,
+        "pickupService": false,
+        "pickupAllotment": false,
+        "pickupAllotmentType": "NO_ALLOTMENT",
+        "useComponentPickupAllotments": false,
+        "pickupFlags": [],
+        "customPickupAllowed": false,
+        "pickupMinutesBefore": null,
+        "pickupTimeWindowInMinutes": 0,
+        "pickupTimeLocationBased": false,
+        "pickupTimeByLocations": [],
+        "noPickupMsg": null,
+        "ticketMsg": null,
+        "showGlobalPickupMsg": false,
+        "showNoPickupMsg": false,
+        "pickupPlaceGroups": [],
+        "dropoffService": false,
+        "dropoffFlags": [],
+        "customDropoffAllowed": false,
+        "useSameAsPickUpPlaces": false,
+        "dropoffPlaceGroups": [],
+        "difficultyLevel": "EASY",
+        "pricingCategories": [
+          {
+            "id": 780302,
+            "title": "Adult",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": true,
+            "fullTitle": "Adult (18 - 99)"
+          },
+          {
+            "id": 823126,
+            "title": "Child (3 to 17)",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 3,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Child (3 to 17) (3 - 17)"
+          },
+          {
+            "id": 823124,
+            "title": "Infant (0 to 2)",
+            "ticketCategory": "INFANT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 0,
+            "maxAge": 2,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Infant (0 to 2) (0 - 2)"
+          }
+        ],
+        "activityPriceCatalogs": [
+          {
+            "catalog": {
+              "id": 30283,
+              "title": "enroma",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": true,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 30283,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 48347,
+              "title": "RESELLERS",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 48347,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 87651,
+              "title": "Musement",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 87651,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 106486,
+              "title": "CiaoFlorence",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 106486,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 106646,
+              "title": "Headout",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 106646,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 108146,
+              "title": "Hellotickets",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 108146,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 118151,
+              "title": "GetYourGuide",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 118151,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 121620,
+              "title": "The Tour Guy",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 121620,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 125271,
+              "title": "Project Expedition",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 125271,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          }
+        ],
+        "agendaItems": [
+          {
+            "id": 2745163,
+            "index": 0,
+            "title": "Colosseum Arena floor",
+            "excerpt": "",
+            "body": "",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "Piazza del Colosseo 1",
+              "city": "Roma",
+              "countryCode": "IT",
+              "postCode": "00184",
+              "latitude": 41.8902102,
+              "longitude": 12.4922309,
+              "zoomLevel": 13,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJrRMgU7ZhLxMRxAOFkC7I8Sg",
+              "wholeAddress": "Piazza del Colosseo 1, 00184 Roma"
+            },
+            "address": {
+              "id": 14729855,
+              "created": [
+                2024,
+                12,
+                3,
+                15,
+                23,
+                51
+              ],
+              "addressLine1": "Piazza del Colosseo 1",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Roma",
+              "state": "Lazio",
+              "postalCode": "00184",
+              "countryCode": "IT",
+              "mapZoomLevel": 13,
+              "geoPoint": {
+                "latitude": 41.8902102,
+                "longitude": 12.4922309
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJrRMgU7ZhLxMRxAOFkC7I8Sg",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": [
+              {
+                "id": 6730940,
+                "originalUrl": "https://bokun.s3.amazonaws.com/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+                "description": null,
+                "alternateText": null,
+                "height": "1319",
+                "width": "2000",
+                "fileName": "/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg",
+                "flags": [],
+                "derived": [
+                  {
+                    "name": "thumbnail",
+                    "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop",
+                    "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=80&h=80&mode=crop"
+                  },
+                  {
+                    "name": "preview",
+                    "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300",
+                    "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=300&h=300"
+                  },
+                  {
+                    "name": "large",
+                    "url": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660",
+                    "cleanUrl": "https://imgcdn.bokun.tools/93a5b6ec-0edb-41e8-b3b2-f12f610ce24b.jpeg?w=660&h=660"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2745164,
+            "index": 1,
+            "title": "Roman Forum",
+            "excerpt": "",
+            "body": "",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Rome",
+              "countryCode": "IT",
+              "postCode": "00186",
+              "latitude": 41.8920906,
+              "longitude": 12.4864378,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ782pg7NhLxMR5n3swAdAkfo",
+              "wholeAddress": "00186 Rome"
+            },
+            "address": {
+              "id": 14729856,
+              "created": [
+                2024,
+                12,
+                3,
+                15,
+                24,
+                2
+              ],
+              "addressLine1": "",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Rome",
+              "state": "Lazio",
+              "postalCode": "00186",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 41.8920906,
+                "longitude": 12.4864378
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ782pg7NhLxMR5n3swAdAkfo",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          },
+          {
+            "id": 2745165,
+            "index": 2,
+            "title": "Palatine Hill",
+            "excerpt": "",
+            "body": "",
+            "day": 1,
+            "flags": [],
+            "location": {
+              "address": "",
+              "city": "Rome",
+              "countryCode": "IT",
+              "postCode": "00186",
+              "latitude": 41.88940360000001,
+              "longitude": 12.4874662,
+              "zoomLevel": 14,
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ8zdPo7VhLxMRwgAXwZzzm50",
+              "wholeAddress": "00186 Rome"
+            },
+            "address": {
+              "id": 14729857,
+              "created": [
+                2024,
+                12,
+                3,
+                15,
+                24,
+                35
+              ],
+              "addressLine1": "",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Rome",
+              "state": "Lazio",
+              "postalCode": "00186",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 41.88940360000001,
+                "longitude": 12.4874662
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJ8zdPo7VhLxMRwgAXwZzzm50",
+              "googlePlaceId": null
+            },
+            "keyPhoto": null,
+            "photos": []
+          }
+        ],
+        "startTimes": [
+          {
+            "id": 4267821,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 4267808,
+            "label": "",
+            "externalLabel": "",
+            "hour": 9,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3762980,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3127071,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 4332002,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3111317,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 20,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3094407,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3614331,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 40,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3255302,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 45,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3269204,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 50,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3285346,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 4292359,
+            "label": "",
+            "externalLabel": "",
+            "hour": 11,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3162079,
+            "label": "",
+            "externalLabel": "",
+            "hour": 14,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3136553,
+            "label": "",
+            "externalLabel": "",
+            "hour": 14,
+            "minute": 50,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2885197,
+            "label": "",
+            "externalLabel": "",
+            "hour": 15,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 4151528,
+            "label": "",
+            "externalLabel": "",
+            "hour": 15,
+            "minute": 15,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 3974211,
+            "label": "",
+            "externalLabel": "",
+            "hour": 16,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          }
+        ],
+        "bookableExtras": [],
+        "route": null,
+        "widgetSettings": null,
+        "hasOpeningHours": false,
+        "defaultOpeningHours": null,
+        "seasonalOpeningHours": [],
+        "displaySettings": {
+          "showPickupPlaces": false,
+          "showRouteMap": false,
+          "selectRateBasedOnStartTime": false,
+          "customFields": []
+        },
+        "hasBoxes": false,
+        "bookingLabels": [],
+        "marketplaceVisibilityType": "PUBLIC",
+        "requestDeadline": 172800000,
+        "bookingCutoff": 10080,
+        "actualId": 841874,
+        "nextDefaultPriceAsText": "",
+        "actualVendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        }
+      },
+      "bookingAnswers": [],
+      "pickupAnswers": [],
+      "dropoffAnswers": [],
+      "flexible": false,
+      "customized": false,
+      "customizedDurationMinutes": 0,
+      "customizedDurationHours": 0,
+      "customizedDurationDays": 0,
+      "customizedDurationWeeks": 0,
+      "ticketPerPerson": false,
+      "offerApplied": false,
+      "pricingCategoryBookings": [
+        {
+          "id": 297961292,
+          "pricingCategoryId": 780302,
+          "pricingCategory": {
+            "id": 780302,
+            "title": "Adult",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adult (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187024789,
+            "created": null,
+            "uuid": "b477cd13-6cb7-448a-8fa5-ed89c11ff0e4",
+            "email": null,
+            "title": null,
+            "firstName": "AMELI",
+            "lastName": "ITZEL ENCISO VALDEZ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adult",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        },
+        {
+          "id": 297961293,
+          "pricingCategoryId": 823126,
+          "pricingCategory": {
+            "id": 823126,
+            "title": "Child (3 to 17)",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 3,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Child (3 to 17) (3 - 17)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187024790,
+            "created": null,
+            "uuid": "ccecfe26-d255-4128-940e-a4572f56af3b",
+            "email": null,
+            "title": null,
+            "firstName": "AMELI",
+            "lastName": "ITZEL ENCISO VALDEZ",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": null,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Child (3 to 17)",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        }
+      ],
+      "extras": [],
+      "bookingFields": [],
+      "pickup": false,
+      "dropoff": false,
+      "inventoryConfirmFailed": false,
+      "channelId": "MARKETPLACE",
+      "guidedLanguages": [],
+      "quantityByPricingCategory": {
+        "780302": 1,
+        "823126": 1
+      },
+      "bookedPricingCategories": [
+        {
+          "id": 780302,
+          "title": "Adult",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "Adult"
+        },
+        {
+          "id": 823126,
+          "title": "Child (3 to 17)",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "Child (3 to 17)"
+        }
+      ],
+      "totalParticipants": 2,
+      "savedAmount": 0
+    }
+  ],
+  "routeBookings": [],
+  "giftCardBookings": [],
+  "bookingFields": [],
+  "action": "BOOKING_CONFIRMED"
+}

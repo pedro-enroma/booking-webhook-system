@@ -6,6 +6,7 @@ import webhookRoutes from './routes/webhook';
 import syncRoutes from './routes/sync';
 import gtmRoutes from './routes/gtm';
 import invoiceRoutes from './routes/invoices';
+import stripeRoutes from './routes/stripe';
 // import gtmEnhancedRoutes from './routes/gtm-enhanced'; // Not needed - using existing GTM webhook
 import { initializeCronJobs } from './cronJobs';
 
@@ -23,7 +24,7 @@ const corsOptions = {
   origin: function (origin: any, callback: any) {
     // Allow requests with no origin (like mobile apps or Postman)
     if (!origin) return callback(null, true);
-    
+
     // List of allowed origins
     const allowedOrigins = [
       'https://enroma.com',
@@ -32,14 +33,14 @@ const corsOptions = {
       'http://localhost:3002', // for Next.js dev
       /\.googletagmanager\.com$/  // Allow all GTM domains
     ];
-    
+
     const isAllowed = allowedOrigins.some(allowed => {
       if (allowed instanceof RegExp) {
         return allowed.test(origin);
       }
       return allowed === origin;
     });
-    
+
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -49,10 +50,15 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'stripe-signature']
 };
 
 app.use(cors(corsOptions));
+
+// IMPORTANT: Stripe webhook needs raw body for signature verification
+// Must be before bodyParser.json()
+app.use('/webhook/stripe', express.raw({ type: 'application/json' }));
+
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -67,6 +73,7 @@ app.use(webhookRoutes);
 app.use('/api', syncRoutes);
 app.use(gtmRoutes);
 app.use(invoiceRoutes);
+app.use(stripeRoutes);
 // app.use(gtmEnhancedRoutes); // Not needed - using existing GTM webhook
 
 // Route principale
@@ -77,7 +84,11 @@ app.get('/', (req, res) => {
       webhook_booking: 'POST /webhook/booking',
       webhook_availability: 'POST /webhook/availability',
       webhook_gtm: 'POST /webhook/gtm',
+      webhook_stripe: 'POST /webhook/stripe',
       gtm_health: 'GET /webhook/gtm/health',
+      stripe_health: 'GET /webhook/stripe/health',
+      stripe_logs: 'GET /webhook/stripe/logs',
+      stripe_test: 'GET /webhook/stripe/test?booking_id=123',
       health: 'GET /health',
       syncProducts: 'POST /api/sync/products',
       syncAvailability: 'POST /api/sync/availability',
@@ -108,13 +119,17 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`- POST http://localhost:${PORT}/webhook/booking (riceve prenotazioni)`);
   console.log(`- POST http://localhost:${PORT}/webhook/availability (riceve aggiornamenti disponibilità)`);
   console.log(`- POST http://localhost:${PORT}/webhook/gtm (riceve dati GTM/GA4)`);
+  console.log(`- POST http://localhost:${PORT}/webhook/stripe (Stripe refund webhook)`);
   console.log(`- GET  http://localhost:${PORT}/webhook/gtm/health (stato GTM webhook)`);
+  console.log(`- GET  http://localhost:${PORT}/webhook/stripe/health (stato Stripe webhook)`);
   console.log(`- GET  http://localhost:${PORT}/health (verifica stato)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/products (sincronizza prodotti)`);
   console.log(`- POST http://localhost:${PORT}/api/sync/availability (sincronizza disponibilità)`);
   console.log(`- GET  http://localhost:${PORT}/api/sync/products (visualizza prodotti)`);
   console.log('================================');
-  
+  console.log('Stripe config:', process.env.STRIPE_SECRET_KEY ? '✅ API key configured' : '❌ API key missing');
+  console.log('================================');
+
   // Inizializza cron jobs solo in produzione
   if (process.env.NODE_ENV === 'production') {
     initializeCronJobs();

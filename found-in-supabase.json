@@ -1,0 +1,702 @@
+[
+  {
+    "activity_booking_id": 108132894,
+    "booking_id": 74190814,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-26 10:15:00"
+  },
+  {
+    "activity_booking_id": 108133046,
+    "booking_id": 74190814,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-27 10:25:00"
+  },
+  {
+    "activity_booking_id": 108165327,
+    "booking_id": 74259341,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-25 10:15:00"
+  },
+  {
+    "activity_booking_id": 108167400,
+    "booking_id": 74212637,
+    "product_title": "Exclusive Colosseum Arena Floor and Ancient Rome guided tour",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-28 15:00:00"
+  },
+  {
+    "activity_booking_id": 108167801,
+    "booking_id": 74212637,
+    "product_title": "Vatican Museums and Sistine Chapel Guided Tour",
+    "status": "CANCELLED",
+    "start_date_time": "2025-09-30 08:15:00"
+  },
+  {
+    "activity_booking_id": 108173552,
+    "booking_id": 74217378,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-29 10:30:00"
+  },
+  {
+    "activity_booking_id": 108173709,
+    "booking_id": 74217378,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-28 11:15:00"
+  },
+  {
+    "activity_booking_id": 108184114,
+    "booking_id": 74230916,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-02 09:45:00"
+  },
+  {
+    "activity_booking_id": 108185167,
+    "booking_id": 74230916,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 09:15:00"
+  },
+  {
+    "activity_booking_id": 108216315,
+    "booking_id": 74251512,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-17 15:30:00"
+  },
+  {
+    "activity_booking_id": 108216357,
+    "booking_id": 74251512,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-18 09:15:00"
+  },
+  {
+    "activity_booking_id": 108226360,
+    "booking_id": 74259341,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-26 10:25:00"
+  },
+  {
+    "activity_booking_id": 108252480,
+    "booking_id": 74212637,
+    "product_title": "Vatican Tour: Museums, Sistine Chapel, and St. Peter's Basilica",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-30 08:15:00"
+  },
+  {
+    "activity_booking_id": 108270969,
+    "booking_id": 74295079,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-27 10:25:00"
+  },
+  {
+    "activity_booking_id": 108271088,
+    "booking_id": 74295079,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-26 10:15:00"
+  },
+  {
+    "activity_booking_id": 108297391,
+    "booking_id": 74316577,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-12 09:45:00"
+  },
+  {
+    "activity_booking_id": 108297522,
+    "booking_id": 74316577,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 10:15:00"
+  },
+  {
+    "activity_booking_id": 108299810,
+    "booking_id": 74318475,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-09 09:45:00"
+  },
+  {
+    "activity_booking_id": 108299833,
+    "booking_id": 74318475,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-10 09:15:00"
+  },
+  {
+    "activity_booking_id": 108355211,
+    "booking_id": 74361440,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-08 10:30:00"
+  },
+  {
+    "activity_booking_id": 108355331,
+    "booking_id": 74361440,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-06 10:15:00"
+  },
+  {
+    "activity_booking_id": 108369564,
+    "booking_id": 74372904,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 10:25:00"
+  },
+  {
+    "activity_booking_id": 108369917,
+    "booking_id": 74372904,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 09:15:00"
+  },
+  {
+    "activity_booking_id": 108379524,
+    "booking_id": 74380523,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 10:25:00"
+  },
+  {
+    "activity_booking_id": 108379563,
+    "booking_id": 74380523,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-11 09:15:00"
+  },
+  {
+    "activity_booking_id": 108414053,
+    "booking_id": 74406926,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-20 10:25:00"
+  },
+  {
+    "activity_booking_id": 108414111,
+    "booking_id": 74406926,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-22 11:15:00"
+  },
+  {
+    "activity_booking_id": 108425254,
+    "booking_id": 74422284,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 09:15:00"
+  },
+  {
+    "activity_booking_id": 108425371,
+    "booking_id": 74422284,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-12 15:00:00"
+  },
+  {
+    "activity_booking_id": 108494261,
+    "booking_id": 74469312,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-14 10:00:00"
+  },
+  {
+    "activity_booking_id": 108494316,
+    "booking_id": 74469312,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-15 09:15:00"
+  },
+  {
+    "activity_booking_id": 108510947,
+    "booking_id": 74483411,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-10 10:15:00"
+  },
+  {
+    "activity_booking_id": 108510979,
+    "booking_id": 74483411,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-09 10:15:00"
+  },
+  {
+    "activity_booking_id": 108540230,
+    "booking_id": 74505638,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 11:15:00"
+  },
+  {
+    "activity_booking_id": 108540271,
+    "booking_id": 74505638,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 09:45:00"
+  },
+  {
+    "activity_booking_id": 108577123,
+    "booking_id": 74534677,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-08 10:30:00"
+  },
+  {
+    "activity_booking_id": 108577183,
+    "booking_id": 74534677,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-09 10:15:00"
+  },
+  {
+    "activity_booking_id": 108586266,
+    "booking_id": 74541821,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-27 10:25:00"
+  },
+  {
+    "activity_booking_id": 108586314,
+    "booking_id": 74541821,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-28 09:15:00"
+  },
+  {
+    "activity_booking_id": 108595389,
+    "booking_id": 74548788,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-09 15:00:00"
+  },
+  {
+    "activity_booking_id": 108595444,
+    "booking_id": 74548788,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CANCELLED",
+    "start_date_time": "2025-10-10 08:15:00"
+  },
+  {
+    "activity_booking_id": 108604472,
+    "booking_id": 74556058,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-24 15:00:00"
+  },
+  {
+    "activity_booking_id": 108604485,
+    "booking_id": 74556058,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-25 11:15:00"
+  },
+  {
+    "activity_booking_id": 108645345,
+    "booking_id": 74589497,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-02 10:15:00"
+  },
+  {
+    "activity_booking_id": 108646357,
+    "booking_id": 74589497,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-01 15:00:00"
+  },
+  {
+    "activity_booking_id": 108691864,
+    "booking_id": 74624693,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-30 10:30:00"
+  },
+  {
+    "activity_booking_id": 108691921,
+    "booking_id": 74624693,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-01 10:15:00"
+  },
+  {
+    "activity_booking_id": 108700528,
+    "booking_id": 74655225,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-07 10:25:00"
+  },
+  {
+    "activity_booking_id": 108700559,
+    "booking_id": 74655225,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-06 11:15:00"
+  },
+  {
+    "activity_booking_id": 108724158,
+    "booking_id": 74650043,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-20 09:30:00"
+  },
+  {
+    "activity_booking_id": 108724195,
+    "booking_id": 74650043,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-21 09:15:00"
+  },
+  {
+    "activity_booking_id": 108731196,
+    "booking_id": 74656036,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-28 10:30:00"
+  },
+  {
+    "activity_booking_id": 108731254,
+    "booking_id": 74656036,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-27 10:15:00"
+  },
+  {
+    "activity_booking_id": 108747703,
+    "booking_id": 74669094,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 08:15:00"
+  },
+  {
+    "activity_booking_id": 108748514,
+    "booking_id": 74669094,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 10:15:00"
+  },
+  {
+    "activity_booking_id": 108801630,
+    "booking_id": 74710482,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-02 15:00:00"
+  },
+  {
+    "activity_booking_id": 108801899,
+    "booking_id": 74710482,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 10:15:00"
+  },
+  {
+    "activity_booking_id": 108803602,
+    "booking_id": 74712658,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-31 09:15:00"
+  },
+  {
+    "activity_booking_id": 108804267,
+    "booking_id": 74712310,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-25 10:25:00"
+  },
+  {
+    "activity_booking_id": 108804297,
+    "booking_id": 74712310,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-26 11:15:00"
+  },
+  {
+    "activity_booking_id": 108804403,
+    "booking_id": 74712658,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-11-01 10:25:00"
+  },
+  {
+    "activity_booking_id": 108820007,
+    "booking_id": 74725158,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-12 10:00:00"
+  },
+  {
+    "activity_booking_id": 108820153,
+    "booking_id": 74725158,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 09:15:00"
+  },
+  {
+    "activity_booking_id": 108840267,
+    "booking_id": 74740408,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-22 10:30:00"
+  },
+  {
+    "activity_booking_id": 108840335,
+    "booking_id": 74740408,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-23 10:15:00"
+  },
+  {
+    "activity_booking_id": 108854787,
+    "booking_id": 74752149,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-27 10:30:00"
+  },
+  {
+    "activity_booking_id": 108854845,
+    "booking_id": 74752149,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-30 09:15:00"
+  },
+  {
+    "activity_booking_id": 108881165,
+    "booking_id": 74771911,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-16 10:15:00"
+  },
+  {
+    "activity_booking_id": 108881217,
+    "booking_id": 74771911,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-17 11:15:00"
+  },
+  {
+    "activity_booking_id": 108883324,
+    "booking_id": 74773506,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 11:15:00"
+  },
+  {
+    "activity_booking_id": 108883365,
+    "booking_id": 74773506,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-11 10:00:00"
+  },
+  {
+    "activity_booking_id": 108909471,
+    "booking_id": 74792639,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-28 10:30:00"
+  },
+  {
+    "activity_booking_id": 108909506,
+    "booking_id": 74792639,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-27 10:15:00"
+  },
+  {
+    "activity_booking_id": 108920666,
+    "booking_id": 74802721,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 10:25:00"
+  },
+  {
+    "activity_booking_id": 108920790,
+    "booking_id": 74802721,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 09:15:00"
+  },
+  {
+    "activity_booking_id": 108936550,
+    "booking_id": 74815032,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-10 09:30:00"
+  },
+  {
+    "activity_booking_id": 108936570,
+    "booking_id": 74815032,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-11 09:15:00"
+  },
+  {
+    "activity_booking_id": 108998560,
+    "booking_id": 74869978,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-01 10:30:00"
+  },
+  {
+    "activity_booking_id": 108998617,
+    "booking_id": 74869978,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-03 10:15:00"
+  },
+  {
+    "activity_booking_id": 109006113,
+    "booking_id": 74875716,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-14 10:30:00"
+  },
+  {
+    "activity_booking_id": 109006132,
+    "booking_id": 74875716,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-12-15 10:15:00"
+  },
+  {
+    "activity_booking_id": 109009653,
+    "booking_id": 74878450,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-11-01 09:30:00"
+  },
+  {
+    "activity_booking_id": 109009779,
+    "booking_id": 74878450,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-30 09:15:00"
+  },
+  {
+    "activity_booking_id": 109010901,
+    "booking_id": 74881537,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-06 15:00:00"
+  },
+  {
+    "activity_booking_id": 109010951,
+    "booking_id": 74881537,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-06 10:15:00"
+  },
+  {
+    "activity_booking_id": 109027986,
+    "booking_id": 74892679,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-10 09:30:00"
+  },
+  {
+    "activity_booking_id": 109028017,
+    "booking_id": 74892679,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-11 08:15:00"
+  },
+  {
+    "activity_booking_id": 109036314,
+    "booking_id": 74899322,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 15:00:00"
+  },
+  {
+    "activity_booking_id": 109036480,
+    "booking_id": 74899322,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-06 10:15:00"
+  },
+  {
+    "activity_booking_id": 109056442,
+    "booking_id": 74915428,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-11-14 10:25:00"
+  },
+  {
+    "activity_booking_id": 109056576,
+    "booking_id": 74915428,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-11-15 10:15:00"
+  },
+  {
+    "activity_booking_id": 109063663,
+    "booking_id": 74921525,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-02 10:30:00"
+  },
+  {
+    "activity_booking_id": 109063912,
+    "booking_id": 74921525,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-03 09:15:00"
+  },
+  {
+    "activity_booking_id": 109164271,
+    "booking_id": 75014845,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-11 10:00:00"
+  },
+  {
+    "activity_booking_id": 109164385,
+    "booking_id": 75014845,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-13 11:15:00"
+  },
+  {
+    "activity_booking_id": 109206551,
+    "booking_id": 75050324,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-18 10:25:00"
+  },
+  {
+    "activity_booking_id": 109209630,
+    "booking_id": 75050324,
+    "product_title": "Tour Vaticano exclusivo: Museos Vaticanos, Capilla Sixtina y Basílica de San Pedro",
+    "status": "CANCELLED",
+    "start_date_time": "2025-10-16 08:15:00"
+  },
+  {
+    "activity_booking_id": 109223410,
+    "booking_id": 75061245,
+    "product_title": "Visita Coliseo con Arena de Gladiadores, Foro y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-30 15:00:00"
+  },
+  {
+    "activity_booking_id": 109223762,
+    "booking_id": 75061245,
+    "product_title": "Visita Guiada Museos Vaticanos y Capilla Sixtina",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-09-30 10:15:00"
+  },
+  {
+    "activity_booking_id": 109240581,
+    "booking_id": 75074599,
+    "product_title": "Visita Guiada Coliseo, Foro Romano y Palatino",
+    "status": "CONFIRMED",
+    "start_date_time": "2025-10-04 10:00:00"
+  }
+]

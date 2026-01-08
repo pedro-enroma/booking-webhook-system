@@ -1,0 +1,1761 @@
+{
+  "creationDate": 1765974958000,
+  "bookingId": 80368889,
+  "language": "es",
+  "confirmationCode": "ENRO-80368889",
+  "status": "CONFIRMED",
+  "currency": "EUR",
+  "totalPrice": 520,
+  "totalPaid": 156,
+  "totalDue": 364,
+  "totalDueAsText": "€364,00",
+  "totalPriceConverted": 520,
+  "customer": {
+    "contactDetailsHidden": false,
+    "contactDetailsHiddenUntil": null,
+    "id": 187089820,
+    "created": null,
+    "uuid": "1273baad-1f05-4ff7-b6e4-9618f2dd9e1d",
+    "email": "webmaster@enroma.com",
+    "title": null,
+    "firstName": "pedro",
+    "lastName": "test",
+    "personalIdNumber": null,
+    "clcEmail": false,
+    "language": null,
+    "nationality": null,
+    "sex": null,
+    "dateOfBirth": null,
+    "phoneNumber": "+39 3936320242",
+    "phoneNumberCountryCode": null,
+    "address": null,
+    "postCode": null,
+    "state": null,
+    "place": null,
+    "country": null,
+    "organization": null,
+    "passportId": null,
+    "passportExpDay": null,
+    "passportExpMonth": null,
+    "passportExpYear": null,
+    "credentials": null,
+    "acceptsMarketing": false,
+    "tags": null,
+    "octoNote": null,
+    "phoneNumberLinkable": "+393936320242"
+  },
+  "invoice": {
+    "id": 462230085,
+    "issueDate": 1765974958000,
+    "currency": "EUR",
+    "includedAppliedTaxes": [],
+    "excludedAppliedTaxes": [],
+    "issuer": {
+      "id": 27164,
+      "title": "EnRoma.com",
+      "externalId": "",
+      "flags": []
+    },
+    "issuerCompany": {
+      "registrationNumber": "Licenza Provincia Roma n° 2316",
+      "vatRegistrationNumber": "IT09802381005"
+    },
+    "recipient": {
+      "contactDetailsHidden": false,
+      "contactDetailsHiddenUntil": null,
+      "id": 187089820,
+      "created": null,
+      "uuid": "1273baad-1f05-4ff7-b6e4-9618f2dd9e1d",
+      "email": "webmaster@enroma.com",
+      "title": null,
+      "firstName": "pedro",
+      "lastName": "test",
+      "personalIdNumber": null,
+      "clcEmail": false,
+      "language": null,
+      "nationality": null,
+      "sex": null,
+      "dateOfBirth": null,
+      "phoneNumber": "+39 3936320242",
+      "phoneNumberCountryCode": null,
+      "address": null,
+      "postCode": null,
+      "state": null,
+      "place": null,
+      "country": null,
+      "organization": null,
+      "passportId": null,
+      "passportExpDay": null,
+      "passportExpMonth": null,
+      "passportExpYear": null,
+      "credentials": null,
+      "acceptsMarketing": false,
+      "tags": null,
+      "octoNote": null,
+      "phoneNumberLinkable": "+393936320242"
+    },
+    "customLineItems": [],
+    "productInvoices": [
+      {
+        "id": 218171168,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116169804,
+        "title": "Tour privado por el Coliseo, Foro Romano y Palatino - mié, diciembre 24 2025 - 14:30",
+        "product": {
+          "id": 220614,
+          "title": "Tour privado por el Coliseo, Foro Romano y Palatino",
+          "flags": [],
+          "keyPhoto": {
+            "id": 6688954,
+            "originalUrl": "https://bokun.s3.amazonaws.com/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1348",
+            "width": "2000",
+            "fileName": "/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 27164,
+            "title": "EnRoma.com",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour privado - Coliseo",
+          "offers": []
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "ENRO-T116169804",
+        "dates": "mié, diciembre 24 2025 - 14:30",
+        "timestamp": 1766586600000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227926814,
+            "title": "Adulto",
+            "currency": "EUR",
+            "unitPriceDate": 1765974958000,
+            "quantity": 1,
+            "unitPrice": 520,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 161601,
+            "itemBookingId": "220614_161601",
+            "costItemId": 176504485,
+            "costItemTitle": "Adulto",
+            "costGroupTitle": "Tour privado por el Coliseo, Foro Romano y Palatino",
+            "supportsDiscount": true,
+            "people": 1,
+            "totalAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "total": 520,
+            "totalDiscountedAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDue": 520,
+            "totalDueAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "totalDiscounted": 520,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 520,
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0,00",
+            "discountedUnitPriceAsText": "€520,00",
+            "unitPriceAsText": "€520,00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0,00",
+            "totalAsText": "€520,00",
+            "totalDiscountedAsText": "€520,00",
+            "totalDueAsText": "€520,00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0,00",
+        "totalAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "free": false,
+        "totalDueAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "excludedTaxes": false,
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "includedTaxes": false,
+        "strikeThroughTotalAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalAsText": "€520,00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€520,00",
+        "totalDiscountAsText": "€0,00",
+        "totalDueAsText": "€520,00",
+        "totalExcludedTaxAsText": "€0,00",
+        "totalIncludedTaxAsText": "€0,00",
+        "totalTaxAsText": "€0,00",
+        "strikeThroughTotalAsText": "€520,00"
+      }
+    ],
+    "payments": [],
+    "appliedFees": [],
+    "issuerName": "EnRoma.com",
+    "totalDueAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "totalBookingFeePercent": 0,
+    "totalFeesAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "invoiceNumber": "C-462230085",
+    "lodgingTaxes": [],
+    "totalBookingFeeAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDueWithoutExcludedTaxAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "recipientName": "pedro test",
+    "totalFeesAsText": "€0,00",
+    "totalAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "totalDiscountedAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "free": false,
+    "totalExcludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalIncludedTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "totalDiscountAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "excludedTaxes": false,
+    "totalTaxAsMoney": {
+      "amount": 0,
+      "currency": "EUR"
+    },
+    "includedTaxes": false,
+    "strikeThroughTotalAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "totalAsText": "€520,00",
+    "totalWithExcludedTaxAsMoney": {
+      "amount": 520,
+      "currency": "EUR"
+    },
+    "totalDiscountedAsText": "€520,00",
+    "totalDiscountAsText": "€0,00",
+    "totalDueAsText": "€520,00",
+    "totalExcludedTaxAsText": "€0,00",
+    "totalIncludedTaxAsText": "€0,00",
+    "totalTaxAsText": "€0,00",
+    "strikeThroughTotalAsText": "€520,00"
+  },
+  "customerPayments": [
+    {
+      "id": 46077429,
+      "amount": 156,
+      "currency": "EUR",
+      "comment": "Payment for booking #80368889, performed by Privati, vendor: EnRoma.com: Booking channel",
+      "transactionDate": 1765974937000,
+      "authorizationCode": "pi_3SfJxSEaRPWnCiIW1ufpZcIf",
+      "activeCustomerInvoiceId": 462230085,
+      "paymentType": "WEB_PAYMENT",
+      "cardNumber": "0542",
+      "paymentId": 39033115,
+      "paymentContractId": 7920,
+      "paymentReferenceId": "809e694a-4689-4826-a75c-ff610c6f1cc0",
+      "paymentProviderType": "STRIPE_TOKEN",
+      "isRefundable": true,
+      "totalRefundedAmount": 0,
+      "maxRefundableAmount": 156,
+      "amountAsText": "€156,00",
+      "refundedAmountAsText": "€0,00",
+      "remainingRefundableAmount": 156,
+      "amountAsMoney": {
+        "amount": 156,
+        "currency": "EUR"
+      },
+      "refundable": true
+    }
+  ],
+  "paymentType": "DEPOSIT",
+  "seller": {
+    "id": 27164,
+    "title": "EnRoma.com",
+    "description": "With over 20 years of experience, EnRoma.com / Numatours.com offers unforgettable tours across Italy. As a trusted local operator, we create authentic experiences with personal care and attention to detail. Thanks to our local knowledge, we provide great quality at competitive prices, no middlemen. Discover Italy with us, easily, safely, and with 24/7 support.",
+    "logo": {
+      "id": 5260859,
+      "originalUrl": "https://bokun.s3.amazonaws.com/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "description": null,
+      "alternateText": null,
+      "height": null,
+      "width": null,
+      "fileName": "/79d8b938-ceeb-45f1-9612-bded09559af0",
+      "flags": [],
+      "derived": [
+        {
+          "name": "thumbnail",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=80&h=80&mode=crop"
+        },
+        {
+          "name": "preview",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=300&h=300"
+        },
+        {
+          "name": "large",
+          "url": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660",
+          "cleanUrl": "https://imgcdn.bokun.tools/79d8b938-ceeb-45f1-9612-bded09559af0?w=660&h=660"
+        }
+      ]
+    },
+    "currencyCode": "EUR",
+    "countryCode": "IT",
+    "phoneNumber": "+39 3429920638",
+    "emailAddress": "info@enroma.com",
+    "website": "https://www.enroma.com/",
+    "logoStyle": "",
+    "invoiceIdNumber": "Licenza Provincia Roma n° 2316",
+    "timeZone": "Europe/Rome",
+    "showInvoiceIdOnTicket": false,
+    "showAgentDetailsOnTicket": false,
+    "showPaymentsOnInvoice": false,
+    "companyEmailIsDefault": true
+  },
+  "bookingChannel": {
+    "id": 59839,
+    "uuid": "c5667f66-f756-4d54-98e5-1f9e411599a8",
+    "title": "Privati",
+    "backend": false,
+    "overrideVoucherHeader": false,
+    "voucherName": "",
+    "voucherPhoneNumber": "",
+    "voucherEmailAddress": "",
+    "voucherLogoStyle": "",
+    "type": "OTHER",
+    "voucherWebsite": "",
+    "paymentProviderAdded": true,
+    "flags": [],
+    "shoppingCartPosition": "RIGHT"
+  },
+  "accommodationBookings": [],
+  "activityBookings": [
+    {
+      "bookingId": 116169804,
+      "parentBookingId": 80368889,
+      "confirmationCode": "ENRO-80368889",
+      "productConfirmationCode": "ENRO-T116169804",
+      "barcode": {
+        "value": "ENRO-T116169804",
+        "barcodeType": "QR_CODE"
+      },
+      "hasTicket": false,
+      "boxBooking": false,
+      "startDateTime": 1766586600000,
+      "endDateTime": 1766597400000,
+      "status": "CONFIRMED",
+      "includedOnCustomerInvoice": false,
+      "title": "Tour privado por el Coliseo, Foro Romano y Palatino",
+      "totalPrice": 520,
+      "priceWithDiscount": 520,
+      "totalPriceAsText": "€520.00",
+      "priceWithDiscountAsText": "€520.00",
+      "discountPercentage": 0,
+      "discountAmount": 0,
+      "productCategory": "ACTIVITIES",
+      "paidType": "DEPOSIT",
+      "product": {
+        "id": 220614,
+        "title": "Tour privado por el Coliseo, Foro Romano y Palatino",
+        "flags": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "externalId": "PRI-2",
+        "productCategory": "ACTIVITIES",
+        "isPassProduct": false,
+        "excerpt": "Tour privado por el Coliseo, Foro Romano y Palatino",
+        "offers": [],
+        "cancellationPolicy": {
+          "id": 52679,
+          "title": "Tour Privati",
+          "penaltyRules": [
+            {
+              "id": 63638,
+              "cutoffHours": 240,
+              "charge": 100,
+              "chargeType": "percentage",
+              "percentage": 100
+            },
+            {
+              "id": 63639,
+              "cutoffHours": 8760,
+              "charge": 50,
+              "chargeType": "percentage",
+              "percentage": 50
+            }
+          ],
+          "tax": null,
+          "defaultPolicy": false,
+          "policyType": "ADVANCED",
+          "simpleCutoffHours": null,
+          "policyTypeEnum": "ADVANCED"
+        }
+      },
+      "productId": 220614,
+      "linksToExternalProducts": [],
+      "answers": [],
+      "invoice": {
+        "id": 218171168,
+        "currency": "EUR",
+        "includedAppliedTaxes": [],
+        "excludedAppliedTaxes": [],
+        "productBookingId": 116169804,
+        "title": "Tour privado por el Coliseo, Foro Romano y Palatino - mié, diciembre 24 2025 - 14:30",
+        "product": {
+          "id": 220614,
+          "title": "Tour privado por el Coliseo, Foro Romano y Palatino",
+          "flags": [],
+          "keyPhoto": {
+            "id": 6688954,
+            "originalUrl": "https://bokun.s3.amazonaws.com/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1348",
+            "width": "2000",
+            "fileName": "/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660"
+              }
+            ]
+          },
+          "vendor": {
+            "id": 27164,
+            "title": "EnRoma.com",
+            "currencyCode": "EUR",
+            "countryCode": "IT",
+            "showInvoiceIdOnTicket": false,
+            "showAgentDetailsOnTicket": false,
+            "showPaymentsOnInvoice": false,
+            "companyEmailIsDefault": false
+          },
+          "isPassProduct": false,
+          "rateTitle": "Tour privado - Coliseo",
+          "offers": []
+        },
+        "productCategory": "ACTIVITIES",
+        "productConfirmationCode": "ENRO-T116169804",
+        "dates": "mié, diciembre 24 2025 - 14:30",
+        "timestamp": 1766586600000,
+        "hasFees": false,
+        "customLineItems": [],
+        "lineItems": [
+          {
+            "id": 227926814,
+            "title": "Adulto",
+            "currency": "EUR",
+            "unitPriceDate": 1765974958000,
+            "quantity": 1,
+            "unitPrice": 520,
+            "calculatedDiscount": 0,
+            "customDiscount": 0,
+            "calculatedDiscountAmount": 0,
+            "taxAmount": 0,
+            "taxesAsMoney": [],
+            "strikeThroughTotal": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "pricingCategoryId": 161601,
+            "itemBookingId": "220614_161601",
+            "costItemId": 176504485,
+            "costItemTitle": "Adulto",
+            "costGroupTitle": "Tour privado por el Coliseo, Foro Romano y Palatino",
+            "supportsDiscount": true,
+            "people": 1,
+            "totalAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "total": 520,
+            "totalDiscountedAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "discount": 0,
+            "totalDue": 520,
+            "totalDueAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "unitPriceAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "totalDiscounted": 520,
+            "taxAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountedUnitPriceAsMoney": {
+              "amount": 520,
+              "currency": "EUR"
+            },
+            "discountedUnitPrice": 520,
+            "discountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "taxAsText": "€0,00",
+            "discountedUnitPriceAsText": "€520,00",
+            "unitPriceAsText": "€520,00",
+            "calculatedDiscountAmountAsMoney": {
+              "amount": 0,
+              "currency": "EUR"
+            },
+            "discountAmountAsText": "€0,00",
+            "totalAsText": "€520,00",
+            "totalDiscountedAsText": "€520,00",
+            "totalDueAsText": "€520,00"
+          }
+        ],
+        "appliedFees": [],
+        "totalFeesAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalFeesAsText": "€0,00",
+        "totalAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "free": false,
+        "totalDueAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalExcludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalIncludedTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "totalDiscountAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "excludedTaxes": false,
+        "totalTaxAsMoney": {
+          "amount": 0,
+          "currency": "EUR"
+        },
+        "includedTaxes": false,
+        "strikeThroughTotalAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalAsText": "€520,00",
+        "totalWithExcludedTaxAsMoney": {
+          "amount": 520,
+          "currency": "EUR"
+        },
+        "totalDiscountedAsText": "€520,00",
+        "totalDiscountAsText": "€0,00",
+        "totalDueAsText": "€520,00",
+        "totalExcludedTaxAsText": "€0,00",
+        "totalIncludedTaxAsText": "€0,00",
+        "totalTaxAsText": "€0,00",
+        "strikeThroughTotalAsText": "€520,00"
+      },
+      "notes": [],
+      "supplierContractFlags": [],
+      "sellerContractFlags": [],
+      "cancellationPolicy": {
+        "id": 52679,
+        "title": "Tour Privati",
+        "penaltyRules": [
+          {
+            "id": 63638,
+            "cutoffHours": 240,
+            "charge": 100,
+            "chargeType": "percentage",
+            "percentage": 100
+          },
+          {
+            "id": 63639,
+            "cutoffHours": 8760,
+            "charge": 50,
+            "chargeType": "percentage",
+            "percentage": 50
+          }
+        ],
+        "tax": null,
+        "defaultPolicy": false,
+        "policyType": "ADVANCED",
+        "simpleCutoffHours": null,
+        "policyTypeEnum": "ADVANCED"
+      },
+      "bookingRoles": [
+        "NONE",
+        "SELLER",
+        "SUPPLIER"
+      ],
+      "refundProtectionSelected": false,
+      "refundProtectionOffered": false,
+      "date": 1766534400000,
+      "dateString": "mié, diciembre 24 2025 - 14:30",
+      "startTime": "14:30",
+      "startTimeId": 4239591,
+      "rateId": 557199,
+      "rateTitle": "Tour privado - Coliseo",
+      "activity": {
+        "id": 220614,
+        "externalId": "PRI-2",
+        "productGroupId": null,
+        "productCategory": "ACTIVITIES",
+        "box": false,
+        "inventoryLocal": true,
+        "inventorySupportsPricing": false,
+        "inventorySupportsAvailability": true,
+        "creationDate": "Tue Sep 24 08:16:26 UTC 2019",
+        "lastModified": "Fri Oct 03 13:16:56 UTC 2025",
+        "lastPublished": "Tue Oct 28 15:55:29 UTC 2025",
+        "published": true,
+        "title": "Tour privado por el Coliseo, Foro Romano y Palatino",
+        "description": "<p style=\"font-size:14px;line-height:1.6;color:rgb( 87 , 100 , 111 );margin-top:0.5em;margin-bottom:0.5em\">Descubre la grandeza de la Antigua Roma con una visita privada al Coliseo, el Foro Romano y el Monte Palatino, guiado por un guía experto en español. Adéntrate en la historia de una de las Siete Maravillas del Mundo mientras revives las emocionantes batallas de gladiadores y las intrigas de Julio César y otros emperadores en el Monte Palatino. Este tour te llevará a través de impresionantes ruinas, revelando los secretos y leyendas de un imperio que ha dejado una huella imborrable en la historia. Una experiencia única que te transportará al corazón de Roma antigua.</p>",
+        "excerpt": "Tour privado por el Coliseo, Foro Romano y Palatino",
+        "cancellationPolicy": null,
+        "overrideBarcodeFormat": false,
+        "barcodeType": "QR_CODE",
+        "timeZone": null,
+        "mainContactFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "EMAIL",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "PHONE_NUMBER",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "DATE_OF_BIRTH",
+            "required": false,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "requiredCustomerFields": [],
+        "keywords": [],
+        "flags": [
+          "colosseo",
+          "privato"
+        ],
+        "slug": null,
+        "baseLanguage": "es",
+        "languages": [
+          "pt",
+          "en_US",
+          "pt_BR",
+          "es"
+        ],
+        "paymentCurrencies": [
+          "EUR"
+        ],
+        "customFields": [],
+        "tagGroups": [],
+        "categories": [],
+        "keyPhoto": {
+          "id": 6688954,
+          "originalUrl": "https://bokun.s3.amazonaws.com/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+          "description": null,
+          "alternateText": null,
+          "height": "1348",
+          "width": "2000",
+          "fileName": "/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+          "flags": [],
+          "derived": [
+            {
+              "name": "thumbnail",
+              "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop",
+              "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop"
+            },
+            {
+              "name": "preview",
+              "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300",
+              "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300"
+            },
+            {
+              "name": "large",
+              "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660",
+              "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660"
+            }
+          ]
+        },
+        "photos": [
+          {
+            "id": 6688954,
+            "originalUrl": "https://bokun.s3.amazonaws.com/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "description": null,
+            "alternateText": null,
+            "height": "1348",
+            "width": "2000",
+            "fileName": "/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg",
+            "flags": [],
+            "derived": [
+              {
+                "name": "thumbnail",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=80&h=80&mode=crop"
+              },
+              {
+                "name": "preview",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=300&h=300"
+              },
+              {
+                "name": "large",
+                "url": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660",
+                "cleanUrl": "https://imgcdn.bokun.tools/3e2d43e8-c0b9-4698-8602-bd90137eba23.jpeg?w=660&h=660"
+              }
+            ]
+          }
+        ],
+        "videos": [],
+        "vendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        },
+        "boxedVendor": null,
+        "storedExternally": false,
+        "pluginId": null,
+        "reviewRating": null,
+        "reviewCount": null,
+        "activityType": "DAY_TOUR_OR_ACTIVITY",
+        "bookingType": "DATE_AND_TIME",
+        "scheduleType": "RECURRING",
+        "cutoffType": "RELATIVE_TO_START_TIME",
+        "cutoffReferenceHour": null,
+        "cutoffReferenceMinute": null,
+        "earlyBookingLimitType": "UNLIMITED",
+        "earlyBookingLimitSpecificDateTime": null,
+        "earlyBookingLimitDaysBefore": null,
+        "earlyBookingLimitMonthsBefore": null,
+        "earlyBookingLimitTime": null,
+        "capacityType": "LIMITED",
+        "passExpiryType": null,
+        "fixedPassExpiryDate": null,
+        "meetingType": "MEET_ON_LOCATION",
+        "privateActivity": true,
+        "passCapacity": 0,
+        "passValidForDays": null,
+        "passesAvailable": 0,
+        "affiliateHubProduct": false,
+        "dressCode": false,
+        "passportRequired": false,
+        "supportedAccessibilityTypes": [],
+        "startPoints": [
+          {
+            "id": 62380,
+            "type": null,
+            "title": "El encuentro será en Largo Corrado Ricci 41, en la acera que se encuentra  el Restaurante \"Angelino ai Fori\". ",
+            "code": null,
+            "address": {
+              "id": 529897,
+              "created": null,
+              "addressLine1": "Largo Corrado Ricci 41",
+              "addressLine2": "",
+              "addressLine3": "",
+              "city": "Roma",
+              "state": "Lazio",
+              "postalCode": "00184",
+              "countryCode": "IT",
+              "mapZoomLevel": 14,
+              "geoPoint": {
+                "latitude": 41.8931365,
+                "longitude": 12.4879876
+              },
+              "unLocode": {
+                "country": "",
+                "city": ""
+              },
+              "origin": "GOOGLE_PLACES",
+              "originId": "ChIJvVNojLNhLxMRFurg7ADCKgU",
+              "googlePlaceId": null
+            },
+            "pickupTicketDescription": null,
+            "dropoffTicketDescription": null,
+            "labels": []
+          }
+        ],
+        "bookingQuestions": [],
+        "passengerFields": [
+          {
+            "field": "FIRST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "LAST_NAME",
+            "required": true,
+            "requiredBeforeDeparture": false
+          },
+          {
+            "field": "DATE_OF_BIRTH",
+            "required": true,
+            "requiredBeforeDeparture": false
+          }
+        ],
+        "inclusions": [
+          "ENTRY_TAX",
+          "ENTRY_OR_ADMISSION_FEE"
+        ],
+        "included": "",
+        "exclusions": [
+          "FOOD_AND_DRINKS"
+        ],
+        "excluded": "",
+        "requirements": "",
+        "knowBeforeYouGoItems": [
+          "PUBLIC_TRANSPORTATION_NEARBY",
+          "ANIMALS_OR_PETS_ALLOWED"
+        ],
+        "attention": "<ul><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Os recomendamos utilizar calzado cómodo.</li><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Es obligatorio incluir todos los nombres de los participantes y las fechas de nacimiento.</li><li style=\"font-size:14px;line-height:1.6;color:#57646f;margin-top:0.5em;margin-bottom:0.5em\">Es obligatorio llevar un documento de identidad válido que confirme que el nombre es correcto. En caso de no presentar el documento, existe el riesgo de que no se permita la entrada al Parque Arqueológico del Coliseo.</li></ul>",
+        "locationCode": null,
+        "googlePlace": {
+          "id": 173468,
+          "country": "Italy",
+          "countryCode": "IT",
+          "city": "Rome",
+          "cityCode": "Rome",
+          "geoLocationCenter": {
+            "lat": 41.90278349999999,
+            "lng": 12.4963655
+          },
+          "addressTypes": []
+        },
+        "tripadvisorReview": null,
+        "resourceSlots": [],
+        "bookingCutoffMinutes": 0,
+        "bookingCutoffHours": 0,
+        "bookingCutoffDays": 0,
+        "bookingCutoffWeeks": 1,
+        "requestDeadlineMinutes": 0,
+        "requestDeadlineHours": 0,
+        "requestDeadlineDays": 2,
+        "requestDeadlineWeeks": 0,
+        "boxedActivityId": null,
+        "comboActivity": false,
+        "comboParts": [],
+        "returnProduct": null,
+        "offers": [],
+        "ticketPerComboComponent": false,
+        "ticketComboComponents": [],
+        "pickupActivityId": null,
+        "allowCustomizedBookings": false,
+        "reservationTimeout": null,
+        "vendorReservationTimeout": null,
+        "dayBasedAvailability": false,
+        "selectFromDayOptions": false,
+        "dayOptions": [],
+        "activityCategories": [
+          "SKIP_THE_LINE",
+          "CULTURAL_AND_THEME_TOURS"
+        ],
+        "activityAttributes": [
+          "FAMILY_FRIENDLY"
+        ],
+        "guidanceTypes": [
+          {
+            "id": null,
+            "created": [
+              2025,
+              12,
+              17,
+              12,
+              36,
+              1,
+              678955657
+            ],
+            "guidanceType": "GUIDED",
+            "languages": [
+              "es"
+            ],
+            "displayLanguages": [
+              "español"
+            ]
+          }
+        ],
+        "defaultRateId": 557199,
+        "rates": [
+          {
+            "id": 557199,
+            "title": "Tour privado - Coliseo",
+            "description": "",
+            "index": 0,
+            "rateCode": null,
+            "pricedPerPerson": true,
+            "minPerBooking": 1,
+            "maxPerBooking": 10,
+            "cancellationPolicy": {
+              "id": 52679,
+              "title": "Tour Privati",
+              "penaltyRules": [
+                {
+                  "id": 63638,
+                  "cutoffHours": 240,
+                  "charge": 100,
+                  "chargeType": "percentage",
+                  "percentage": 100
+                },
+                {
+                  "id": 63639,
+                  "cutoffHours": 8760,
+                  "charge": 50,
+                  "chargeType": "percentage",
+                  "percentage": 50
+                }
+              ],
+              "tax": null,
+              "defaultPolicy": false,
+              "policyType": "ADVANCED",
+              "simpleCutoffHours": null,
+              "policyTypeEnum": "ADVANCED"
+            },
+            "fixedPassExpiryDate": null,
+            "passValidForDays": null,
+            "pickupSelectionType": "UNAVAILABLE",
+            "pickupPricingType": "PRICED_SEPARATELY",
+            "pickupPricedPerPerson": true,
+            "dropoffSelectionType": "UNAVAILABLE",
+            "dropoffPricingType": "PRICED_SEPARATELY",
+            "dropoffPricedPerPerson": true,
+            "extraConfigs": [],
+            "startTimeIds": [],
+            "allStartTimes": true,
+            "tieredPricingEnabled": true,
+            "tiers": [
+              {
+                "id": 293732,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681901703
+                ],
+                "minPassengersRequired": 1,
+                "maxPassengersRequired": 1,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 3284472,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902453
+                ],
+                "minPassengersRequired": 1,
+                "maxPassengersRequired": null,
+                "pricingCategoryId": 166592,
+                "activityRateId": 557199
+              },
+              {
+                "id": 3284473,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902614
+                ],
+                "minPassengersRequired": 1,
+                "maxPassengersRequired": null,
+                "pricingCategoryId": 161726,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293733,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902703
+                ],
+                "minPassengersRequired": 2,
+                "maxPassengersRequired": 2,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293734,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902808
+                ],
+                "minPassengersRequired": 3,
+                "maxPassengersRequired": 3,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293735,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902888
+                ],
+                "minPassengersRequired": 4,
+                "maxPassengersRequired": 4,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293736,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681902966
+                ],
+                "minPassengersRequired": 5,
+                "maxPassengersRequired": 5,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293737,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681903044
+                ],
+                "minPassengersRequired": 6,
+                "maxPassengersRequired": 6,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 293738,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681903124
+                ],
+                "minPassengersRequired": 7,
+                "maxPassengersRequired": 7,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              },
+              {
+                "id": 2870108,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  681903203
+                ],
+                "minPassengersRequired": 8,
+                "maxPassengersRequired": 10,
+                "pricingCategoryId": 161601,
+                "activityRateId": 557199
+              }
+            ],
+            "pricingCategoryIds": [
+              161601,
+              166592,
+              161726
+            ],
+            "allPricingCategories": true,
+            "details": [],
+            "textItems": [
+              {
+                "id": 557199,
+                "created": [
+                  2025,
+                  12,
+                  17,
+                  12,
+                  36,
+                  1,
+                  680272371
+                ],
+                "language": "es_ES",
+                "title": "Tour privado - Coliseo",
+                "activityRateId": 557199,
+                "description": ""
+              }
+            ]
+          }
+        ],
+        "ticketPerPerson": false,
+        "durationType": "HOURS",
+        "duration": 3,
+        "durationMinutes": 0,
+        "durationHours": 3,
+        "durationDays": 0,
+        "durationWeeks": 0,
+        "durationText": "3 horas",
+        "minAge": 0,
+        "originalDefaultPrice": null,
+        "nextDefaultPrice": null,
+        "nextDefaultPriceMoney": null,
+        "pickupService": false,
+        "pickupAllotment": false,
+        "pickupAllotmentType": "NO_ALLOTMENT",
+        "useComponentPickupAllotments": false,
+        "pickupFlags": [],
+        "customPickupAllowed": true,
+        "pickupMinutesBefore": 45,
+        "pickupTimeWindowInMinutes": 0,
+        "pickupTimeLocationBased": false,
+        "pickupTimeByLocations": [],
+        "noPickupMsg": null,
+        "ticketMsg": null,
+        "showGlobalPickupMsg": false,
+        "showNoPickupMsg": false,
+        "pickupPlaceGroups": [
+          {
+            "id": 9853,
+            "active": true,
+            "title": "Tour Vat + Col",
+            "inclusionType": "HANDPICKED",
+            "includedFlags": "",
+            "includedPlaces": [],
+            "exclusionType": "NONE",
+            "excludedFlags": "",
+            "excludedPlaces": [],
+            "places": []
+          }
+        ],
+        "dropoffService": false,
+        "dropoffFlags": [],
+        "customDropoffAllowed": true,
+        "useSameAsPickUpPlaces": false,
+        "dropoffPlaceGroups": [
+          {
+            "id": 9853,
+            "active": true,
+            "title": "Tour Vat + Col",
+            "inclusionType": "HANDPICKED",
+            "includedFlags": "",
+            "includedPlaces": [],
+            "exclusionType": "NONE",
+            "excludedFlags": "",
+            "excludedPlaces": [],
+            "places": []
+          }
+        ],
+        "difficultyLevel": "MODERATE",
+        "pricingCategories": [
+          {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": true,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          {
+            "id": 166592,
+            "title": "6 a 17 años",
+            "ticketCategory": "CHILD",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 6,
+            "maxAge": 17,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "6 a 17 años (6 - 17)"
+          },
+          {
+            "id": 161726,
+            "title": "0 a 5 años",
+            "ticketCategory": "INFANT",
+            "occupancy": 1,
+            "groupSize": null,
+            "ageQualified": true,
+            "minAge": 0,
+            "maxAge": 5,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [
+              "infant"
+            ],
+            "defaultCategory": false,
+            "fullTitle": "0 a 5 años (0 - 5)"
+          }
+        ],
+        "activityPriceCatalogs": [
+          {
+            "catalog": {
+              "id": 30283,
+              "title": "enroma",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": true,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 30283,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 48347,
+              "title": "RESELLERS",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": [
+                "EUR"
+              ]
+            },
+            "catalogId": 48347,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 106646,
+              "title": "Headout",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 106646,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 109589,
+              "title": "CIVITATIS",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 109589,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          },
+          {
+            "catalog": {
+              "id": 118151,
+              "title": "GetYourGuide",
+              "defaultCurrency": "EUR",
+              "isVendorDefaultCatalog": false,
+              "currencies": []
+            },
+            "catalogId": 118151,
+            "currencies": [
+              {
+                "currency": "EUR",
+                "currencyId": 2,
+                "default": true
+              }
+            ]
+          }
+        ],
+        "agendaItems": [],
+        "startTimes": [
+          {
+            "id": 1155831,
+            "label": "",
+            "externalLabel": null,
+            "hour": 9,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2374879,
+            "label": "",
+            "externalLabel": null,
+            "hour": 10,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 484474,
+            "label": "",
+            "externalLabel": "",
+            "hour": 10,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 484473,
+            "label": "",
+            "externalLabel": null,
+            "hour": 11,
+            "minute": 0,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 2031937,
+            "label": "",
+            "externalLabel": null,
+            "hour": 13,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 4239591,
+            "label": "",
+            "externalLabel": "",
+            "hour": 14,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          },
+          {
+            "id": 1155819,
+            "label": "",
+            "externalLabel": null,
+            "hour": 15,
+            "minute": 30,
+            "overrideTimeWhenPickup": false,
+            "pickupHour": 0,
+            "pickupMinute": 0,
+            "durationType": "H",
+            "voucherPickupMsg": "",
+            "externalId": "",
+            "duration": 3,
+            "durationMinutes": 0,
+            "durationHours": 3,
+            "durationDays": 0,
+            "durationWeeks": 0,
+            "flags": []
+          }
+        ],
+        "bookableExtras": [],
+        "route": null,
+        "widgetSettings": null,
+        "hasOpeningHours": false,
+        "defaultOpeningHours": null,
+        "seasonalOpeningHours": [],
+        "displaySettings": {
+          "showPickupPlaces": false,
+          "showRouteMap": false,
+          "selectRateBasedOnStartTime": false,
+          "customFields": []
+        },
+        "hasBoxes": false,
+        "bookingLabels": [],
+        "marketplaceVisibilityType": "UNLISTED",
+        "requestDeadline": 172800000,
+        "bookingCutoff": 10080,
+        "actualId": 220614,
+        "nextDefaultPriceAsText": "",
+        "actualVendor": {
+          "id": 27164,
+          "title": "EnRoma.com",
+          "currencyCode": "EUR",
+          "timeZone": "Europe/Rome",
+          "showInvoiceIdOnTicket": false,
+          "showAgentDetailsOnTicket": false,
+          "showPaymentsOnInvoice": false,
+          "companyEmailIsDefault": false
+        }
+      },
+      "bookingAnswers": [],
+      "pickupAnswers": [],
+      "dropoffAnswers": [],
+      "flexible": false,
+      "customized": false,
+      "customizedDurationMinutes": 0,
+      "customizedDurationHours": 0,
+      "customizedDurationDays": 0,
+      "customizedDurationWeeks": 0,
+      "ticketPerPerson": false,
+      "offerApplied": false,
+      "pricingCategoryBookings": [
+        {
+          "id": 298055347,
+          "pricingCategoryId": 161601,
+          "pricingCategory": {
+            "id": 161601,
+            "title": "Adulto",
+            "ticketCategory": "ADULT",
+            "occupancy": 1,
+            "groupSize": 1,
+            "ageQualified": true,
+            "minAge": 18,
+            "maxAge": 99,
+            "dependent": false,
+            "masterCategoryId": null,
+            "maxPerMaster": 0,
+            "sumDependentCategories": false,
+            "maxDependentSum": 0,
+            "internalUseOnly": false,
+            "flags": [],
+            "defaultCategory": false,
+            "fullTitle": "Adulto (18 - 99)"
+          },
+          "leadPassenger": false,
+          "age": 0,
+          "passengerInfo": {
+            "contactDetailsHidden": false,
+            "contactDetailsHiddenUntil": null,
+            "id": 187089844,
+            "created": null,
+            "uuid": "fa6f267f-0092-4d24-98f5-9ffb98241455",
+            "email": null,
+            "title": null,
+            "firstName": "wsw",
+            "lastName": "swsw",
+            "personalIdNumber": null,
+            "clcEmail": false,
+            "language": null,
+            "nationality": null,
+            "sex": null,
+            "dateOfBirth": 578793600000,
+            "phoneNumber": null,
+            "phoneNumberCountryCode": null,
+            "address": null,
+            "postCode": null,
+            "state": null,
+            "place": null,
+            "country": null,
+            "organization": null,
+            "passportId": null,
+            "passportExpDay": null,
+            "passportExpMonth": null,
+            "passportExpYear": null,
+            "credentials": null,
+            "acceptsMarketing": false,
+            "tags": null,
+            "octoNote": null,
+            "phoneNumberLinkable": null
+          },
+          "bookingAnswers": [],
+          "bookedTitle": "Adulto",
+          "occupancy": 1,
+          "quantity": 1,
+          "extras": [],
+          "answers": [],
+          "flags": []
+        }
+      ],
+      "extras": [],
+      "bookingFields": [],
+      "pickup": false,
+      "dropoff": false,
+      "inventoryConfirmFailed": false,
+      "channelId": "DIRECT_ONLINE_WIDGETS",
+      "guidedLanguages": [],
+      "quantityByPricingCategory": {
+        "161601": 1
+      },
+      "bookedPricingCategories": [
+        {
+          "id": 161601,
+          "title": "Adulto",
+          "ticketCategory": null,
+          "occupancy": 1,
+          "groupSize": 1,
+          "ageQualified": false,
+          "minAge": null,
+          "maxAge": null,
+          "dependent": false,
+          "masterCategoryId": null,
+          "maxPerMaster": 0,
+          "sumDependentCategories": false,
+          "maxDependentSum": 0,
+          "internalUseOnly": false,
+          "flags": [],
+          "defaultCategory": false,
+          "fullTitle": "Adulto"
+        }
+      ],
+      "totalParticipants": 1,
+      "savedAmount": 0
+    }
+  ],
+  "routeBookings": [],
+  "giftCardBookings": [],
+  "bookingFields": [],
+  "action": "BOOKING_CONFIRMED"
+}
