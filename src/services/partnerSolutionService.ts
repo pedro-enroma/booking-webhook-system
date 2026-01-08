@@ -755,10 +755,11 @@ export class PartnerSolutionService {
       if (params.customer.codiceFiscale) {
         docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
       } else {
-        // For foreign customers without fiscal code, use a generated one
-        // Format: XXXXXXXXXXXXXXXX (16 X's) or country code based
-        const country = params.customer.country || 'EE';  // EE = generic foreign
-        docfiscalePayload.codicefiscale = `${country.toUpperCase()}99999999999999`.substring(0, 16);
+        // For foreign customers without fiscal code, use standard placeholder
+        // Italian SDI accepts 16 X's for foreign individuals
+        docfiscalePayload.codicefiscale = 'XXXXXXXXXXXXXXXX';
+        // Set country to identify as foreign customer
+        const country = params.customer.country || 'EE';  // EE = Estonia as generic EU
         docfiscalePayload.nazione = country.length === 3 ? country : this.iso2ToIso3(country);
       }
     }
@@ -872,9 +873,8 @@ export class PartnerSolutionService {
       if (params.customer.codiceFiscale) {
         docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
       } else {
-        // For foreign customers without fiscal code, use a generated one
-        const country = 'EE';  // EE = generic foreign
-        docfiscalePayload.codicefiscale = `${country}99999999999999`.substring(0, 16);
+        // For foreign customers without fiscal code, use standard placeholder
+        docfiscalePayload.codicefiscale = 'XXXXXXXXXXXXXXXX';
       }
     }
 
