@@ -751,8 +751,15 @@ export class PartnerSolutionService {
       // Individual
       docfiscalePayload.cognome = params.customer.lastName;
       docfiscalePayload.nome = params.customer.firstName;
+      // Generate fiscal code if not provided (required for SDI)
       if (params.customer.codiceFiscale) {
         docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
+      } else {
+        // For foreign customers without fiscal code, use a generated one
+        // Format: XXXXXXXXXXXXXXXX (16 X's) or country code based
+        const country = params.customer.country || 'EE';  // EE = generic foreign
+        docfiscalePayload.codicefiscale = `${country.toUpperCase()}99999999999999`.substring(0, 16);
+        docfiscalePayload.nazione = country.length === 3 ? country : this.iso2ToIso3(country);
       }
     }
 
@@ -861,8 +868,13 @@ export class PartnerSolutionService {
     } else {
       docfiscalePayload.cognome = params.customer.lastName;
       docfiscalePayload.nome = params.customer.firstName;
+      // Generate fiscal code if not provided (required for SDI)
       if (params.customer.codiceFiscale) {
         docfiscalePayload.codicefiscale = params.customer.codiceFiscale;
+      } else {
+        // For foreign customers without fiscal code, use a generated one
+        const country = 'EE';  // EE = generic foreign
+        docfiscalePayload.codicefiscale = `${country}99999999999999`.substring(0, 16);
       }
     }
 
