@@ -731,6 +731,9 @@ export class PartnerSolutionService {
     // Step 1: Create Docfiscale (invoice header)
     console.log(`\n[SDI Invoice] Creating invoice for booking ${params.booking.confirmationCode}...`);
 
+    // Generate invoice number from confirmation code and timestamp
+    const invoiceNumber = `INV-${params.booking.confirmationCode}-${Date.now().toString().slice(-6)}`;
+
     const docfiscalePayload: PSDocfiscalePayload = {
       codiceagenzia: agencyCode,
       stato: 'INS',  // INS = Inserted/Final
@@ -739,6 +742,7 @@ export class PartnerSolutionService {
       datadocfiscale: params.booking.invoiceDate,
       importototaledocumento: params.booking.totalAmount,
       externalid: params.booking.confirmationCode,
+      numerodocfiscale: invoiceNumber,  // Required for SDI submission
       causale: params.booking.description || `Booking ${params.booking.confirmationCode}`,
     };
 
@@ -847,6 +851,9 @@ export class PartnerSolutionService {
 
     console.log(`\n[SDI Credit Note] Creating credit note for booking ${params.booking.confirmationCode}...`);
 
+    // Generate credit note number
+    const creditNoteNumber = `NC-${params.booking.confirmationCode}-${Date.now().toString().slice(-6)}`;
+
     const docfiscalePayload: PSDocfiscalePayload = {
       codiceagenzia: agencyCode,
       stato: 'INS',
@@ -855,6 +862,7 @@ export class PartnerSolutionService {
       datadocfiscale: params.booking.creditDate,
       importototaledocumento: params.booking.creditAmount,
       externalid: `CN-${params.booking.confirmationCode}`,
+      numerodocfiscale: creditNoteNumber,  // Required for SDI submission
       causale: params.booking.description ||
         `Nota di credito per fattura ${params.booking.originalInvoiceNumber} - Booking ${params.booking.confirmationCode}`,
     };
