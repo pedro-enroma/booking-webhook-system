@@ -570,7 +570,7 @@ export interface PSDocfiscaleDettaglioResponse {
 export interface PSDocfiscaleXMLPayload {
   codiceagenzia: string;              // Agency code
   stato: 'INS';                       // Status (always INS for sending)
-  docfiscaleid: number;               // ID of the docfiscale to send
+  docfiscaleid: string;               // UUID of the docfiscale to send
   tipomovimento: 'E' | 'R';           // E = Emission (send), R = Reception
   formatotrasmissione: 'FPR12' | 'FPA12';  // FPR12 = private, FPA12 = public admin
   codicedestinatario?: string;        // SDI destination code (0000000 for private)
