@@ -799,10 +799,13 @@ export class PartnerSolutionService {
     if (params.sendToSdi !== false) {
       console.log(`[SDI Invoice] Submitting to SDI...`);
 
+      // Extract UUID from IRI (e.g., /docfiscales/uuid -> uuid)
+      const docfiscaleUuid = docfiscale['@id'].split('/').pop() || '';
+
       const xmlPayload: PSDocfiscaleXMLPayload = {
         codiceagenzia: agencyCode,
         stato: 'INS',
-        docfiscaleid: docfiscale.id,
+        docfiscaleid: docfiscaleUuid,
         tipomovimento: 'E',  // E = Emission (send)
         formatotrasmissione: 'FPR12',  // FPR12 = private clients
         codicedestinatario: params.customer.codicesdi || '0000000',  // Default for private citizens
@@ -901,10 +904,13 @@ export class PartnerSolutionService {
     let docfiscalexml: PSDocfiscaleXMLResponse | undefined;
 
     if (params.sendToSdi !== false) {
+      // Extract UUID from IRI (e.g., /docfiscales/uuid -> uuid)
+      const docfiscaleUuid = docfiscale['@id'].split('/').pop() || '';
+
       const xmlPayload: PSDocfiscaleXMLPayload = {
         codiceagenzia: agencyCode,
         stato: 'INS',
-        docfiscaleid: docfiscale.id,
+        docfiscaleid: docfiscaleUuid,
         tipomovimento: 'E',
         formatotrasmissione: 'FPR12',
         codicedestinatario: params.customer.codicesdi || '0000000',

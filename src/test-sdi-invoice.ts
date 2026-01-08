@@ -19,7 +19,7 @@ async function testSdiInvoice() {
         invoiceDate: new Date().toISOString().split('T')[0],
         description: 'Test SDI Invoice',
       },
-      sendToSdi: false,  // Don't send to SDI, just create docfiscale
+      sendToSdi: false,  // Don't send to SDI (demo2 account not configured for SDI)
     });
 
     console.log('\n✅ SUCCESS!');
