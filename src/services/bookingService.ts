@@ -509,13 +509,15 @@ export class BookingService {
       console.log('📤 Triggering notification rules:', trigger);
       console.log('   📋 Payload:', JSON.stringify(payload, null, 2));
 
+      const bodyString = JSON.stringify(payload);
       const response = await fetch(`${tourmageddonUrl}/api/notification-rules/evaluate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(bodyString).toString(),
           'x-webhook-secret': webhookSecret || '',
         },
-        body: JSON.stringify(payload),
+        body: bodyString,
       });
 
       if (response.ok) {
