@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import { OctoService } from './octoService';
 import { PromotionService } from './promotionService';
 import { InvoiceService } from './invoiceService';
+import axios from 'axios';
 
 export class BookingService {
   private octoService: OctoService;
@@ -509,22 +510,22 @@ export class BookingService {
       console.log('📤 Triggering notification rules:', trigger);
       console.log('   📋 Payload:', JSON.stringify(payload, null, 2));
 
-      const bodyString = JSON.stringify(payload);
-      const response = await fetch(`${tourmageddonUrl}/api/notification-rules/evaluate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(bodyString).toString(),
-          'x-webhook-secret': webhookSecret || '',
-        },
-        body: bodyString,
-      });
+      const response = await axios.post(
+        `${tourmageddonUrl}/api/notification-rules/evaluate`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-webhook-secret': webhookSecret || '',
+          },
+          timeout: 10000,
+        }
+      );
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         console.log('✅ Notification rules triggered successfully');
       } else {
-        const errorText = await response.text();
-        console.error('⚠️ Notification rules response error:', response.status, errorText);
+        console.error('⚠️ Notification rules response error:', response.status, response.data);
       }
     } catch (error) {
       console.error('⚠️ Failed to trigger notification rules:', error);
