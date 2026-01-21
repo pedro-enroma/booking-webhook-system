@@ -427,9 +427,105 @@ export class BookingService {
         // Non propagare l'errore - la nota di credito non deve bloccare il webhook
       }
 
+      // Trigger notification rules evaluation
+      try {
+        await this.triggerNotificationRules('booking_cancelled', activityBefore, bookingData);
+      } catch (rulesError) {
+        console.error('⚠️ Errore in notification rules (non-blocking):', rulesError);
+        // Non propagare l'errore - le notifiche non devono bloccare il webhook
+      }
+
     } catch (error) {
       console.error('❌ Errore in BOOKING_ITEM_CANCELLED:', error);
       throw error;
+    }
+  }
+
+  // Trigger notification rules in tourmageddon-saas
+  private async triggerNotificationRules(trigger: string, activityData: any, bookingData: any): Promise<void> {
+    const tourmageddonUrl = process.env.TOURMAGEDDON_URL || 'https://tourmageddon.it';
+    const webhookSecret = process.env.TOURMAGEDDON_WEBHOOK_SECRET || process.env.SUPABASE_WEBHOOK_SECRET;
+
+    try {
+      // Get additional data for the notification
+      const { data: bookingInfo } = await supabase
+        .from('bookings')
+        .select(`
+          booking_id,
+          confirmation_code,
+          total_price,
+          currency,
+          customers (
+            first_name,
+            last_name,
+            email
+          )
+        `)
+        .eq('booking_id', activityData?.booking_id)
+        .single();
+
+      // Get pax count
+      const { data: pricingBookings } = await supabase
+        .from('pricing_category_bookings')
+        .select('quantity')
+        .eq('activity_booking_id', activityData?.activity_booking_id);
+
+      const paxCount = pricingBookings?.reduce((sum: number, pb: any) => sum + (pb.quantity || 0), 0) || 0;
+
+      // Get voucher info
+      const { data: vouchers } = await supabase
+        .from('vouchers')
+        .select('id, is_placeholder')
+        .eq('activity_booking_id', activityData?.activity_booking_id);
+
+      const vouchersWithNames = vouchers?.filter((v: any) => !v.is_placeholder) || [];
+
+      const customer = bookingInfo?.customers as any;
+      const customerName = customer ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() : 'Unknown';
+
+      const travelDate = activityData?.start_date_time ? new Date(activityData.start_date_time) : null;
+      const daysUntilTravel = travelDate ? Math.ceil((travelDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
+
+      const payload = {
+        trigger,
+        data: {
+          activity_name: activityData?.product_title || bookingData.productTitle || 'Unknown',
+          product_name: activityData?.product_title || bookingData.productTitle || 'Unknown',
+          booking_id: activityData?.booking_id || bookingData.bookingId,
+          confirmation_code: bookingInfo?.confirmation_code || bookingData.confirmationCode,
+          customer_name: customerName,
+          customer_email: customer?.email || '',
+          pax_count: paxCount,
+          ticket_count: paxCount,
+          travel_date: travelDate ? travelDate.toISOString().split('T')[0] : '',
+          days_until_travel: daysUntilTravel,
+          has_uploaded_vouchers: vouchersWithNames.length > 0,
+          voucher_count: vouchersWithNames.length,
+          total_price: bookingInfo?.total_price || 0,
+          currency: bookingInfo?.currency || 'EUR',
+        }
+      };
+
+      console.log('📤 Triggering notification rules:', trigger);
+      console.log('   📋 Payload:', JSON.stringify(payload, null, 2));
+
+      const response = await fetch(`${tourmageddonUrl}/api/notification-rules/evaluate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-webhook-secret': webhookSecret || '',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        console.log('✅ Notification rules triggered successfully');
+      } else {
+        const errorText = await response.text();
+        console.error('⚠️ Notification rules response error:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('⚠️ Failed to trigger notification rules:', error);
     }
   }
 
