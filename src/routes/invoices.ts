@@ -354,7 +354,7 @@ router.post('/api/invoices/create-batch', validateApiKey, async (req: Request, r
 /**
  * Get Commessa UUID for a given year_month
  * Commesse are created in Partner Solution's FacileWS3 API
- * The delivering field should use format: commessa:{UUID}
+ * The delivering field should use format: commessa:{CODE} (e.g., commessa:2026-01)
  */
 
 // Cache for commessa UUIDs (in-memory)
@@ -520,10 +520,11 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     // Get axios client for direct API calls
     const client = await (partnerSolutionService as any).getClient();
 
-    // Get Commessa UUID for this year_month (creates if not exists)
-    console.log(`\n  Getting Commessa UUID for ${year_month}...`);
-    const commessaId = await getCommessaId(year_month);
-    const deliveringValue = `commessa:${commessaId}`;
+    // Ensure Commessa exists for this year_month (creates if not exists)
+    console.log(`\n  Ensuring Commessa exists for ${year_month}...`);
+    await getCommessaId(year_month); // This creates the Commessa if it doesn't exist
+    // Use the CODE format, not UUID - this is what Partner Solution expects
+    const deliveringValue = `commessa:${year_month}`;
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
@@ -566,7 +567,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       stato: 'WP',
       descrizionepratica: 'Tour UE ed Extra UE',
       noteinterne: seller_title ? `Seller: ${seller_title}` : null,
-      delivering: `commessa:${commessaId}`
+      delivering: deliveringValue
     };
 
     const praticaResponse = await client.post('/prt_praticas', praticaPayload);
