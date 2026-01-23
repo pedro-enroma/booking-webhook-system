@@ -403,7 +403,8 @@ async function listCommesse(): Promise<any[]> {
     { params: { Token: token } }
   );
 
-  return response.data || [];
+  // Response structure: { data: { '@Pagina': [...] }, code: 200 }
+  return response.data?.data?.['@Pagina'] || [];
 }
 
 async function createCommessa(yearMonth: string): Promise<string> {
@@ -433,8 +434,8 @@ async function createCommessa(yearMonth: string): Promise<string> {
     }
   );
 
-  // The response should contain the new commessa with its UUID
-  const commessaId = response.data?.Id || response.data?.id;
+  // Response structure: { data: { CommessaID: '...' }, code: 200 }
+  const commessaId = response.data?.data?.CommessaID;
   console.log(`  ✅ Commessa created: ${commessaId}`);
 
   return commessaId;
@@ -450,18 +451,22 @@ async function getCommessaId(yearMonth: string): Promise<string> {
   try {
     // List all commesse and find the one matching yearMonth
     const commesse = await listCommesse();
+    console.log(`  Found ${commesse.length} commesse in FacileWS3`);
+
+    // Fields in list: codice_commessa (lowercase with underscore), id
     const existing = commesse.find((c: any) =>
-      c.CodiceCommessa === yearMonth || c.codicecommessa === yearMonth
+      c.codice_commessa === yearMonth || c.CodiceCommessa === yearMonth
     );
 
     if (existing) {
-      const id = existing.Id || existing.id;
+      const id = existing.id || existing.Id;
       console.log(`  Found existing Commessa for ${yearMonth}: ${id}`);
       COMMESSA_CACHE[yearMonth] = id;
       return id;
     }
 
     // Not found - create new commessa
+    console.log(`  Commessa ${yearMonth} not found, creating...`);
     const newId = await createCommessa(yearMonth);
     COMMESSA_CACHE[yearMonth] = newId;
     return newId;
