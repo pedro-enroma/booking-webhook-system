@@ -129,7 +129,7 @@ export class InvoiceService {
       const now = new Date().toISOString();
       const psPratica = await this.partnerSolution.createPratica({
         codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
-        tipocattura: 'API',
+        tipocattura: 'PS',
         stato: 'WP',
         datacreazione: now,
         datamodifica: now,
@@ -137,7 +137,8 @@ export class InvoiceService {
         nomecliente: 'Invoice',
         descrizionepratica: `Monthly Invoice: ${yearMonth}`,
         externalid: `MONTHLY-${yearMonth}`,
-      });
+        delivering: `commessa:${yearMonth}`,
+      } as any);
 
       // 4. Update DB record with Partner Solution IDs
       const { data: updated } = await supabase
@@ -442,7 +443,7 @@ export class InvoiceService {
         const now = new Date().toISOString();
         const psPratica = await this.partnerSolution.createPratica({
           codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
-          tipocattura: 'API',
+          tipocattura: 'PS',
           stato: 'WP',
           datacreazione: now,
           datamodifica: now,
@@ -450,7 +451,8 @@ export class InvoiceService {
           nomecliente: 'Invoice',
           descrizionepratica: `Monthly Invoice: ${monthlyPratica.year_month}`,
           externalid: `MONTHLY-${monthlyPratica.year_month}`,
-        });
+          delivering: `commessa:${monthlyPratica.year_month}`,
+        } as any);
 
         await supabase
           .from('monthly_praticas')
@@ -498,9 +500,9 @@ export class InvoiceService {
           nrpaxadulti: activity.participant_count || 1,
           nrpaxchild: 0,
           nrpaxinfant: 0,
-          codicefornitore: supplierCode,
-          codicefilefornitore: String(activity.activity_booking_id),
-          ragsocfornitore: 'EnRoma Tours',
+          codicefornitore: 'IT09802381005',
+          codicefilefornitore: String(bookingData.booking_id),
+          ragsocfornitore: 'AGENZIA VIAGGI PROPRI',
           tipodestinazione: 'CEENAZ',
           duratagg: 1,
           duratant: 0,
@@ -515,16 +517,34 @@ export class InvoiceService {
           servizio: servizio['@id'],
           descrizionequota: `${bookingData.confirmation_code} - ${activity.activity_booking_id}`,
           datavendita: activityDate,
-          codiceisovalutacosto: 'eur',
-          codiceisovalutaricavo: 'eur',
+          codiceisovalutacosto: 'EUR',
+          codiceisovalutaricavo: 'EUR',
           quantitacosto: 1,
           quantitaricavo: 1,
-          costovalutaprimaria: 0, // Always 0
-          ricavovalutaprimaria: activity.total_price, // Revenue
+          costovalutaprimaria: activity.total_price,
+          ricavovalutaprimaria: activity.total_price,
           progressivo: 1,
           annullata: 0,
           commissioniattivevalutaprimaria: 0,
           commissionipassivevalutaprimaria: 0,
+          codiceagenzia: agencyCode,
+          stato: 'INS',
+        } as any);
+
+        // Create Movimento Finanziario (payment record)
+        await this.partnerSolution.createMovimentoFinanziario({
+          externalid: String(bookingData.booking_id),
+          tipomovimento: 'I',
+          codicefile: String(bookingData.booking_id),
+          codiceagenzia: agencyCode,
+          tipocattura: 'PS',
+          importo: activity.total_price,
+          datacreazione: now,
+          datamodifica: now,
+          datamovimento: activityDate,
+          stato: 'INS',
+          codcausale: 'PAGCC',
+          descrizione: `${bookingData.confirmation_code} - ${activity.product_title}`,
         });
 
         // Create line item in DB
