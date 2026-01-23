@@ -402,26 +402,12 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     if (monthlyPratica?.partner_pratica_id) {
       praticaIri = monthlyPratica.partner_pratica_id;
       console.log('   Found existing pratica:', praticaIri);
-
-      // Update pratica with customer if provided
-      if (account) {
-        const client = await (partnerSolutionService as any).getClient();
-        const currentPratica = await partnerSolutionService.getPratica(praticaIri);
-        await client.put(praticaIri, {
-          codiceagenzia: currentPratica.codiceagenzia,
-          tipocattura: (currentPratica as any).tipocattura || 'API',
-          stato: currentPratica.stato,
-          datacreazione: currentPratica.datacreazione,
-          datamodifica: new Date().toISOString(),
-          cognomecliente: customer?.last_name || (currentPratica as any).cognomecliente,
-          nomecliente: customer?.first_name || (currentPratica as any).nomecliente,
-          codicecliente: account.id,
-          externalid: currentPratica.externalid,
-          descrizionepratica: (currentPratica as any).descrizionepratica,
-        });
-      }
+      // Note: For monthly praticas, we DON'T update the header with individual customer info.
+      // The monthly pratica header stays generic (cognomecliente: "Monthly", nomecliente: "Invoice")
+      // and customers are linked as Passeggeros instead.
     } else {
-      // Create new pratica
+      // Create new monthly pratica with generic values
+      // Individual customers are linked as Passeggeros, not as pratica header
       const now = new Date().toISOString();
       const pratica = await partnerSolutionService.createPratica({
         codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
@@ -429,12 +415,12 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
         stato: 'WP',
         datacreazione: now,
         datamodifica: now,
-        cognomecliente: customer?.last_name || 'N/A',
-        nomecliente: customer?.first_name || 'N/A',
-        codicecliente: account?.id,
-        descrizionepratica: description || `Pratica Mensile ${year_month}`,
+        cognomecliente: 'Monthly',
+        nomecliente: 'Invoice',
+        descrizionepratica: `Monthly Invoice: ${year_month}`,
         externalid: `MONTHLY-${year_month}`,
-      });
+        delivering: `commessa:${year_month}`,
+      } as any);
 
       praticaIri = pratica['@id'];
       console.log('   Created pratica:', praticaIri);
@@ -453,6 +439,24 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
         .single();
 
       monthlyPratica = newPratica;
+    }
+
+    // 2b. Create Passeggero (customer linked to pratica)
+    if (customer) {
+      console.log('2b. Creating Passeggero...');
+      try {
+        await partnerSolutionService.createPasseggero({
+          pratica: praticaIri,
+          cognomepax: customer.last_name || 'N/A',
+          nomepax: customer.first_name || 'N/A',
+          annullata: 0,
+          iscontraente: 1,
+        });
+        console.log('   Passeggero created');
+      } catch (error) {
+        console.error('   Failed to create passeggero:', error);
+        // Continue anyway - passeggero is not critical
+      }
     }
 
     // 3. Create Servizio + Quota for each activity
