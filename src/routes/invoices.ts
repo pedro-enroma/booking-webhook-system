@@ -481,7 +481,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
         tiposervizio: 'VIS',
         tipovendita: 'ORG',
         regimevendita: '74T',
-        codicefornitore: '2773',
+        codicefornitore: '4942',
         ragsocfornitore: 'EnRoma Tours',
         codicefilefornitore: String(booking_id),
         datacreazione: now,
@@ -547,7 +547,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       datamodifica: now,
       datamovimento: now,
       stato: 'INS',
-      codcausale: 'PAGCC',
+      codcausale: 'PAGBOK',
       descrizione: `Tour UE ed Extra UE - ${confirmation_code}`
     };
 
