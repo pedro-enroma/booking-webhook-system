@@ -424,7 +424,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       // Create new pratica
       const now = new Date().toISOString();
       const pratica = await partnerSolutionService.createPratica({
-        codiceagenzia: 'demo2',
+        codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
         tipocattura: 'API',
         stato: 'WP',
         datacreazione: now,

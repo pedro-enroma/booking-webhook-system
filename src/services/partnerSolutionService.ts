@@ -36,12 +36,59 @@ interface CachedConfig {
   fetchedAt: number;
 }
 
+// FacileWS3 types
+interface FacileWSLoginResponse {
+  jwt: string;
+  fullname: string;
+  email: string;
+  id: string;
+}
+
+interface CommessaResponse {
+  id: string;
+  codice_commessa: string;
+  Titolo_Commessa: string;
+  Titolo: string;
+  Descrizione: string | null;
+  DataInizioValidita: string;
+  DataFineValidita: string | null;
+}
+
+interface MovimentoFinanziarioPayload {
+  externalid: string;
+  tipomovimento: 'I' | 'U'; // I = Incasso (income), U = Uscita (expense)
+  codicefile: string;
+  codiceagenzia: string;
+  tipocattura: string;
+  importo: number;
+  datacreazione: string;
+  datamodifica: string;
+  datamovimento: string;
+  stato: string;
+  codcausale: string;
+  descrizione: string;
+}
+
+interface MovimentoFinanziarioResponse {
+  '@id': string;
+  '@type': string;
+  id: string;
+  externalid: string;
+  importo: number;
+}
+
 export class PartnerSolutionService {
   private client: any = null;
   private token: string | null = null;
   private tokenExpiry: Date | null = null;
   private cachedConfig: CachedConfig | null = null;
   private readonly CONFIG_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+  // FacileWS3 authentication
+  private facileToken: string | null = null;
+  private facileTokenExpiry: Date | null = null;
+  private readonly FACILE_LOGIN_URL = 'https://facilews.partnersolution.it/login.php';
+  private readonly FACILE_WS3_URL = 'https://facilews3.partnersolution.it';
 
   constructor() {
     console.log('PartnerSolutionService initialized');
@@ -142,6 +189,50 @@ export class PartnerSolutionService {
         ? JSON.stringify(axiosError.response.data)
         : axiosError.message;
       throw new Error(`Partner Solution authentication failed: ${message}`);
+    }
+  }
+
+  /**
+   * Authenticate with FacileWS3 API for Commessa operations
+   */
+  private async authenticateFacileWS3(): Promise<string> {
+    // Check if we have a valid token
+    if (this.facileToken && this.facileTokenExpiry && new Date() < this.facileTokenExpiry) {
+      return this.facileToken;
+    }
+
+    const username = process.env.FACILE_WS3_USERNAME || 'alberto@enroma.com';
+    const password = process.env.FACILE_WS3_PASSWORD || 'InSpe2026!';
+
+    try {
+      console.log('Authenticating with FacileWS3 API...');
+
+      const formData = new URLSearchParams();
+      formData.append('username', username);
+      formData.append('password', password);
+
+      const response = await axios.post<FacileWSLoginResponse>(
+        this.FACILE_LOGIN_URL,
+        formData.toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+
+      this.facileToken = response.data.jwt;
+      // Token valid for ~24 hours, refresh 1 hour before expiry
+      this.facileTokenExpiry = new Date(Date.now() + 23 * 60 * 60 * 1000);
+
+      console.log('Successfully authenticated with FacileWS3 API');
+      return this.facileToken;
+    } catch (error) {
+      const axiosError = error as any;
+      const message = axiosError.response?.data
+        ? JSON.stringify(axiosError.response.data)
+        : axiosError.message;
+      throw new Error(`FacileWS3 authentication failed: ${message}`);
     }
   }
 
@@ -498,7 +589,7 @@ export class PartnerSolutionService {
       iscliente: 1,
       isfornitore: 0,
       ispromotore: 0,
-      codiceagenzia: 'demo2', // TODO: make configurable
+      codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
       stato: 'INS',
       tipocattura: 'API',
       externalid: externalId,
@@ -726,7 +817,7 @@ export class PartnerSolutionService {
     dettaglio: PSDocfiscaleDettaglioResponse;
     docfiscalexml?: PSDocfiscaleXMLResponse;
   }> {
-    const agencyCode = params.agencyCode || 'demo2';
+    const agencyCode = params.agencyCode || process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
 
     // Step 1: Create Docfiscale (invoice header)
     console.log(`\n[SDI Invoice] Creating invoice for booking ${params.booking.confirmationCode}...`);
@@ -850,7 +941,7 @@ export class PartnerSolutionService {
     dettaglio: PSDocfiscaleDettaglioResponse;
     docfiscalexml?: PSDocfiscaleXMLResponse;
   }> {
-    const agencyCode = params.agencyCode || 'demo2';
+    const agencyCode = params.agencyCode || process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
 
     console.log(`\n[SDI Credit Note] Creating credit note for booking ${params.booking.confirmationCode}...`);
 
@@ -922,6 +1013,510 @@ export class PartnerSolutionService {
 
     console.log(`[SDI Credit Note] Credit note created successfully!`);
     return { docfiscale, dettaglio, docfiscalexml };
+  }
+
+  // ============================================
+  // COMMESSA (JOB ORDER) OPERATIONS - via FacileWS3
+  // ============================================
+
+  /**
+   * List all Commesse for the agency
+   */
+  async listCommesse(): Promise<CommessaResponse[]> {
+    const token = await this.authenticateFacileWS3();
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+
+    try {
+      const response = await axios.get(
+        `${this.FACILE_WS3_URL}/Api/Rest/${agencyCode}/Commesse`,
+        { params: { Token: token } }
+      );
+
+      return response.data.data?.['@Pagina'] || [];
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to list commesse: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Create a new Commessa
+   */
+  async createCommessa(params: {
+    codice: string;
+    titolo: string;
+    descrizione?: string;
+  }): Promise<{ CommessaID: string; Codice: string }> {
+    const token = await this.authenticateFacileWS3();
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+
+    console.log(`Creating Commessa: ${params.codice} - ${params.titolo}`);
+
+    try {
+      const response = await axios.post(
+        `${this.FACILE_WS3_URL}/Api/Rest/${agencyCode}/Commesse`,
+        {
+          CodiceCommessa: params.codice,
+          TitoloCommessa: params.titolo,
+          DescrizioneCommessa: params.descrizione || '',
+          ReferenteCommerciale: '',
+          NoteInterne: '',
+        },
+        {
+          params: { Token: token },
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+
+      console.log(`Commessa created: ${params.codice}`);
+      return response.data.data;
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to create commessa: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Get or create a monthly Commessa
+   * Code format: YYYY-MM (e.g., "2026-01" for January 2026)
+   */
+  async getOrCreateMonthlyCommessa(date?: Date): Promise<string> {
+    const targetDate = date || new Date();
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    const commessaCode = `${year}-${month}`;
+
+    // List existing commesse
+    const commesse = await this.listCommesse();
+    const existing = commesse.find(c => c.codice_commessa === commessaCode);
+
+    if (existing) {
+      console.log(`Found existing Commessa: ${commessaCode}`);
+      return commessaCode;
+    }
+
+    // Create new commessa
+    const monthNames = [
+      'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+    ];
+    const monthName = monthNames[targetDate.getMonth()];
+
+    await this.createCommessa({
+      codice: commessaCode,
+      titolo: `${monthName} ${year}`,
+      descrizione: `Tour UE ed Extra UE - ${monthName} ${year}`,
+    });
+
+    return commessaCode;
+  }
+
+  /**
+   * Search for a client/account by Codice Fiscale or Partita IVA via FacileWS3
+   * Returns the account if found, null otherwise
+   */
+  async findClientByCfOrPi(params: {
+    codiceFiscale?: string;
+    partitaIva?: string;
+  }): Promise<any | null> {
+    if (!params.codiceFiscale && !params.partitaIva) {
+      throw new Error('Must provide either codiceFiscale or partitaIva');
+    }
+
+    const token = await this.authenticateFacileWS3();
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+
+    try {
+      const queryParams: any = { Token: token };
+      if (params.codiceFiscale) queryParams.cf = params.codiceFiscale;
+      if (params.partitaIva) queryParams.pi = params.partitaIva;
+
+      const response = await axios.get(
+        `${this.FACILE_WS3_URL}/Api/Rest/Account/${agencyCode}`,
+        { params: queryParams }
+      );
+
+      const accounts = response.data.data?.['@Pagina'] || [];
+      return accounts.length > 0 ? accounts[0] : null;
+    } catch (error) {
+      const axiosError = error as any;
+      if (axiosError.response?.status === 404) return null;
+      throw new Error(`Failed to search client: ${axiosError.message}`);
+    }
+  }
+
+  /**
+   * Search Anagrafica (detailed client search) via FacileWS3
+   */
+  async searchAnagrafica(searchParams?: {
+    cf?: string;
+    pi?: string;
+    cognome?: string;
+    nome?: string;
+  }): Promise<any[]> {
+    const token = await this.authenticateFacileWS3();
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+
+    try {
+      const queryParams: any = { Token: token, ...searchParams };
+
+      const response = await axios.get(
+        `${this.FACILE_WS3_URL}/Api/Rest/${agencyCode}/Anagrafica`,
+        { params: queryParams }
+      );
+
+      return response.data.data?.['@Pagina'] || [];
+    } catch (error) {
+      const axiosError = error as any;
+      throw new Error(`Failed to search anagrafica: ${axiosError.message}`);
+    }
+  }
+
+  // ============================================
+  // MOVIMENTO FINANZIARIO (PAYMENT) OPERATIONS
+  // ============================================
+
+  /**
+   * Create a Movimento Finanziario (financial movement/payment)
+   */
+  async createMovimentoFinanziario(payload: MovimentoFinanziarioPayload): Promise<MovimentoFinanziarioResponse> {
+    const client = await this.getClient();
+
+    console.log('Creating movimento finanziario:', {
+      externalid: payload.externalid,
+      importo: payload.importo,
+      codcausale: payload.codcausale,
+    });
+
+    try {
+      const response = await client.post('/mov_finanziarios', payload);
+      console.log('Movimento finanziario created:', response.data['@id']);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as any;
+      const errorData = axiosError.response?.data;
+      throw new Error(
+        `Failed to create movimento finanziario: ${
+          typeof errorData === 'object' ? JSON.stringify(errorData) : axiosError.message
+        }`
+      );
+    }
+  }
+
+  // ============================================
+  // COMPLETE BOOKING FLOW
+  // ============================================
+
+  /**
+   * Create a complete Pratica from a booking
+   * This is the main method for sending a booking to Partner Solution:
+   * 1. Get or create monthly Commessa
+   * 2. Check/Create Account
+   * 3. Create Pratica (with Commessa link)
+   * 4. Add Passeggero
+   * 5. Add Servizio
+   * 6. Add Quota
+   * 7. Add Movimento Finanziario
+   * 8. Update Pratica status to INS
+   */
+  async createBookingPratica(params: {
+    bookingId: string;           // Numeric booking ID (e.g., "81893011")
+    confirmationCode: string;    // Full code (e.g., "CIV-81893011")
+    customer: {
+      firstName: string;
+      lastName: string;
+    };
+    amount: number;              // Customer price in EUR
+    sellerTitle?: string;        // Optional: seller for tracking
+    travelDate?: Date;           // Optional: date of service
+    commessaCode?: string;       // Optional: override monthly commessa
+    skipAccount?: boolean;       // Optional: skip Account/Cliente creation
+  }): Promise<{
+    praticaIri: string;
+    accountIri: string | null;
+    passeggeroIri: string;
+    servizioIri: string;
+    quotaIri: string;
+    movimentoIri: string;
+    commessaCode: string;
+  }> {
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+    const supplierCode = 'IT09802381005'; // EnRoma Tours P.IVA - ALWAYS this value
+    const now = new Date().toISOString();
+
+    console.log(`\n=== Creating Pratica for booking ${params.confirmationCode} ===`);
+    console.log(`Customer: ${params.customer.firstName} ${params.customer.lastName}`);
+    console.log(`Amount: €${params.amount}`);
+
+    // Step 1: Get or create monthly Commessa
+    const commessaCode = params.commessaCode || await this.getOrCreateMonthlyCommessa(params.travelDate);
+    console.log(`Using Commessa: ${commessaCode}`);
+
+    const client = await this.getClient();
+
+    // Step 2: Create Account (optional - can be skipped)
+    let accountIri: string | null = null;
+    if (!params.skipAccount) {
+      console.log('\nStep 1: Creating Account...');
+      const accountPayload = {
+        cognome: params.customer.lastName,
+        nome: params.customer.firstName,
+        flagpersonafisica: 1,
+        codicefiscale: params.bookingId,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0,
+        externalid: params.bookingId,
+      };
+      const accountResponse = await client.post('/accounts', accountPayload);
+      accountIri = accountResponse.data['@id'];
+      console.log(`  Account created: ${accountIri}`);
+    } else {
+      console.log('\nStep 1: Skipping Account creation');
+    }
+
+    // Step 3: Create Pratica with Commessa link
+    console.log('\nStep 2: Creating Pratica...');
+    const praticaPayload: any = {
+      externalid: params.bookingId,
+      cognomecliente: params.customer.lastName,
+      nomecliente: params.customer.firstName,
+      codiceagenzia: agencyCode,
+      tipocattura: 'PS',
+      datacreazione: now,
+      datamodifica: now,
+      stato: 'WP',
+      descrizionepratica: 'Tour UE ed Extra UE',
+      noteinterne: params.sellerTitle ? `Seller: ${params.sellerTitle}` : '',
+      delivering: `commessa:${commessaCode}`,
+    };
+    // Only add codicecliente if we created an Account (for Cliente linking)
+    if (!params.skipAccount) {
+      praticaPayload.codicecliente = params.bookingId;
+    }
+    const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+    const praticaIri = praticaResponse.data['@id'];
+    console.log(`  Pratica created: ${praticaIri}`);
+
+    // Step 4: Add Passeggero
+    console.log('\nStep 3: Adding Passeggero...');
+    const passeggeroPayload = {
+      pratica: praticaIri,
+      cognomepax: params.customer.lastName,
+      nomepax: params.customer.firstName,
+      annullata: 0,
+      iscontraente: 1,
+    };
+    const passeggeroResponse = await client.post('/prt_praticapasseggeros', passeggeroPayload);
+    const passeggeroIri = passeggeroResponse.data['@id'];
+    console.log(`  Passeggero added: ${passeggeroIri}`);
+
+    // Step 5: Add Servizio
+    console.log('\nStep 4: Adding Servizio...');
+    const serviceDate = params.travelDate ? params.travelDate.toISOString() : now;
+    const servizioPayload = {
+      pratica: praticaIri,
+      externalid: params.bookingId,
+      tiposervizio: 'PKG',
+      tipovendita: 'ORG',
+      regimevendita: '74T',
+      codicefornitore: supplierCode,
+      ragsocfornitore: 'EnRoma Tours',
+      codicefilefornitore: params.bookingId,
+      datacreazione: now,
+      datainizioservizio: serviceDate,
+      datafineservizio: serviceDate,
+      duratant: 0,
+      duratagg: 1,
+      nrpaxadulti: 1,
+      nrpaxchild: 0,
+      nrpaxinfant: 0,
+      descrizione: 'Tour UE ed Extra UE',
+      tipodestinazione: 'CEENAZ',
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+    };
+    const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
+    const servizioIri = servizioResponse.data['@id'];
+    console.log(`  Servizio added: ${servizioIri}`);
+
+    // Step 6: Add Quota
+    console.log('\nStep 5: Adding Quota...');
+    const quotaPayload = {
+      servizio: servizioIri,
+      descrizionequota: 'Tour UE ed Extra UE',
+      datavendita: now,
+      codiceisovalutacosto: 'EUR',
+      quantitacosto: 1,
+      costovalutaprimaria: params.amount,
+      quantitaricavo: 1,
+      ricavovalutaprimaria: params.amount,
+      codiceisovalutaricavo: 'EUR',
+      commissioniattivevalutaprimaria: 0,
+      commissionipassivevalutaprimaria: 0,
+      progressivo: 1,
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+    };
+    const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
+    const quotaIri = quotaResponse.data['@id'];
+    console.log(`  Quota added: ${quotaIri}`);
+
+    // Step 7: Add Movimento Finanziario
+    // codicefile must match codicefilefornitore in Servizio to link payment to service
+    console.log('\nStep 6: Adding Movimento Finanziario...');
+    const movimentoPayload: MovimentoFinanziarioPayload = {
+      externalid: params.bookingId,
+      tipomovimento: 'I',
+      codicefile: params.bookingId,  // Must match codicefilefornitore in Servizio to link
+      codiceagenzia: agencyCode,
+      tipocattura: 'PS',
+      importo: params.amount,
+      datacreazione: now,
+      datamodifica: now,
+      datamovimento: now,
+      stato: 'INS',
+      codcausale: 'PAGCC',
+      descrizione: `Tour UE ed Extra UE - ${params.confirmationCode}`,
+    };
+    const movimentoResponse = await this.createMovimentoFinanziario(movimentoPayload);
+    const movimentoIri = movimentoResponse['@id'];
+    console.log(`  Movimento added: ${movimentoIri}`);
+
+    // Step 8: Update Pratica status to INS
+    console.log('\nStep 7: Updating Pratica status to INS...');
+    await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+    console.log('  Pratica status updated to INS');
+
+    console.log('\n=== Pratica created successfully ===');
+    console.log(`Pratica IRI: ${praticaIri}`);
+    console.log(`Commessa: ${commessaCode}`);
+
+    return {
+      praticaIri,
+      accountIri,
+      passeggeroIri,
+      servizioIri,
+      quotaIri,
+      movimentoIri,
+      commessaCode,
+    };
+  }
+
+  /**
+   * Save Partner Solution references to the database
+   * Call this after createBookingPratica to persist the references for refunds/linking
+   */
+  async savePsReferencesToDatabase(params: {
+    bookingId: number;
+    confirmationCode: string;
+    customerName: string;
+    customerEmail?: string;
+    sellerName?: string;
+    totalAmount: number;
+    bookingCreationDate?: Date;
+    psReferences: {
+      accountIri: string | null;
+      praticaIri: string;
+      passeggeroIri: string;
+      servizioIri: string;
+      quotaIri: string;
+      movimentoIri: string;
+      commessaCode: string;
+    };
+  }): Promise<{ invoiceId: string }> {
+    console.log(`\nSaving PS references to database for booking ${params.bookingId}...`);
+
+    const { data, error } = await supabase
+      .from('invoices')
+      .upsert({
+        booking_id: params.bookingId,
+        confirmation_code: params.confirmationCode,
+        invoice_type: 'INVOICE',
+        status: 'sent',
+        total_amount: params.totalAmount,
+        currency: 'EUR',
+        customer_name: params.customerName,
+        customer_email: params.customerEmail,
+        seller_name: params.sellerName,
+        booking_creation_date: params.bookingCreationDate?.toISOString().split('T')[0],
+        sent_at: new Date().toISOString(),
+        // Partner Solution references
+        ps_account_iri: params.psReferences.accountIri,
+        ps_pratica_iri: params.psReferences.praticaIri,
+        ps_passeggero_iri: params.psReferences.passeggeroIri,
+        ps_servizio_iri: params.psReferences.servizioIri,
+        ps_quota_iri: params.psReferences.quotaIri,
+        ps_movimento_iri: params.psReferences.movimentoIri,
+        ps_commessa_code: params.psReferences.commessaCode,
+        ps_raw_response: params.psReferences,
+        created_by: 'api',
+      }, {
+        onConflict: 'booking_id,invoice_type',
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Failed to save PS references:', error);
+      throw new Error(`Failed to save PS references: ${error.message}`);
+    }
+
+    console.log(`  Saved to invoices table with ID: ${data.id}`);
+    return { invoiceId: data.id };
+  }
+
+  /**
+   * Get PS references from database for a booking
+   * Use this when creating refunds/credit notes
+   */
+  async getPsReferencesFromDatabase(bookingId: number): Promise<{
+    invoiceId: string;
+    accountIri: string;
+    praticaIri: string;
+    passeggeroIri: string;
+    servizioIri: string;
+    quotaIri: string;
+    movimentoIri: string;
+    commessaCode: string;
+  } | null> {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('id, ps_account_iri, ps_pratica_iri, ps_passeggero_iri, ps_servizio_iri, ps_quota_iri, ps_movimento_iri, ps_commessa_code')
+      .eq('booking_id', bookingId)
+      .eq('invoice_type', 'INVOICE')
+      .single();
+
+    if (error || !data) {
+      console.log(`No PS references found for booking ${bookingId}`);
+      return null;
+    }
+
+    return {
+      invoiceId: data.id,
+      accountIri: data.ps_account_iri,
+      praticaIri: data.ps_pratica_iri,
+      passeggeroIri: data.ps_passeggero_iri,
+      servizioIri: data.ps_servizio_iri,
+      quotaIri: data.ps_quota_iri,
+      movimentoIri: data.ps_movimento_iri,
+      commessaCode: data.ps_commessa_code,
+    };
+  }
+
+  /**
+   * Generate monthly Commessa code from a date
+   * Format: YYYY-MM (e.g., "2026-01")
+   */
+  getMonthlyCommessaCode(date?: Date): string {
+    const targetDate = date || new Date();
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
   }
 
   // ============================================

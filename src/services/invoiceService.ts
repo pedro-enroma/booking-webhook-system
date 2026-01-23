@@ -128,7 +128,7 @@ export class InvoiceService {
     try {
       const now = new Date().toISOString();
       const psPratica = await this.partnerSolution.createPratica({
-        codiceagenzia: 'demo2', // TODO: Make configurable
+        codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
         tipocattura: 'API',
         stato: 'WP',
         datacreazione: now,
@@ -418,7 +418,7 @@ export class InvoiceService {
       try {
         const now = new Date().toISOString();
         const psPratica = await this.partnerSolution.createPratica({
-          codiceagenzia: 'demo2', // TODO: Make configurable
+          codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
           tipocattura: 'API',
           stato: 'WP',
           datacreazione: now,
