@@ -736,6 +736,40 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
 });
 
 /**
+ * GET /api/invoices/debug-pratica/:praticaId
+ * Debug endpoint to fetch Pratica from Partner Solution and check delivering field
+ */
+router.get('/api/invoices/debug-pratica/:praticaId', async (req: Request, res: Response) => {
+  try {
+    const praticaId = req.params.praticaId;
+    const client = await (partnerSolutionService as any).getClient();
+
+    const response = await client.get(`/prt_praticas/${praticaId}`);
+
+    res.json({
+      success: true,
+      pratica: {
+        id: response.data.id,
+        '@id': response.data['@id'],
+        externalid: response.data.externalid,
+        cognomecliente: response.data.cognomecliente,
+        nomecliente: response.data.nomecliente,
+        stato: response.data.stato,
+        delivering: response.data.delivering,
+        descrizionepratica: response.data.descrizionepratica,
+        datacreazione: response.data.datacreazione
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      response: error.response?.data
+    });
+  }
+});
+
+/**
  * GET /api/invoices/debug-commessa/:yearMonth
  * Debug endpoint to check Commessa lookup
  */
