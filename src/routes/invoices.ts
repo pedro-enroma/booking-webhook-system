@@ -4,6 +4,7 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
+import axios from 'axios';
 import { invoiceService } from '../services/invoiceService';
 import { partnerSolutionService } from '../services/partnerSolutionService';
 import { supabase } from '../config/supabase';
@@ -355,35 +356,121 @@ router.post('/api/invoices/create-batch', validateApiKey, async (req: Request, r
  * Commesse are created in Partner Solution's FacileWS3 API
  * The delivering field should use format: commessa:{UUID}
  */
-const COMMESSA_MAP: Record<string, string> = {
+
+// Cache for commessa UUIDs (in-memory)
+const COMMESSA_CACHE: Record<string, string> = {
   '2026-01': 'B53D23E5-3DB1-4CC2-8659-EFAED539336D',
-  // Add more mappings as commesse are created
 };
 
-async function getCommessaId(yearMonth: string, client: any): Promise<string> {
-  // First check static mapping
-  if (COMMESSA_MAP[yearMonth]) {
-    return COMMESSA_MAP[yearMonth];
+// Cache for FacileWS JWT token
+let facileWsToken: string | null = null;
+let facileWsTokenExpiry: number = 0;
+
+async function getFacileWsToken(): Promise<string> {
+  // Check if token is still valid (refresh 5 mins before expiry)
+  if (facileWsToken && Date.now() < facileWsTokenExpiry - 300000) {
+    return facileWsToken;
   }
 
-  // Try to find commessa in Partner Solution by querying
-  try {
-    const response = await client.get('/commesses', {
-      params: { 'codice': yearMonth }
-    });
+  const loginUrl = 'https://facilews.partnersolution.it/login.php';
+  const username = process.env.FACILEWS_USERNAME || 'alberto@enroma.com';
+  const password = process.env.FACILEWS_PASSWORD || 'InSpe2026!';
 
-    if (response.data?.['hydra:member']?.length > 0) {
-      const commessa = response.data['hydra:member'][0];
-      console.log(`  Found existing Commessa for ${yearMonth}:`, commessa.id);
-      return commessa.id;
+  console.log('  Authenticating with FacileWS...');
+  const params = new URLSearchParams();
+  params.append('username', username);
+  params.append('password', password);
+
+  const response = await axios.post(loginUrl, params.toString(), {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  });
+
+  facileWsToken = response.data.jwt;
+  // Token typically valid for 24 hours
+  facileWsTokenExpiry = Date.now() + 23 * 60 * 60 * 1000;
+  console.log('  ✅ FacileWS authenticated');
+
+  return facileWsToken!;
+}
+
+async function listCommesse(): Promise<any[]> {
+  const token = await getFacileWsToken();
+  const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+  const facileUrl = 'https://facilews3.partnersolution.it';
+
+  const response = await axios.get(
+    `${facileUrl}/Api/Rest/${agencyCode}/Commesse`,
+    { params: { Token: token } }
+  );
+
+  return response.data || [];
+}
+
+async function createCommessa(yearMonth: string): Promise<string> {
+  const token = await getFacileWsToken();
+  const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+  const facileUrl = 'https://facilews3.partnersolution.it';
+
+  // Parse year and month for title
+  const [year, month] = yearMonth.split('-');
+  const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+                      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+  const monthName = monthNames[parseInt(month) - 1] || month;
+
+  console.log(`  Creating new Commessa for ${yearMonth}...`);
+  const response = await axios.post(
+    `${facileUrl}/Api/Rest/${agencyCode}/Commesse`,
+    {
+      CodiceCommessa: yearMonth,
+      TitoloCommessa: `${monthName} ${year}`,
+      DescrizioneCommessa: `Tour UE ed Extra UE - ${monthName} ${year}`,
+      ReferenteCommerciale: '',
+      NoteInterne: ''
+    },
+    {
+      params: { Token: token },
+      headers: { 'Content-Type': 'application/json' }
     }
-  } catch (e) {
-    // Commessa endpoint might not exist or work differently
-    console.log(`  Could not query commessa for ${yearMonth}, using year_month format`);
+  );
+
+  // The response should contain the new commessa with its UUID
+  const commessaId = response.data?.Id || response.data?.id;
+  console.log(`  ✅ Commessa created: ${commessaId}`);
+
+  return commessaId;
+}
+
+async function getCommessaId(yearMonth: string): Promise<string> {
+  // First check cache
+  if (COMMESSA_CACHE[yearMonth]) {
+    console.log(`  Using cached Commessa for ${yearMonth}: ${COMMESSA_CACHE[yearMonth]}`);
+    return COMMESSA_CACHE[yearMonth];
   }
 
-  // Fallback to year_month (may not link properly but won't fail)
-  return yearMonth;
+  try {
+    // List all commesse and find the one matching yearMonth
+    const commesse = await listCommesse();
+    const existing = commesse.find((c: any) =>
+      c.CodiceCommessa === yearMonth || c.codicecommessa === yearMonth
+    );
+
+    if (existing) {
+      const id = existing.Id || existing.id;
+      console.log(`  Found existing Commessa for ${yearMonth}: ${id}`);
+      COMMESSA_CACHE[yearMonth] = id;
+      return id;
+    }
+
+    // Not found - create new commessa
+    const newId = await createCommessa(yearMonth);
+    COMMESSA_CACHE[yearMonth] = newId;
+    return newId;
+
+  } catch (error: any) {
+    console.error(`  Error getting/creating commessa for ${yearMonth}:`, error.message);
+    // Fallback to year_month format (may not link properly)
+    return yearMonth;
+  }
 }
 
 /**
@@ -426,8 +513,8 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     // Get axios client for direct API calls
     const client = await (partnerSolutionService as any).getClient();
 
-    // Get Commessa UUID for this year_month
-    const commessaId = await getCommessaId(year_month, client);
+    // Get Commessa UUID for this year_month (creates if not exists)
+    const commessaId = await getCommessaId(year_month);
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
