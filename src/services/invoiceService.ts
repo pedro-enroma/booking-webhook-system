@@ -473,22 +473,48 @@ export class InvoiceService {
       }
     }
 
-    // Build description with booking reference and seller
-    const descParts = [`Booking: ${bookingData.confirmation_code}`];
-    if (bookingData.seller_name) {
-      descParts.push(`Seller: ${bookingData.seller_name}`);
-    }
-    const bookingDescription = descParts.join(' | ');
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+    const now = new Date().toISOString();
 
-    // Create Servizi for each activity
+    // Step 1: Create/Get Account (Cliente) with codicefiscale = bookingId
+    console.log(`[InvoiceService] Step 1: Creating Account for booking ${bookingData.booking_id}...`);
+    let accountIri: string | null = null;
+    try {
+      const account = await this.partnerSolution.getOrCreateAccount({
+        customer_id: String(bookingData.booking_id),
+        first_name: bookingData.customer?.first_name || 'N/A',
+        last_name: bookingData.customer?.last_name || 'N/A',
+        email: bookingData.customer?.email,
+        phone_number: bookingData.customer?.phone_number,
+      });
+      accountIri = account['@id'];
+      console.log(`[InvoiceService] Account created/found: ${accountIri}`);
+    } catch (error) {
+      console.warn(`[InvoiceService] Failed to create account, continuing without:`, error);
+    }
+
+    // Step 2: Create Passeggero (linked to pratica)
+    console.log(`[InvoiceService] Step 2: Creating Passeggero...`);
+    try {
+      await this.partnerSolution.createPasseggero({
+        pratica: monthlyPratica.partner_pratica_id!,
+        cognomepax: bookingData.customer?.last_name || 'N/A',
+        nomepax: bookingData.customer?.first_name || 'N/A',
+        annullata: 0,
+        iscontraente: 1,
+      });
+      console.log(`[InvoiceService] Passeggero created`);
+    } catch (error) {
+      console.warn(`[InvoiceService] Failed to create passeggero, continuing:`, error);
+    }
+
+    // Step 3-5: Create Servizi, Quote, Movimenti for each activity
     for (const activity of bookingData.activities) {
       const activityDate = activity.start_date_time?.split('T')[0] || new Date().toISOString().split('T')[0];
-      const now = new Date().toISOString();
 
       try {
         // Create Servizio in Partner Solution
-        const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
-        const supplierCode = process.env.PARTNER_SOLUTION_SUPPLIER_CODE || '2773';
+        console.log(`[InvoiceService] Step 3: Creating Servizio for activity ${activity.activity_booking_id}...`);
         const servizio = await this.partnerSolution.createServizio({
           pratica: monthlyPratica.partner_pratica_id!,
           tiposervizio: 'VIS', // Always VIS for tours

@@ -10,8 +10,10 @@ import { invoiceService } from '../services/invoiceService';
 
 const router = express.Router();
 
-// Initialize Stripe (will use STRIPE_SECRET_KEY from env)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+// Initialize Stripe (only if key is configured)
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 // Webhook secret for signature verification
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -223,7 +225,7 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
 
   try {
     // Verify signature if we have the secret
-    if (endpointSecret && sig) {
+    if (endpointSecret && sig && stripe) {
       try {
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
       } catch (err) {

@@ -12,6 +12,8 @@ export interface OctoProduct {
   durationUnit?: 'MINUTES' | 'HOURS' | 'DAYS';
   availableCurrencies?: string[];
   defaultCurrency?: string;
+  defaultLanguage?: string;  // Language/locale code (e.g., 'en', 'it', 'es')
+  locale?: string;  // Alternative field name for language
   instantConfirmation?: boolean;
   instantDelivery?: boolean;
   availabilityRequired?: boolean;  // Bokun usa questo invece di requiresDate

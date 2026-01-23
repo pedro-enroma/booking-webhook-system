@@ -48,7 +48,13 @@
       "Bash(src/utils/phoneCountry.ts )",
       "Bash(src/migrations/add-excluded-sellers.sql )",
       "Bash(src/test-partner-solution.ts)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(find:*)",
+      "Bash(git show:*)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "mcp__plugin_supabase_supabase__list_tables",
+      "mcp__plugin_supabase_supabase__apply_migration"
     ],
     "deny": [],
     "ask": []

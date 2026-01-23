@@ -6,7 +6,7 @@ export class OctoService {
   private apiKey: string;
   private baseUrl: string;
   private supplierId: string;
-  
+
   // Configurazione batch processing
   private readonly PARALLEL_PRODUCTS = 3; // Processa 3 prodotti in parallelo
   private readonly DAYS_PER_CHUNK = 10;   // Processa 10 giorni alla volta
@@ -364,7 +364,7 @@ export class OctoService {
       const defaultOption = product.options.find(opt => opt.default) || product.options[0];
       defaultOptionId = defaultOption.id;
     }
-    
+
     const { error } = await supabase
       .from('activities')
       .upsert({
