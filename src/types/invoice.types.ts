@@ -281,8 +281,8 @@ export interface PSPasseggeroPayload {
   pratica: string;                // IRI of the parent pratica
   cognomepax: string;             // Passenger last name
   nomepax: string;                // Passenger first name
-  datadinascita: string;          // Date of birth (ISO format)
-  sesso: 'm' | 'f';               // Gender
+  datadinascita?: string;         // Date of birth (ISO format) - optional
+  sesso?: 'm' | 'f';              // Gender - optional
   iscontraente: number;           // Is contracting party (0 or 1)
   cellulare?: string;             // Mobile phone
   annullata?: number;             // Cancelled flag (0 or 1)

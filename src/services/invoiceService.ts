@@ -504,8 +504,6 @@ export class InvoiceService {
         pratica: monthlyPratica.partner_pratica_id!,
         cognomepax: bookingData.customer?.last_name || 'N/A',
         nomepax: bookingData.customer?.first_name || 'N/A',
-        datadinascita: '1990-01-01', // Default date of birth
-        sesso: 'm', // Default gender
         annullata: 0,
         iscontraente: 1,
       });
