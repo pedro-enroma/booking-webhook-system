@@ -60,6 +60,7 @@ Invoice Rules allow you to configure automatic invoicing behavior per seller. Ea
 | `default_sales_type` | TEXT | Sales type: `ORG`, `INT`, etc. |
 | `invoice_date_type` | TEXT | When to send: `creation` or `travel` |
 | `travel_date_delay_days` | INTEGER | Days after travel date to send (if type=travel) |
+| `execution_time` | TIME | Time of day to send (e.g., `08:00`, `14:00`) |
 | `invoice_start_date` | DATE | Only process bookings with travel date >= this |
 | `created_at` | TIMESTAMP | When rule was created |
 | `updated_at` | TIMESTAMP | When rule was last updated |
@@ -71,7 +72,8 @@ Invoice Rules allow you to configure automatic invoicing behavior per seller. Ea
 | `id` | UUID | Primary key |
 | `booking_id` | INTEGER | References bookings.booking_id |
 | `rule_id` | UUID | References invoice_rules.id |
-| `scheduled_send_date` | DATE | When to send the invoice |
+| `scheduled_send_date` | DATE | Date when to send the invoice |
+| `scheduled_send_time` | TIME | Time of day to send (e.g., `08:00`) |
 | `status` | TEXT | `pending`, `sent`, `failed`, `cancelled` |
 | `sent_at` | TIMESTAMP | When invoice was actually sent |
 | `error_message` | TEXT | Error details if failed |
