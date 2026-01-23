@@ -69,7 +69,7 @@ POST /api/invoices/send-to-partner
 **Payload:**
 ```json
 {
-  "codicecliente": "<account_id>",
+  "codicecliente": "80404039",
   "externalid": "80404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
@@ -87,7 +87,7 @@ POST /api/invoices/send-to-partner
 **Key Fields:**
 | Field | Value | Description |
 |-------|-------|-------------|
-| `codicecliente` | Account ID (UUID) | Links pratica to the account |
+| `codicecliente` | booking_id | Cliente reference (same as booking_id) |
 | `externalid` | booking_id | Our booking reference |
 | `delivering` | `commessa:YYYY-MM` | Links to Commessa |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
@@ -238,7 +238,7 @@ POST /api/invoices/send-to-partner
 
 ```json
 {
-  "codicecliente": "<account_id>",
+  "codicecliente": "80404039",
   "externalid": "80404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
@@ -348,8 +348,8 @@ Error: tipodestinazione: The value you selected is not a valid choice.
 ```
 **Solution:** Use `CEENAZ` (not `MISTO`)
 
-### Account not linked to Pratica
-**Solution:** Use the account's `id` (UUID) as `codicecliente` in the pratica
+### Consistent IDs across entities
+**Important:** `codicecliente` (pratica), `codicefilefornitore` (servizio), and `codicefile` (movimento) should all use the same value: `booking_id`
 
 ### Missing Movimento Finanziario
 **Solution:** Step 6 must create movimento with `codcausale: 'PAGBOK'` and `tipomovimento: 'I'`

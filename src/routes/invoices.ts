@@ -415,10 +415,10 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     const accountId = accountResponse.data.id;
     console.log('  ✅ Account created:', accountIri, '(id:', accountId, ')');
 
-    // Step 2: Create Pratica (status WP) - linked to account via codicecliente
-    console.log('\nStep 2: Creating Pratica (linked to account)...');
+    // Step 2: Create Pratica (status WP) - codicecliente is booking_id
+    console.log('\nStep 2: Creating Pratica...');
     const praticaPayload = {
-      codicecliente: accountId,
+      codicecliente: String(booking_id),
       externalid: String(booking_id),
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
