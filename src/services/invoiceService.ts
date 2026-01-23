@@ -476,21 +476,25 @@ export class InvoiceService {
     const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
     const now = new Date().toISOString();
 
-    // Step 1: Create/Get Account (Cliente) with codicefiscale = bookingId
+    // Step 1: Create/Get Account (Cliente) with customer_id
     console.log(`[InvoiceService] Step 1: Creating Account for booking ${bookingData.booking_id}...`);
     let accountIri: string | null = null;
-    try {
-      const account = await this.partnerSolution.getOrCreateAccount({
-        customer_id: String(bookingData.booking_id),
-        first_name: bookingData.customer?.first_name || 'N/A',
-        last_name: bookingData.customer?.last_name || 'N/A',
-        email: bookingData.customer?.email,
-        phone_number: bookingData.customer?.phone_number,
-      });
-      accountIri = account['@id'];
-      console.log(`[InvoiceService] Account created/found: ${accountIri}`);
-    } catch (error) {
-      console.warn(`[InvoiceService] Failed to create account, continuing without:`, error);
+    if (bookingData.customer?.customer_id) {
+      try {
+        const account = await this.partnerSolution.getOrCreateAccount({
+          customer_id: bookingData.customer.customer_id,
+          first_name: bookingData.customer?.first_name || 'N/A',
+          last_name: bookingData.customer?.last_name || 'N/A',
+          email: bookingData.customer?.email,
+          phone_number: bookingData.customer?.phone_number,
+        });
+        accountIri = account['@id'];
+        console.log(`[InvoiceService] Account created/found: ${accountIri}`);
+      } catch (error) {
+        console.error(`[InvoiceService] Failed to create account:`, error);
+      }
+    } else {
+      console.log(`[InvoiceService] No customer_id, skipping account creation`);
     }
 
     // Step 2: Create Passeggero (linked to pratica)
@@ -500,12 +504,14 @@ export class InvoiceService {
         pratica: monthlyPratica.partner_pratica_id!,
         cognomepax: bookingData.customer?.last_name || 'N/A',
         nomepax: bookingData.customer?.first_name || 'N/A',
+        datadinascita: '1990-01-01', // Default date of birth
+        sesso: 'm', // Default gender
         annullata: 0,
         iscontraente: 1,
       });
       console.log(`[InvoiceService] Passeggero created`);
     } catch (error) {
-      console.warn(`[InvoiceService] Failed to create passeggero, continuing:`, error);
+      console.error(`[InvoiceService] Failed to create passeggero:`, error);
     }
 
     // Step 3-5: Create Servizi, Quote, Movimenti for each activity
