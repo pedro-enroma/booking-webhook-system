@@ -578,77 +578,89 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     };
 
     const passeggeroResponse = await client.post('/prt_praticapasseggeros', passeggeroPayload);
-    console.log('  ✅ Passeggero added:', passeggeroResponse.data['@id']);
+    const passeggeroIri = passeggeroResponse.data['@id'];
+    console.log('  ✅ Passeggero added:', passeggeroIri);
 
-    // Process each activity
-    const createdServices = [];
+    // Calculate total amount and date range from all activities
     let totalAmount = 0;
+    let totalPaxAdults = 0;
+    let totalPaxChildren = 0;
+    let totalPaxInfants = 0;
+    const activityDates: string[] = [];
 
     for (const activity of activities) {
-      const activityDate = activity.activity_date || now.split('T')[0];
       const amount = activity.revenue || activity.total_price || 0;
       totalAmount += amount;
-
-      // Step 4: Add Servizio
-      console.log(`\nStep 4: Adding Servizio for ${activity.activity_booking_id}...`);
-      const servizioPayload = {
-        pratica: praticaIri,
-        externalid: String(booking_id),
-        tiposervizio: 'VIS',
-        tipovendita: 'ORG',
-        regimevendita: '74T',
-        codicefornitore: 'IT09802381005',
-        ragsocfornitore: 'EnRoma Tours',
-        codicefilefornitore: String(booking_id),
-        datacreazione: now,
-        datainizioservizio: activityDate,
-        datafineservizio: activityDate,
-        duratant: 0,
-        duratagg: 1,
-        nrpaxadulti: activity.pax_adults || 1,
-        nrpaxchild: activity.pax_children || 0,
-        nrpaxinfant: activity.pax_infants || 0,
-        descrizione: activity.product_title || 'Tour UE ed Extra UE',
-        tipodestinazione: 'CEENAZ',
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      };
-
-      const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
-      const servizioIri = servizioResponse.data['@id'];
-      console.log('  ✅ Servizio added:', servizioIri);
-
-      // Step 5: Add Quota
-      console.log('Step 5: Adding Quota...');
-      const quotaPayload = {
-        servizio: servizioIri,
-        descrizionequota: activity.product_title || 'Tour UE ed Extra UE',
-        datavendita: now,
-        codiceisovalutacosto: 'EUR',
-        quantitacosto: 1,
-        costovalutaprimaria: amount,
-        quantitaricavo: 1,
-        ricavovalutaprimaria: amount,
-        codiceisovalutaricavo: 'EUR',
-        commissioniattivevalutaprimaria: 0,
-        commissionipassivevalutaprimaria: 0,
-        progressivo: 1,
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      };
-
-      const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
-      console.log('  ✅ Quota added:', quotaResponse.data['@id']);
-
-      createdServices.push({
-        activity_booking_id: activity.activity_booking_id,
-        servizio_id: servizioIri,
-        quota_id: quotaResponse.data['@id'],
-        amount,
-      });
+      totalPaxAdults += activity.pax_adults || 0;
+      totalPaxChildren += activity.pax_children || 0;
+      totalPaxInfants += activity.pax_infants || 0;
+      if (activity.activity_date) {
+        activityDates.push(activity.activity_date.split('T')[0]);
+      }
     }
+
+    // Use first activity date as start, last as end (or same if only one)
+    activityDates.sort();
+    const startDate = activityDates[0] || now.split('T')[0];
+    const endDate = activityDates[activityDates.length - 1] || startDate;
+    const durationDays = Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1);
+
+    // Ensure at least 1 adult pax
+    if (totalPaxAdults === 0) totalPaxAdults = 1;
+
+    // Step 4: Add ONE Servizio for the entire booking
+    console.log('\nStep 4: Adding Servizio (one per booking)...');
+    const servizioPayload = {
+      pratica: praticaIri,
+      externalid: String(booking_id),
+      tiposervizio: 'PKG',
+      tipovendita: 'ORG',
+      regimevendita: '74T',
+      codicefornitore: 'IT09802381005',
+      ragsocfornitore: 'EnRoma Tours',
+      codicefilefornitore: String(booking_id),
+      datacreazione: now,
+      datainizioservizio: startDate,
+      datafineservizio: endDate,
+      duratant: 0,
+      duratagg: durationDays,
+      nrpaxadulti: totalPaxAdults,
+      nrpaxchild: totalPaxChildren,
+      nrpaxinfant: totalPaxInfants,
+      descrizione: 'Tour UE ed Extra UE',
+      tipodestinazione: 'MISTO',
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    };
+
+    const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
+    const servizioIri = servizioResponse.data['@id'];
+    console.log('  ✅ Servizio added:', servizioIri);
+
+    // Step 5: Add ONE Quota with total amount
+    console.log('Step 5: Adding Quota (one per booking)...');
+    const quotaPayload = {
+      servizio: servizioIri,
+      descrizionequota: 'Tour UE ed Extra UE',
+      datavendita: now,
+      codiceisovalutacosto: 'EUR',
+      quantitacosto: 1,
+      costovalutaprimaria: totalAmount,
+      quantitaricavo: 1,
+      ricavovalutaprimaria: totalAmount,
+      codiceisovalutaricavo: 'EUR',
+      commissioniattivevalutaprimaria: 0,
+      commissionipassivevalutaprimaria: 0,
+      progressivo: 1,
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    };
+
+    const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
+    const quotaIri = quotaResponse.data['@id'];
+    console.log('  ✅ Quota added:', quotaIri);
 
     // Step 6: Add Movimento Finanziario
     console.log('\nStep 6: Adding Movimento Finanziario...');
@@ -695,10 +707,12 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       year_month,
       pratica_id: praticaIri,
       account_id: accountIri,
-      passeggero_id: passeggeroResponse.data['@id'],
+      passeggero_id: passeggeroIri,
+      servizio_id: servizioIri,
+      quota_id: quotaIri,
       movimento_id: movimentoResponse.data['@id'],
-      services: createdServices,
       total_amount: totalAmount,
+      activity_count: activities.length,
     });
   } catch (error: any) {
     console.error('\n=== ERROR ===');
