@@ -448,34 +448,36 @@ async function getCommessaId(yearMonth: string): Promise<string> {
     return COMMESSA_CACHE[yearMonth];
   }
 
-  try {
-    // List all commesse and find the one matching yearMonth
-    const commesse = await listCommesse();
-    console.log(`  Found ${commesse.length} commesse in FacileWS3`);
+  // List all commesse and find the one matching yearMonth
+  const commesse = await listCommesse();
+  console.log(`  Found ${commesse.length} commesse in FacileWS3`);
 
-    // Fields in list: codice_commessa (lowercase with underscore), id
-    const existing = commesse.find((c: any) =>
-      c.codice_commessa === yearMonth || c.CodiceCommessa === yearMonth
-    );
+  // Log all commesse for debugging
+  commesse.forEach((c: any, i: number) => {
+    console.log(`    [${i}] codice: ${c.codice_commessa || c.CodiceCommessa}, id: ${c.id || c.Id}`);
+  });
 
-    if (existing) {
-      const id = existing.id || existing.Id;
-      console.log(`  Found existing Commessa for ${yearMonth}: ${id}`);
-      COMMESSA_CACHE[yearMonth] = id;
-      return id;
-    }
+  // Fields in list: codice_commessa (lowercase with underscore), id
+  const existing = commesse.find((c: any) =>
+    c.codice_commessa === yearMonth || c.CodiceCommessa === yearMonth
+  );
 
-    // Not found - create new commessa
-    console.log(`  Commessa ${yearMonth} not found, creating...`);
-    const newId = await createCommessa(yearMonth);
-    COMMESSA_CACHE[yearMonth] = newId;
-    return newId;
-
-  } catch (error: any) {
-    console.error(`  Error getting/creating commessa for ${yearMonth}:`, error.message);
-    // Fallback to year_month format (may not link properly)
-    return yearMonth;
+  if (existing) {
+    const id = existing.id || existing.Id;
+    console.log(`  ✅ Found existing Commessa for ${yearMonth}: ${id}`);
+    COMMESSA_CACHE[yearMonth] = id;
+    return id;
   }
+
+  // Not found - create new commessa
+  console.log(`  Commessa ${yearMonth} not found, creating...`);
+  const newId = await createCommessa(yearMonth);
+  if (!newId) {
+    throw new Error(`Failed to create Commessa for ${yearMonth}`);
+  }
+  console.log(`  ✅ Created new Commessa for ${yearMonth}: ${newId}`);
+  COMMESSA_CACHE[yearMonth] = newId;
+  return newId;
 }
 
 /**
@@ -519,13 +521,17 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     const client = await (partnerSolutionService as any).getClient();
 
     // Get Commessa UUID for this year_month (creates if not exists)
+    console.log(`\n  Getting Commessa UUID for ${year_month}...`);
     const commessaId = await getCommessaId(year_month);
+    const deliveringValue = `commessa:${commessaId}`;
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
     console.log(`Customer: ${customerName.firstName} ${customerName.lastName}`);
     console.log(`Agency: ${agencyCode}`);
-    console.log(`Commessa: ${year_month} (UUID: ${commessaId})\n`);
+    console.log(`Commessa: ${year_month}`);
+    console.log(`Commessa UUID: ${commessaId}`);
+    console.log(`Delivering field: ${deliveringValue}\n`);
 
     // Step 1: Always create new Account
     console.log('Step 1: Creating new account...');
