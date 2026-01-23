@@ -309,10 +309,33 @@ export class InvoiceService {
         throw new Error(`Booking ${bookingId} not found`);
       }
 
-      // 3. Extract year-month from booking creation date
-      const creationDate = bookingData.creation_date;
-      const yearMonth = creationDate.substring(0, 7); // 'YYYY-MM'
-      console.log(`[InvoiceService] Booking ${bookingId} belongs to month: ${yearMonth}`);
+      // 3. Determine year-month based on invoice rules
+      // Check if there's a rule for this seller
+      let yearMonth: string;
+      const sellerName = bookingData.activities?.[0]?.activity_seller || bookingData.seller_name;
+
+      if (sellerName) {
+        const { data: rules } = await supabase
+          .from('invoice_rules')
+          .select('invoice_date_type')
+          .contains('sellers', [sellerName])
+          .single();
+
+        if (rules?.invoice_date_type === 'travel' && bookingData.activities?.[0]?.start_date_time) {
+          // Use travel date for this seller
+          const travelDate = bookingData.activities[0].start_date_time.split('T')[0];
+          yearMonth = travelDate.substring(0, 7);
+          console.log(`[InvoiceService] Using travel date for ${sellerName}: ${travelDate} -> ${yearMonth}`);
+        } else {
+          // Use creation date
+          yearMonth = bookingData.creation_date.substring(0, 7);
+          console.log(`[InvoiceService] Using creation date: ${bookingData.creation_date} -> ${yearMonth}`);
+        }
+      } else {
+        // Fallback to creation date
+        yearMonth = bookingData.creation_date.substring(0, 7);
+        console.log(`[InvoiceService] No seller, using creation date: ${yearMonth}`);
+      }
 
       // 4. Get or create monthly pratica
       const monthlyPratica = await this.getOrCreateMonthlyPratica(yearMonth);
@@ -462,6 +485,8 @@ export class InvoiceService {
 
       try {
         // Create Servizio in Partner Solution
+        const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+        const supplierCode = process.env.PARTNER_SOLUTION_SUPPLIER_CODE || '2773';
         const servizio = await this.partnerSolution.createServizio({
           pratica: monthlyPratica.partner_pratica_id!,
           tiposervizio: 'VIS', // Always VIS for tours
@@ -473,15 +498,17 @@ export class InvoiceService {
           nrpaxadulti: activity.participant_count || 1,
           nrpaxchild: 0,
           nrpaxinfant: 0,
-          codicefornitore: 'ENROMA',
-          codicefilefornitore: 'ENROMA',
+          codicefornitore: supplierCode,
+          codicefilefornitore: String(activity.activity_booking_id),
           ragsocfornitore: 'EnRoma Tours',
           tipodestinazione: 'CEENAZ',
           duratagg: 1,
           duratant: 0,
           annullata: 0,
-          descrizione: 'Tour Italia e Vaticano', // Always this description
-        });
+          descrizione: 'Tour Italia e Vaticano',
+          codiceagenzia: agencyCode,
+          stato: 'INS',
+        } as any);
 
         // Create Quota for the servizio
         await this.partnerSolution.createQuota({
@@ -1013,6 +1040,7 @@ export class InvoiceService {
         status: activity.status,
         participant_count: participantCount,
         rate_title: activity.rate_title,
+        activity_seller: activity.activity_seller,
       });
     }
 

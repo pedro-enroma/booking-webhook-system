@@ -153,6 +153,7 @@ export interface ActivityDataForInvoice {
   status: string;
   participant_count: number;
   rate_title?: string;
+  activity_seller?: string;
 }
 
 // ============================================
