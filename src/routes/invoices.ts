@@ -352,199 +352,249 @@ router.post('/api/invoices/create-batch', validateApiKey, async (req: Request, r
 
 /**
  * POST /api/invoices/send-to-partner
- * Send booking directly to Partner Solution with all fields
- * This is for manual invoice creation with full control over the data sent
+ * Send booking to Partner Solution following the exact flow from test-pratica-flow.ts:
+ * 1. Check/Create Account
+ * 2. Create Pratica (status WP)
+ * 3. Add Passeggero
+ * 4. Add Servizio
+ * 5. Add Quota
+ * 6. Add Movimento Finanziario
+ * 7. Update Pratica to INS
  */
 router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request, res: Response) => {
   try {
     const {
+      booking_id,
       confirmation_code,
       year_month,
-      customer,          // { customer_id, first_name, last_name, email, phone_number }
-      activities,        // [{ activity_booking_id, product_title, revenue, activity_date }]
-      description,       // Optional custom pratica description
+      customer,          // { first_name, last_name }
+      activities,        // [{ activity_booking_id, product_title, revenue, activity_date, pax_adults, pax_children, pax_infants }]
+      seller_title,      // Optional seller name for notes
     } = req.body;
 
-    if (!confirmation_code || !year_month || !activities || activities.length === 0) {
+    if (!booking_id || !confirmation_code || !year_month || !activities || activities.length === 0) {
       res.status(400).json({
         success: false,
-        error: 'Missing required fields: confirmation_code, year_month, activities',
+        error: 'Missing required fields: booking_id, confirmation_code, year_month, activities',
       });
       return;
     }
 
-    console.log(`\n=== Sending ${confirmation_code} to Partner Solution ===`);
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+    const now = new Date().toISOString();
+    const customerName = {
+      firstName: customer?.first_name || 'N/A',
+      lastName: customer?.last_name || 'N/A',
+    };
 
-    // 1. Get or create customer account
-    let account = null;
-    if (customer && customer.customer_id) {
-      console.log('1. Creating/getting customer account...');
-      account = await partnerSolutionService.getOrCreateAccount({
-        customer_id: customer.customer_id,
-        first_name: customer.first_name || 'N/A',
-        last_name: customer.last_name || 'N/A',
-        email: customer.email,
-        phone_number: customer.phone_number,
+    console.log('\n=== Sending to Partner Solution ===');
+    console.log(`Booking: ${confirmation_code}`);
+    console.log(`Customer: ${customerName.firstName} ${customerName.lastName}`);
+    console.log(`Agency: ${agencyCode}`);
+    console.log(`Commessa: ${year_month}\n`);
+
+    // Get axios client for direct API calls
+    const client = await (partnerSolutionService as any).getClient();
+
+    // Step 1: Check/Create Account
+    console.log('Step 1: Checking if account exists...');
+    let accountIri: string | null = null;
+    try {
+      const searchResponse = await client.get('/accounts', {
+        params: { codicefiscale: String(booking_id), codiceagenzia: agencyCode }
       });
-      console.log('   Account:', account['@id']);
-    }
-
-    // 2. Get or create monthly pratica
-    console.log('2. Getting/creating monthly pratica for', year_month);
-    let { data: monthlyPratica } = await supabase
-      .from('monthly_praticas')
-      .select('*')
-      .eq('year_month', year_month)
-      .single();
-
-    let praticaIri: string;
-
-    if (monthlyPratica?.partner_pratica_id) {
-      praticaIri = monthlyPratica.partner_pratica_id;
-      console.log('   Found existing pratica:', praticaIri);
-      // Note: For monthly praticas, we DON'T update the header with individual customer info.
-      // The monthly pratica header stays generic (cognomecliente: "Monthly", nomecliente: "Invoice")
-      // and customers are linked as Passeggeros instead.
-    } else {
-      // Create new monthly pratica with generic values
-      // Individual customers are linked as Passeggeros, not as pratica header
-      const now = new Date().toISOString();
-      const pratica = await partnerSolutionService.createPratica({
-        codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
-        tipocattura: 'API',
-        stato: 'WP',
-        datacreazione: now,
-        datamodifica: now,
-        cognomecliente: 'Monthly',
-        nomecliente: 'Invoice',
-        descrizionepratica: `Monthly Invoice: ${year_month}`,
-        externalid: `MONTHLY-${year_month}`,
-        delivering: `commessa:${year_month}`,
-      } as any);
-
-      praticaIri = pratica['@id'];
-      console.log('   Created pratica:', praticaIri);
-
-      // Save to our DB
-      const { data: newPratica } = await supabase
-        .from('monthly_praticas')
-        .insert({
-          year_month,
-          partner_pratica_id: praticaIri,
-          ps_status: 'WP',
-          total_amount: 0,
-          booking_count: 0,
-        })
-        .select()
-        .single();
-
-      monthlyPratica = newPratica;
-    }
-
-    // 2b. Create Passeggero (customer linked to pratica)
-    if (customer) {
-      console.log('2b. Creating Passeggero...');
-      try {
-        await partnerSolutionService.createPasseggero({
-          pratica: praticaIri,
-          cognomepax: customer.last_name || 'N/A',
-          nomepax: customer.first_name || 'N/A',
-          annullata: 0,
-          iscontraente: 1,
-        });
-        console.log('   Passeggero created');
-      } catch (error) {
-        console.error('   Failed to create passeggero:', error);
-        // Continue anyway - passeggero is not critical
+      if (searchResponse.data['hydra:member']?.length > 0) {
+        accountIri = searchResponse.data['hydra:member'][0]['@id'];
+        console.log('  Account found:', accountIri);
       }
+    } catch (e) {
+      console.log('  Account search failed, will create new');
     }
 
-    // 3. Create Servizio + Quota for each activity
-    console.log('3. Creating services for activities...');
+    if (!accountIri) {
+      console.log('  Creating new account...');
+      const accountPayload = {
+        cognome: customerName.lastName,
+        nome: customerName.firstName,
+        flagpersonafisica: 1,
+        codicefiscale: String(booking_id),
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0
+      };
+
+      const accountResponse = await client.post('/accounts', accountPayload);
+      accountIri = accountResponse.data['@id'];
+      console.log('  ✅ Account created:', accountIri);
+    }
+
+    // Step 2: Create Pratica (status WP)
+    console.log('\nStep 2: Creating Pratica...');
+    const praticaPayload = {
+      codicecliente: String(booking_id),
+      externalid: String(booking_id),
+      cognomecliente: customerName.lastName,
+      nomecliente: customerName.firstName,
+      codiceagenzia: agencyCode,
+      tipocattura: 'PS',
+      datacreazione: now,
+      datamodifica: now,
+      stato: 'WP',
+      descrizionepratica: 'Tour UE ed Extra UE',
+      noteinterne: seller_title ? `Seller: ${seller_title}` : null,
+      delivering: `commessa:${year_month}`
+    };
+
+    const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+    const praticaIri = praticaResponse.data['@id'];
+    console.log('  ✅ Pratica created:', praticaIri);
+
+    // Step 3: Add Passeggero
+    console.log('\nStep 3: Adding Passeggero...');
+    const passeggeroPayload = {
+      pratica: praticaIri,
+      cognomepax: customerName.lastName,
+      nomepax: customerName.firstName,
+      annullata: 0,
+      iscontraente: 1
+    };
+
+    const passeggeroResponse = await client.post('/prt_praticapasseggeros', passeggeroPayload);
+    console.log('  ✅ Passeggero added:', passeggeroResponse.data['@id']);
+
+    // Process each activity
     const createdServices = [];
+    let totalAmount = 0;
 
     for (const activity of activities) {
-      const activityDate = activity.activity_date || new Date().toISOString().split('T')[0];
-      const now = new Date().toISOString();
-      const revenue = activity.revenue || activity.total_price || 0;
+      const activityDate = activity.activity_date || now.split('T')[0];
+      const amount = activity.revenue || activity.total_price || 0;
+      totalAmount += amount;
 
-      console.log(`   Activity ${activity.activity_booking_id}: ${revenue} EUR`);
-
-      // Create Servizio
-      const servizio = await partnerSolutionService.createServizio({
+      // Step 4: Add Servizio
+      console.log(`\nStep 4: Adding Servizio for ${activity.activity_booking_id}...`);
+      const servizioPayload = {
         pratica: praticaIri,
+        externalid: String(booking_id),
         tiposervizio: 'VIS',
         tipovendita: 'ORG',
         regimevendita: '74T',
+        codicefornitore: '2773',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: String(booking_id),
+        datacreazione: now,
         datainizioservizio: activityDate,
         datafineservizio: activityDate,
-        datacreazione: now,
+        duratant: 0,
+        duratagg: 1,
         nrpaxadulti: activity.pax_adults || 1,
         nrpaxchild: activity.pax_children || 0,
         nrpaxinfant: activity.pax_infants || 0,
-        codicefornitore: 'ENROMA',
-        codicefilefornitore: 'ENROMA',
-        ragsocfornitore: 'EnRoma Tours',
+        descrizione: activity.product_title || 'Tour UE ed Extra UE',
         tipodestinazione: 'CEENAZ',
-        duratagg: 1,
-        duratant: 0,
         annullata: 0,
-        descrizione: activity.product_title || 'Tour Italia e Vaticano',
-      });
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      };
 
-      // Create Quota
-      const quota = await partnerSolutionService.createQuota({
-        servizio: servizio['@id'],
-        descrizionequota: `${confirmation_code} - ${activity.activity_booking_id}`,
-        datavendita: activityDate,
-        codiceisovalutacosto: 'eur',
-        codiceisovalutaricavo: 'eur',
+      const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
+      const servizioIri = servizioResponse.data['@id'];
+      console.log('  ✅ Servizio added:', servizioIri);
+
+      // Step 5: Add Quota
+      console.log('Step 5: Adding Quota...');
+      const quotaPayload = {
+        servizio: servizioIri,
+        descrizionequota: activity.product_title || 'Tour UE ed Extra UE',
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
         quantitacosto: 1,
+        costovalutaprimaria: amount,
         quantitaricavo: 1,
-        costovalutaprimaria: 0,
-        ricavovalutaprimaria: revenue,
-        progressivo: 1,
-        annullata: 0,
+        ricavovalutaprimaria: amount,
+        codiceisovalutaricavo: 'EUR',
         commissioniattivevalutaprimaria: 0,
         commissionipassivevalutaprimaria: 0,
-      });
+        progressivo: 1,
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      };
+
+      const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
+      console.log('  ✅ Quota added:', quotaResponse.data['@id']);
 
       createdServices.push({
         activity_booking_id: activity.activity_booking_id,
-        servizio_id: servizio['@id'],
-        quota_id: quota['@id'],
-        revenue,
+        servizio_id: servizioIri,
+        quota_id: quotaResponse.data['@id'],
+        amount,
       });
     }
 
-    // 4. Update monthly pratica totals
-    const totalRevenue = createdServices.reduce((sum, s) => sum + s.revenue, 0);
-    await supabase
-      .from('monthly_praticas')
-      .update({
-        total_amount: (monthlyPratica?.total_amount || 0) + totalRevenue,
-        booking_count: (monthlyPratica?.booking_count || 0) + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', monthlyPratica?.id);
+    // Step 6: Add Movimento Finanziario
+    console.log('\nStep 6: Adding Movimento Finanziario...');
+    const movimentoPayload = {
+      externalid: String(booking_id),
+      tipomovimento: 'I',
+      codicefile: String(booking_id),
+      codiceagenzia: agencyCode,
+      tipocattura: 'PS',
+      importo: totalAmount,
+      datacreazione: now,
+      datamodifica: now,
+      datamovimento: now,
+      stato: 'INS',
+      codcausale: 'PAGCC',
+      descrizione: `Tour UE ed Extra UE - ${confirmation_code}`
+    };
 
-    console.log('=== Invoice sent successfully ===\n');
+    const movimentoResponse = await client.post('/mov_finanziarios', movimentoPayload);
+    console.log('  ✅ Movimento added:', movimentoResponse.data['@id']);
+
+    // Step 7: Update Pratica to INS
+    console.log('\nStep 7: Updating Pratica status to INS...');
+    await client.put(praticaIri, {
+      ...praticaPayload,
+      stato: 'INS'
+    });
+    console.log('  ✅ Pratica status updated to INS');
+
+    console.log('\n========================================');
+    console.log('=== SUCCESS - DATA SENT TO PARTNER ===');
+    console.log('========================================');
+    console.log('Pratica IRI:', praticaIri);
+    console.log('Booking:', confirmation_code);
+    console.log('Customer:', `${customerName.firstName} ${customerName.lastName}`);
+    console.log('Amount: €', totalAmount);
+    console.log('Commessa:', year_month);
+    console.log('Agency:', agencyCode);
 
     res.json({
       success: true,
+      booking_id,
       confirmation_code,
       year_month,
       pratica_id: praticaIri,
-      account_id: account?.['@id'] || null,
+      account_id: accountIri,
+      passeggero_id: passeggeroResponse.data['@id'],
+      movimento_id: movimentoResponse.data['@id'],
       services: createdServices,
-      total_revenue: totalRevenue,
+      total_amount: totalAmount,
     });
-  } catch (error) {
-    console.error('[Invoices] Error sending to Partner Solution:', error);
+  } catch (error: any) {
+    console.error('\n=== ERROR ===');
+    console.error('Message:', error.message);
+    if (error.response?.data) {
+      console.error('API Response:', JSON.stringify(error.response.data, null, 2));
+    }
     res.status(500).json({
       success: false,
       error: 'Failed to send to Partner Solution',
-      details: error instanceof Error ? error.message : 'Unknown error',
+      details: error.message,
+      api_response: error.response?.data,
     });
   }
 });
