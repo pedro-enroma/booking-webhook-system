@@ -628,7 +628,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       nrpaxchild: totalPaxChildren,
       nrpaxinfant: totalPaxInfants,
       descrizione: 'Tour UE ed Extra UE',
-      tipodestinazione: 'MISTO',
+      tipodestinazione: 'CEENAZ',
       annullata: 0,
       codiceagenzia: agencyCode,
       stato: 'INS'
