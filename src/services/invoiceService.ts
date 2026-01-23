@@ -356,7 +356,7 @@ export class InvoiceService {
             : null,
           customer_email: bookingData.customer?.email || null,
           seller_name: bookingData.seller_name || null,
-          booking_creation_date: creationDate.split('T')[0],
+          booking_creation_date: bookingData.creation_date.split('T')[0],
           created_by: triggeredBy,
         })
         .select()
