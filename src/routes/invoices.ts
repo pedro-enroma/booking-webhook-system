@@ -351,6 +351,42 @@ router.post('/api/invoices/create-batch', validateApiKey, async (req: Request, r
 });
 
 /**
+ * Get Commessa UUID for a given year_month
+ * Commesse are created in Partner Solution's FacileWS3 API
+ * The delivering field should use format: commessa:{UUID}
+ */
+const COMMESSA_MAP: Record<string, string> = {
+  '2026-01': 'B53D23E5-3DB1-4CC2-8659-EFAED539336D',
+  // Add more mappings as commesse are created
+};
+
+async function getCommessaId(yearMonth: string, client: any): Promise<string> {
+  // First check static mapping
+  if (COMMESSA_MAP[yearMonth]) {
+    return COMMESSA_MAP[yearMonth];
+  }
+
+  // Try to find commessa in Partner Solution by querying
+  try {
+    const response = await client.get('/commesses', {
+      params: { 'codice': yearMonth }
+    });
+
+    if (response.data?.['hydra:member']?.length > 0) {
+      const commessa = response.data['hydra:member'][0];
+      console.log(`  Found existing Commessa for ${yearMonth}:`, commessa.id);
+      return commessa.id;
+    }
+  } catch (e) {
+    // Commessa endpoint might not exist or work differently
+    console.log(`  Could not query commessa for ${yearMonth}, using year_month format`);
+  }
+
+  // Fallback to year_month (may not link properly but won't fail)
+  return yearMonth;
+}
+
+/**
  * POST /api/invoices/send-to-partner
  * Send booking to Partner Solution following the exact flow from test-pratica-flow.ts:
  * 1. Check/Create Account
@@ -387,14 +423,17 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       lastName: customer?.last_name || 'N/A',
     };
 
+    // Get axios client for direct API calls
+    const client = await (partnerSolutionService as any).getClient();
+
+    // Get Commessa UUID for this year_month
+    const commessaId = await getCommessaId(year_month, client);
+
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
     console.log(`Customer: ${customerName.firstName} ${customerName.lastName}`);
     console.log(`Agency: ${agencyCode}`);
-    console.log(`Commessa: ${year_month}\n`);
-
-    // Get axios client for direct API calls
-    const client = await (partnerSolutionService as any).getClient();
+    console.log(`Commessa: ${year_month} (UUID: ${commessaId})\n`);
 
     // Step 1: Always create new Account
     console.log('Step 1: Creating new account...');
@@ -429,7 +468,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       stato: 'WP',
       descrizionepratica: 'Tour UE ed Extra UE',
       noteinterne: seller_title ? `Seller: ${seller_title}` : null,
-      delivering: `commessa:${year_month}`
+      delivering: `commessa:${commessaId}`
     };
 
     const praticaResponse = await client.post('/prt_praticas', praticaPayload);

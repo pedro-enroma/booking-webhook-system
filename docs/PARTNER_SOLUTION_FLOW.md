@@ -89,7 +89,7 @@ POST /api/invoices/send-to-partner
 |-------|-------|-------------|
 | `codicecliente` | booking_id | Cliente reference (same as booking_id) |
 | `externalid` | booking_id | Our booking reference |
-| `delivering` | `commessa:YYYY-MM` | Links to Commessa |
+| `delivering` | `commessa:{UUID}` | Links to Commessa by UUID |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
 | `tipocattura` | `PS` | Partner Solution |
 
