@@ -736,6 +736,50 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
 });
 
 /**
+ * GET /api/invoices/debug-commessa/:yearMonth
+ * Debug endpoint to check Commessa lookup
+ */
+router.get('/api/invoices/debug-commessa/:yearMonth', async (req: Request, res: Response) => {
+  try {
+    const yearMonth = req.params.yearMonth;
+    console.log(`\n=== Debug Commessa for ${yearMonth} ===`);
+
+    // List all commesse
+    const commesse = await listCommesse();
+    console.log(`Found ${commesse.length} commesse`);
+
+    // Find matching commessa
+    const existing = commesse.find((c: any) =>
+      c.codice_commessa === yearMonth || c.CodiceCommessa === yearMonth
+    );
+
+    const commessaId = existing ? (existing.id || existing.Id) : null;
+
+    res.json({
+      success: true,
+      yearMonth,
+      commesse_count: commesse.length,
+      commesse: commesse.map((c: any) => ({
+        codice: c.codice_commessa || c.CodiceCommessa,
+        id: c.id || c.Id
+      })),
+      found_commessa: existing ? {
+        codice: existing.codice_commessa || existing.CodiceCommessa,
+        id: commessaId
+      } : null,
+      delivering_value: commessaId ? `commessa:${commessaId}` : null
+    });
+  } catch (error: any) {
+    console.error('Debug commessa error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      response: error.response?.data
+    });
+  }
+});
+
+/**
  * POST /api/invoices/credit-note
  * Create credit note for a cancelled booking
  */
