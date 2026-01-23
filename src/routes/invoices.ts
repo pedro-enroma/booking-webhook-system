@@ -396,44 +396,29 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     // Get axios client for direct API calls
     const client = await (partnerSolutionService as any).getClient();
 
-    // Step 1: Check/Create Account
-    console.log('Step 1: Checking if account exists...');
-    let accountIri: string | null = null;
-    try {
-      const searchResponse = await client.get('/accounts', {
-        params: { codicefiscale: String(booking_id), codiceagenzia: agencyCode }
-      });
-      if (searchResponse.data['hydra:member']?.length > 0) {
-        accountIri = searchResponse.data['hydra:member'][0]['@id'];
-        console.log('  Account found:', accountIri);
-      }
-    } catch (e) {
-      console.log('  Account search failed, will create new');
-    }
+    // Step 1: Always create new Account
+    console.log('Step 1: Creating new account...');
+    const accountPayload = {
+      cognome: customerName.lastName,
+      nome: customerName.firstName,
+      flagpersonafisica: 1,
+      codicefiscale: String(booking_id),
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+      tipocattura: 'PS',
+      iscliente: 1,
+      isfornitore: 0
+    };
 
-    if (!accountIri) {
-      console.log('  Creating new account...');
-      const accountPayload = {
-        cognome: customerName.lastName,
-        nome: customerName.firstName,
-        flagpersonafisica: 1,
-        codicefiscale: String(booking_id),
-        codiceagenzia: agencyCode,
-        stato: 'INS',
-        tipocattura: 'PS',
-        iscliente: 1,
-        isfornitore: 0
-      };
+    const accountResponse = await client.post('/accounts', accountPayload);
+    const accountIri = accountResponse.data['@id'];
+    const accountId = accountResponse.data.id;
+    console.log('  ✅ Account created:', accountIri, '(id:', accountId, ')');
 
-      const accountResponse = await client.post('/accounts', accountPayload);
-      accountIri = accountResponse.data['@id'];
-      console.log('  ✅ Account created:', accountIri);
-    }
-
-    // Step 2: Create Pratica (status WP)
-    console.log('\nStep 2: Creating Pratica...');
+    // Step 2: Create Pratica (status WP) - linked to account via codicecliente
+    console.log('\nStep 2: Creating Pratica (linked to account)...');
     const praticaPayload = {
-      codicecliente: String(booking_id),
+      codicecliente: accountId,
       externalid: String(booking_id),
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
@@ -481,7 +466,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
         tiposervizio: 'VIS',
         tipovendita: 'ORG',
         regimevendita: '74T',
-        codicefornitore: '4942',
+        codicefornitore: 'IT09802381005',
         ragsocfornitore: 'EnRoma Tours',
         codicefilefornitore: String(booking_id),
         datacreazione: now,
