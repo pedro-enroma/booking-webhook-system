@@ -531,7 +531,6 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     console.log(`Customer: ${customerName.firstName} ${customerName.lastName}`);
     console.log(`Agency: ${agencyCode}`);
     console.log(`Commessa: ${year_month}`);
-    console.log(`Commessa UUID: ${commessaId}`);
     console.log(`Delivering field: ${deliveringValue}\n`);
 
     // Step 1: Always create new Account
