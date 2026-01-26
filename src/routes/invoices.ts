@@ -2005,9 +2005,6 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
           product_title,
           start_date_time,
           total_price,
-          pax_adults,
-          pax_children,
-          pax_infants,
           activity_seller
         )
       `)
@@ -2060,9 +2057,9 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
         product_title: a.product_title,
         start_date_time: a.start_date_time,
         total_price: a.total_price,
-        pax_adults: a.pax_adults || 0,
-        pax_children: a.pax_children || 0,
-        pax_infants: a.pax_infants || 0,
+        pax_adults: 1,  // Default to 1 passenger (pax columns don't exist in activity_bookings)
+        pax_children: 0,
+        pax_infants: 0,
         activity_seller: a.activity_seller,
       })),
       seller_name: sellerName,
@@ -2355,9 +2352,6 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
           product_title,
           start_date_time,
           total_price,
-          pax_adults,
-          pax_children,
-          pax_infants,
           activity_seller
         )
       `)
@@ -2393,9 +2387,9 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
         product_title: a.product_title,
         start_date_time: a.start_date_time,
         total_price: a.total_price,
-        pax_adults: a.pax_adults || 0,
-        pax_children: a.pax_children || 0,
-        pax_infants: a.pax_infants || 0,
+        pax_adults: 1,  // Default to 1 passenger (pax columns don't exist in activity_bookings)
+        pax_children: 0,
+        pax_infants: 0,
         activity_seller: a.activity_seller,
       })),
       seller_name: sellerName,
@@ -2435,11 +2429,13 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       isfornitore: 0
     });
 
-    // Step 2: Create Pratica (WP)
+    /// Step 2: Create Pratica (WP)
     const praticaCreationDate = now.split('T')[0];
     const praticaPayload = {
       codicecliente: bookingIdPadded,
       externalid: bookingIdPadded,
+      cognomecliente: customerName.lastName,
+      nomecliente: customerName.firstName,
       datacreazione: now,
       datamodifica: now,
       datapratica: praticaCreationDate,
@@ -2448,7 +2444,8 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       stato: 'WP',
       tipocattura: 'PS',
       delivering: deliveringValue,
-      descrizione: `Tour UE ed Extra UE - ${booking.confirmation_code}`,
+      descrizionepratica: 'Tour UE ed Extra UE',
+      noteinterne: bookingData.seller_name ? `Seller: ${bookingData.seller_name} - ${booking.confirmation_code}` : booking.confirmation_code,
     };
     const praticaResponse = await client.post('/prt_praticas', praticaPayload);
     const praticaIri = praticaResponse.data['@id'];
@@ -2456,12 +2453,10 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
     // Step 3: Add Passeggero
     const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
       pratica: praticaIri,
-      cognome: customerName.lastName,
-      nome: customerName.firstName,
-      tipopax: 'ADU',
-      capofila: 1,
-      codiceagenzia: agencyCode,
-      stato: 'INS',
+      cognomepax: customerName.lastName,
+      nomepax: customerName.firstName,
+      annullata: 0,
+      iscontraente: 1,
     });
 
     // Step 4 & 5: Add Servizio and Quota for each activity
