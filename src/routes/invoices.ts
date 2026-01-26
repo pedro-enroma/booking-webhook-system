@@ -991,17 +991,34 @@ router.get('/api/invoices/config', validateApiKey, async (req: Request, res: Res
 
 /**
  * GET /api/invoices/sellers
- * Get list of all unique suppliers for multi-select configuration
+ * Get list of all unique sellers for invoice rules configuration
  */
 router.get('/api/invoices/sellers', validateApiKey, async (req: Request, res: Response) => {
   try {
-    // Get unique activity_supplier values
-    const { data: suppliers } = await supabase
-      .from('activity_bookings')
-      .select('activity_supplier')
-      .not('activity_supplier', 'is', null);
+    // Get unique activity_seller values (not activity_supplier)
+    // Need to paginate to get all values
+    let allSellers: string[] = [];
+    let offset = 0;
+    const batchSize = 1000;
+    let hasMore = true;
 
-    const uniqueSuppliers = [...new Set(suppliers?.map(d => d.activity_supplier).filter(Boolean))].sort();
+    while (hasMore) {
+      const { data: batch } = await supabase
+        .from('activity_bookings')
+        .select('activity_seller')
+        .not('activity_seller', 'is', null)
+        .range(offset, offset + batchSize - 1);
+
+      if (batch && batch.length > 0) {
+        allSellers = allSellers.concat(batch.map(d => d.activity_seller).filter(Boolean));
+        offset += batchSize;
+        hasMore = batch.length === batchSize;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    const uniqueSellers = [...new Set(allSellers)].sort();
 
     // Get current config
     const { data: config } = await supabase
@@ -1011,7 +1028,7 @@ router.get('/api/invoices/sellers', validateApiKey, async (req: Request, res: Re
 
     res.json({
       success: true,
-      sellers: uniqueSuppliers,
+      sellers: uniqueSellers,
       auto_invoice_sellers: config?.auto_invoice_sellers || [],
       excluded_sellers: (config as any)?.excluded_sellers || [],
     });
@@ -1303,6 +1320,14 @@ router.get('/api/invoices/health', validateApiKey, async (req: Request, res: Res
 /**
  * GET /api/invoices/pending-bookings
  * Get bookings that don't have invoices yet
+ *
+ * For travel_date rules: shows bookings with travel_date >= rule.invoice_start_date
+ * For creation_date rules: shows bookings with creation_date >= rule.invoice_start_date
+ *
+ * Query params:
+ * - seller: filter by seller name
+ * - startDate: optional start date filter
+ * - endDate: optional end date filter
  */
 router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request, res: Response) => {
   try {
@@ -1318,53 +1343,174 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
 
     const invoicedBookingIds = new Set(invoicedBookings?.map(i => i.booking_id) || []);
 
-    // Build query for bookings
-    let query = supabase
-      .from('bookings')
-      .select(`
-        booking_id,
-        confirmation_code,
-        total_price,
-        currency,
-        creation_date,
-        status,
-        booking_customers(
-          customers(first_name, last_name, email)
-        ),
-        activity_bookings(activity_seller)
-      `)
-      .eq('status', 'CONFIRMED')
-      .order('creation_date', { ascending: false });
+    // Get all active invoice rules
+    const { data: rules } = await supabase
+      .from('invoice_rules')
+      .select('*')
+      .eq('is_active', true);
 
-    if (startDate) {
-      query = query.gte('creation_date', startDate);
-    }
-    if (endDate) {
-      query = query.lte('creation_date', endDate + 'T23:59:59');
+    // Build a map of seller -> rule
+    const sellerRuleMap: Record<string, { rule_name: string; rule_type: 'travel_date' | 'creation_date'; start_date: string }> = {};
+    for (const rule of (rules || [])) {
+      for (const s of (rule.sellers || [])) {
+        sellerRuleMap[s] = {
+          rule_name: rule.name,
+          rule_type: rule.invoice_date_type,
+          start_date: rule.invoice_start_date,
+        };
+      }
     }
 
-    const { data: bookings, error } = await query;
+    // Get all sellers with rules
+    const sellersWithRules = Object.keys(sellerRuleMap);
+
+    // Query activity_bookings directly - this is more efficient
+    // Get all activity bookings for sellers with rules that match the date criteria
+    // We need to paginate to get all results since Supabase limits to 1000
+    let allActivityBookings: any[] = [];
+    let offset = 0;
+    const batchSize = 1000;
+    let hasMore = true;
+
+    while (hasMore) {
+      let activityQuery = supabase
+        .from('activity_bookings')
+        .select(`
+          activity_booking_id,
+          booking_id,
+          activity_seller,
+          start_date_time,
+          total_price,
+          bookings!inner(
+            booking_id,
+            confirmation_code,
+            total_price,
+            currency,
+            creation_date,
+            status,
+            booking_customers(
+              customers(first_name, last_name, email)
+            )
+          )
+        `)
+        .eq('bookings.status', 'CONFIRMED')
+        .range(offset, offset + batchSize - 1);
+
+      // Filter by seller if specified
+      if (seller) {
+        activityQuery = activityQuery.eq('activity_seller', seller);
+      } else if (sellersWithRules.length > 0) {
+        activityQuery = activityQuery.in('activity_seller', sellersWithRules);
+      }
+
+      const { data: batch, error: batchError } = await activityQuery;
+
+      if (batchError) {
+        throw batchError;
+      }
+
+      if (batch && batch.length > 0) {
+        allActivityBookings = allActivityBookings.concat(batch);
+        offset += batchSize;
+        hasMore = batch.length === batchSize;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    const activityBookings = allActivityBookings;
+    const error = null;
 
     if (error) {
       throw error;
     }
 
-    // Filter to only uninvoiced bookings
-    const uninvoicedBookings = (bookings || [])
-      .filter(b => !invoicedBookingIds.has(b.booking_id))
-      .filter(b => !seller || b.activity_bookings?.some((a: { activity_seller: string }) => a.activity_seller === seller))
-      .map(b => ({
-        booking_id: b.booking_id,
-        confirmation_code: b.confirmation_code,
-        total_price: b.total_price,
-        currency: b.currency,
-        creation_date: b.creation_date,
-        customer_name: b.booking_customers?.[0]?.customers
-          ? `${(b.booking_customers[0].customers as any).first_name} ${(b.booking_customers[0].customers as any).last_name}`
-          : null,
-        customer_email: (b.booking_customers?.[0]?.customers as any)?.email || null,
-        activity_seller: b.activity_bookings?.[0]?.activity_seller || null,
-      }));
+    // Group by booking_id and compute travel dates
+    const bookingMap = new Map<number, {
+      booking_id: number;
+      confirmation_code: string;
+      total_price: number;
+      currency: string;
+      creation_date: string;
+      travel_date: string | null;
+      customer_name: string | null;
+      customer_email: string | null;
+      activity_seller: string | null;
+      rule_name: string | null;
+      rule_type: 'travel_date' | 'creation_date' | null;
+      rule_start_date: string | null;
+    }>();
+
+    for (const ab of (activityBookings || [])) {
+      const bookingId = ab.booking_id;
+      const booking = ab.bookings as any;
+
+      if (!booking || invoicedBookingIds.has(bookingId)) {
+        continue; // Skip invoiced bookings
+      }
+
+      const travelDate = ab.start_date_time?.split('T')[0] || null;
+      const activitySeller = ab.activity_seller || null;
+      const ruleInfo = activitySeller ? sellerRuleMap[activitySeller] : null;
+
+      // Check if booking already in map
+      const existing = bookingMap.get(bookingId);
+
+      if (existing) {
+        // Update travel_date to latest
+        if (travelDate && (!existing.travel_date || travelDate > existing.travel_date)) {
+          existing.travel_date = travelDate;
+        }
+      } else {
+        const customer = booking.booking_customers?.[0]?.customers;
+
+        bookingMap.set(bookingId, {
+          booking_id: bookingId,
+          confirmation_code: booking.confirmation_code,
+          total_price: booking.total_price,
+          currency: booking.currency,
+          creation_date: booking.creation_date,
+          travel_date: travelDate,
+          customer_name: customer
+            ? `${customer.first_name} ${customer.last_name}`
+            : null,
+          customer_email: customer?.email || null,
+          activity_seller: activitySeller,
+          rule_name: ruleInfo?.rule_name || null,
+          rule_type: ruleInfo?.rule_type || null,
+          rule_start_date: ruleInfo?.start_date || null,
+        });
+      }
+    }
+
+    // Filter based on rule logic and date filters
+    const uninvoicedBookings = Array.from(bookingMap.values())
+      .filter(b => {
+        if (!b.rule_type || !b.rule_start_date) {
+          return true; // No rule - include all
+        }
+
+        if (b.rule_type === 'travel_date') {
+          if (!b.travel_date) return false;
+          return b.travel_date >= b.rule_start_date;
+        } else {
+          const creationDateOnly = b.creation_date?.split('T')[0];
+          if (!creationDateOnly) return false;
+          return creationDateOnly >= b.rule_start_date;
+        }
+      })
+      .filter(b => {
+        if (startDate) {
+          const dateToCheck = b.rule_type === 'travel_date' ? b.travel_date : b.creation_date?.split('T')[0];
+          if (!dateToCheck || dateToCheck < startDate) return false;
+        }
+        if (endDate) {
+          const dateToCheck = b.rule_type === 'travel_date' ? b.travel_date : b.creation_date?.split('T')[0];
+          if (!dateToCheck || dateToCheck > endDate) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => (b.travel_date || '').localeCompare(a.travel_date || ''));
 
     res.json({
       success: true,
@@ -2148,6 +2294,291 @@ router.get('/api/invoices/:id', validateApiKey, async (req: Request, res: Respon
     });
   } catch (error) {
     console.error('[Invoices] Error fetching invoice:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
+ * POST /api/invoices/send-booking/:bookingId
+ * Manually send a booking to Partner Solution (bypasses rule checks)
+ * Used for manual invoice triggering from the UI
+ */
+router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const bookingId = parseInt(req.params.bookingId);
+
+    if (isNaN(bookingId)) {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid booking ID',
+      });
+      return;
+    }
+
+    console.log(`\n[Invoices] Manual send requested for booking ${bookingId}`);
+
+    // Check if already invoiced
+    const { data: existingInvoice } = await supabase
+      .from('invoices')
+      .select('id')
+      .eq('booking_id', bookingId)
+      .eq('invoice_type', 'INVOICE')
+      .single();
+
+    if (existingInvoice) {
+      res.json({
+        success: true,
+        message: 'Booking already invoiced',
+        already_invoiced: true,
+      });
+      return;
+    }
+
+    // Fetch booking data
+    const { data: booking, error: bookingError } = await supabase
+      .from('bookings')
+      .select(`
+        booking_id,
+        confirmation_code,
+        creation_date,
+        status,
+        total_price,
+        currency,
+        booking_customers(
+          customers(first_name, last_name)
+        ),
+        activity_bookings(
+          activity_booking_id,
+          product_title,
+          start_date_time,
+          total_price,
+          pax_adults,
+          pax_children,
+          pax_infants,
+          activity_seller
+        )
+      `)
+      .eq('booking_id', bookingId)
+      .single();
+
+    if (bookingError || !booking) {
+      res.status(404).json({
+        success: false,
+        error: `Booking ${bookingId} not found`,
+      });
+      return;
+    }
+
+    // Transform to format needed for send-to-partner
+    const customer = booking.booking_customers?.[0]?.customers;
+    const activities = booking.activity_bookings || [];
+    const sellerName = activities.find((a: any) => a.activity_seller)?.activity_seller || null;
+
+    const bookingData = {
+      booking_id: booking.booking_id,
+      confirmation_code: booking.confirmation_code,
+      creation_date: booking.creation_date,
+      status: booking.status,
+      total_price: booking.total_price,
+      currency: booking.currency,
+      customer: customer ? {
+        first_name: (customer as any).first_name,
+        last_name: (customer as any).last_name,
+      } : null,
+      activities: activities.map((a: any) => ({
+        activity_booking_id: a.activity_booking_id,
+        product_title: a.product_title,
+        start_date_time: a.start_date_time,
+        total_price: a.total_price,
+        pax_adults: a.pax_adults || 0,
+        pax_children: a.pax_children || 0,
+        pax_infants: a.pax_infants || 0,
+        activity_seller: a.activity_seller,
+      })),
+      seller_name: sellerName,
+    };
+
+    // Resolve year/month for commessa
+    const yearMonthInfo = await invoiceRulesService.resolveYearMonthForBooking(bookingData);
+    const client = await (partnerSolutionService as any).getClient();
+    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+    const now = new Date().toISOString();
+    const bookingIdPadded = String(booking.booking_id).padStart(9, '0');
+
+    // Ensure Commessa exists
+    const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
+    const deliveringValue = `commessa:${commessaId}`;
+
+    const customerName = {
+      firstName: bookingData.customer?.first_name || 'N/A',
+      lastName: bookingData.customer?.last_name || 'N/A',
+    };
+
+    console.log(`[Invoices] Sending ${booking.confirmation_code} to Partner Solution...`);
+    console.log(`  Customer: ${customerName.firstName} ${customerName.lastName}`);
+    console.log(`  Commessa: ${yearMonthInfo.yearMonth}`);
+
+    // Execute 7-step flow
+    // Step 1: Create Account
+    const accountResponse = await client.post('/accounts', {
+      cognome: customerName.lastName,
+      nome: customerName.firstName,
+      flagpersonafisica: 1,
+      codicefiscale: bookingIdPadded,
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+      tipocattura: 'PS',
+      iscliente: 1,
+      isfornitore: 0
+    });
+
+    // Step 2: Create Pratica (WP)
+    const praticaCreationDate = now.split('T')[0];
+    const praticaPayload = {
+      codicecliente: bookingIdPadded,
+      externalid: bookingIdPadded,
+      datacreazione: now,
+      datamodifica: now,
+      datapratica: praticaCreationDate,
+      tipopratica: 'TURP',
+      codiceagenzia: agencyCode,
+      stato: 'WP',
+      tipocattura: 'PS',
+      delivering: deliveringValue,
+      descrizione: `Tour UE ed Extra UE - ${booking.confirmation_code}`,
+    };
+    const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+    const praticaIri = praticaResponse.data['@id'];
+
+    // Step 3: Add Passeggero
+    const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
+      pratica: praticaIri,
+      cognome: customerName.lastName,
+      nome: customerName.firstName,
+      tipopax: 'ADU',
+      capofila: 1,
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+    });
+
+    // Step 4 & 5: Add Servizio and Quota for each activity
+    let totalAmount = 0;
+    const services: any[] = [];
+
+    for (const activity of bookingData.activities) {
+      const amount = activity.total_price || 0;
+      totalAmount += amount;
+      const paxAdults = Math.max(1, (activity.pax_adults || 0) + (activity.pax_children || 0) + (activity.pax_infants || 0));
+
+      const servizioResponse = await client.post('/prt_praticaservizios', {
+        pratica: praticaIri,
+        externalid: bookingIdPadded,
+        tiposervizio: 'PKG',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        codicefornitore: 'IT09802381005',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: bookingIdPadded,
+        datacreazione: now,
+        datainizioservizio: praticaCreationDate,
+        datafineservizio: praticaCreationDate,
+        duratant: 0,
+        duratagg: 1,
+        nrpaxadulti: paxAdults,
+        nrpaxchild: 0,
+        nrpaxinfant: 0,
+        descrizione: 'Tour UE ed Extra UE',
+        tipodestinazione: 'CEENAZ',
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      });
+
+      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+        servizio: servizioResponse.data['@id'],
+        descrizionequota: activity.product_title || 'Tour UE ed Extra UE',
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
+        codiceisovalutaricavo: 'EUR',
+        quantitacosto: 1,
+        quantitaricavo: 1,
+        costovalutaprimaria: amount,
+        ricavovalutaprimaria: amount,
+        progressivo: 1,
+        annullata: 0,
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+      });
+
+      services.push({
+        activity_booking_id: activity.activity_booking_id,
+        servizio_id: servizioResponse.data['@id'],
+        quota_id: quotaResponse.data['@id'],
+        amount,
+      });
+    }
+
+    // Step 6: Add Movimento Finanziario
+    const movimentoResponse = await client.post('/mov_finanziarios', {
+      externalid: bookingIdPadded,
+      tipomovimento: 'I',
+      codicefile: bookingIdPadded,
+      codiceagenzia: agencyCode,
+      tipocattura: 'PS',
+      importo: totalAmount,
+      datacreazione: now,
+      datamodifica: now,
+      datamovimento: praticaCreationDate,
+      stato: 'INS',
+      codcausale: 'PAGBOK',
+      descrizione: `Tour UE ed Extra UE - ${booking.confirmation_code}`
+    });
+
+    // Step 7: Update Pratica to INS
+    await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+
+    // Record in invoices table
+    await supabase.from('invoices').upsert({
+      booking_id: booking.booking_id,
+      confirmation_code: booking.confirmation_code,
+      invoice_type: 'INVOICE',
+      status: 'sent',
+      total_amount: totalAmount,
+      currency: 'EUR',
+      customer_name: `${customerName.firstName} ${customerName.lastName}`,
+      seller_name: bookingData.seller_name,
+      booking_creation_date: booking.creation_date?.split('T')[0],
+      sent_at: now,
+      ps_pratica_iri: praticaIri,
+      ps_account_iri: accountResponse.data['@id'],
+      ps_passeggero_iri: passeggeroResponse.data['@id'],
+      ps_movimento_iri: movimentoResponse.data['@id'],
+      ps_commessa_code: yearMonthInfo.yearMonth,
+      created_by: 'manual',
+    }, { onConflict: 'booking_id,invoice_type' });
+
+    console.log(`[Invoices] Successfully sent ${booking.confirmation_code} to Partner Solution`);
+
+    res.json({
+      success: true,
+      message: 'Booking sent to Partner Solution',
+      data: {
+        booking_id: booking.booking_id,
+        confirmation_code: booking.confirmation_code,
+        pratica_iri: praticaIri,
+        account_iri: accountResponse.data['@id'],
+        commessa: yearMonthInfo.yearMonth,
+        total_amount: totalAmount,
+        services,
+      },
+    });
+  } catch (error) {
+    console.error('[Invoices] Error sending booking to Partner Solution:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
