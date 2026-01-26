@@ -7,11 +7,13 @@ async function testPraticaFlow() {
   const agencyCode = '7206'; // Production agency code
 
   const bookingId = '81893012'; // Numeric only, no prefix (max 13 chars)
+  const bookingIdPadded = bookingId.padStart(9, '0'); // Padded to 9 chars per spec
   const confirmationCode = 'CIV-81893012'; // Full code for descriptions
   const customerName = { firstName: 'Maria Jose', lastName: 'Domingo Garcia' };
   const sellerTitle = 'Civitatis'; // Seller for tracking
   const amount = 118; // Real amount from booking
   const commessaCode = '2026-01'; // January 2026 - Commessa created in UI
+  const commessaUUID = 'B53D23E5-3DB1-4CC2-8659-EFAED539336D'; // UUID from FacileWS3
 
   try {
     console.log('=== Testing Pratica Flow - PRODUCTION ===\n');
@@ -48,45 +50,29 @@ async function testPraticaFlow() {
 
     const now = new Date().toISOString();
 
-    // Step 1: Check/Create Account
-    console.log('Step 1: Checking if account exists...');
-    let accountIri: string | null = null;
-    try {
-      const searchResponse = await client.get('/accounts', {
-        params: { codicefiscale: bookingId, codiceagenzia: agencyCode }
-      });
-      if (searchResponse.data['hydra:member']?.length > 0) {
-        accountIri = searchResponse.data['hydra:member'][0]['@id'];
-        console.log('  Account found:', accountIri);
-      }
-    } catch (e) {
-      console.log('  Account search failed, will create new');
-    }
+    // Step 1: Always create new Account (per spec - always create, don't search)
+    console.log('Step 1: Creating new account...');
+    const accountPayload = {
+      cognome: customerName.lastName,
+      nome: customerName.firstName,
+      flagpersonafisica: 1,
+      codicefiscale: bookingIdPadded, // Must be 9 chars, left-padded with 0
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+      tipocattura: 'PS',
+      iscliente: 1,
+      isfornitore: 0
+    };
 
-    if (!accountIri) {
-      console.log('  Creating new account...');
-      const accountPayload = {
-        cognome: customerName.lastName,
-        nome: customerName.firstName,
-        flagpersonafisica: 1,
-        codicefiscale: bookingId,
-        codiceagenzia: agencyCode,
-        stato: 'INS',
-        tipocattura: 'PS',
-        iscliente: 1,
-        isfornitore: 0
-      };
-
-      const accountResponse = await client.post('/accounts', accountPayload);
-      accountIri = accountResponse.data['@id'];
-      console.log('  ✅ Account created:', accountIri);
-    }
+    const accountResponse = await client.post('/accounts', accountPayload);
+    const accountIri = accountResponse.data['@id'];
+    console.log('  ✅ Account created:', accountIri);
 
     // Step 2: Create Pratica (status WP)
     console.log('\nStep 2: Creating Pratica...');
     const praticaPayload = {
-      codicecliente: bookingId,
-      externalid: bookingId,
+      codicecliente: bookingIdPadded,  // Must be 9 chars, left-padded with 0
+      externalid: bookingIdPadded,     // Must be 9 chars, left-padded with 0
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
       codiceagenzia: agencyCode,
@@ -96,7 +82,7 @@ async function testPraticaFlow() {
       stato: 'WP',
       descrizionepratica: 'Tour UE ed Extra UE',
       noteinterne: `Seller: ${sellerTitle}`,
-      delivering: `commessa:${commessaCode}`
+      delivering: `commessa:${commessaUUID}` // Must be UUID, not code
     };
 
     const praticaResponse = await client.post('/prt_praticas', praticaPayload);
@@ -120,21 +106,21 @@ async function testPraticaFlow() {
     console.log('\nStep 4: Adding Servizio...');
     const servizioPayload = {
       pratica: praticaIri,
-      externalid: bookingId,
-      tiposervizio: 'VIS',
+      externalid: bookingIdPadded,          // Must be 9 chars, left-padded with 0
+      tiposervizio: 'PKQ',                  // Always PKQ per spec
       tipovendita: 'ORG',
       regimevendita: '74T',
-      codicefornitore: '2773',
+      codicefornitore: 'IT09802381005',     // Supplier VAT per spec
       ragsocfornitore: 'EnRoma Tours',
-      codicefilefornitore: bookingId,
+      codicefilefornitore: bookingIdPadded, // Must be 9 chars, left-padded with 0
       datacreazione: now,
-      datainizioservizio: now,
-      datafineservizio: now,
+      datainizioservizio: now.split('T')[0],
+      datafineservizio: now.split('T')[0],
       duratant: 0,
       duratagg: 1,
-      nrpaxadulti: 1,
-      nrpaxchild: 0,
-      nrpaxinfant: 0,
+      nrpaxadulti: 1,                       // Total participants
+      nrpaxchild: 0,                        // Always 0 per spec
+      nrpaxinfant: 0,                       // Always 0 per spec
       descrizione: 'Tour UE ed Extra UE',
       tipodestinazione: 'CEENAZ',
       annullata: 0,
@@ -172,9 +158,9 @@ async function testPraticaFlow() {
     // Step 6: Add Movimento Finanziario
     console.log('\nStep 6: Adding Movimento Finanziario...');
     const movimentoPayload = {
-      externalid: bookingId,
+      externalid: bookingIdPadded,   // Must be 9 chars, left-padded with 0
       tipomovimento: 'I',
-      codicefile: bookingId,
+      codicefile: bookingIdPadded,   // Must be 9 chars, left-padded with 0
       codiceagenzia: agencyCode,
       tipocattura: 'PS',
       importo: amount,
@@ -182,7 +168,7 @@ async function testPraticaFlow() {
       datamodifica: now,
       datamovimento: now,
       stato: 'INS',
-      codcausale: 'PAGCC',
+      codcausale: 'PAGBOK',          // PAGBOK per spec
       descrizione: `Tour UE ed Extra UE - ${confirmationCode}`
     };
 

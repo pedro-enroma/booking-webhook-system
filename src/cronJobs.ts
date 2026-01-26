@@ -168,7 +168,45 @@ export function initializeCronJobs() {
     }
   });
   
-  // 8. NUOVO: Health check ogni 30 minuti per verificare stato sync
+  // 8. INVOICE RULES - Process travel_date rules at 14:00 every day
+  cron.schedule('0 14 * * *', async () => {
+    const jobId = `invoice-travel-date-${Date.now()}`;
+    logCronStart('Invoice Rules - Travel Date Processing', jobId);
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      console.log(`[InvoiceRules CRON] Processing travel_date rules for ${today}`);
+
+      // Call the internal API endpoint to process travel_date invoicing
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
+      const apiKey = process.env.INVOICE_API_KEY || '';
+
+      const response = await fetch(`${baseUrl}/api/invoices/rules/process-travel-date?date=${today}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+        },
+      });
+
+      const result = await response.json() as {
+        success: boolean;
+        error?: string;
+        summary?: { total: number; sent: number; failed: number };
+      };
+
+      if (result.success && result.summary) {
+        console.log(`[InvoiceRules CRON] Summary: ${result.summary.sent} sent, ${result.summary.failed} failed out of ${result.summary.total} bookings`);
+        logCronEnd(jobId, result.summary.total, result.summary.failed === 0);
+      } else {
+        throw new Error(result.error || 'Unknown error');
+      }
+    } catch (error) {
+      logCronEnd(jobId, 0, false, error);
+    }
+  });
+
+  // 9. Health check ogni 30 minuti per verificare stato sync
   cron.schedule('*/30 * * * *', async () => {
     try {
       const now = new Date();
@@ -200,7 +238,7 @@ export function initializeCronJobs() {
     }
   });
   
-  // 9. NUOVO: Cleanup checkpoint vecchi ogni domenica
+  // 10. Cleanup checkpoint vecchi ogni domenica
   cron.schedule('0 0 * * 0', async () => {
     try {
       const thirtyDaysAgo = new Date();
@@ -222,6 +260,7 @@ export function initializeCronJobs() {
   console.log('   - Prioritari: ogni 4 ore (15gg) + 2:00 AM (60gg) [BATCH]');
   console.log('   - Secondari: ogni 12 ore (15gg) + 4:00 AM (30gg) [BATCH]');
   console.log('   - Altri: 6:00 AM (30gg) + venerdì (90gg) [CHECKPOINT]');
+  console.log('   - Invoice Rules (travel_date): ogni giorno alle 14:00');
   console.log('   - Health check: ogni 30 minuti');
   console.log('   - Cleanup: ogni domenica');
   console.log(`   - Esclusi: ${EXCLUDED_PRODUCTS.length} prodotti`);

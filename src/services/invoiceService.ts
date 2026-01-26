@@ -27,10 +27,11 @@ import {
 } from '../types/invoice.types';
 
 interface InvoiceRule {
-  invoice_date_type: 'creation' | 'travel';
+  invoice_date_type: 'creation' | 'travel' | 'creation_date' | 'travel_date';
   sellers: string[];
   invoice_start_date?: string | null;
   name?: string;
+  is_active?: boolean;
 }
 
 export class InvoiceService {
@@ -46,19 +47,40 @@ export class InvoiceService {
 
   /**
    * Check if auto-invoicing is enabled for a given seller
+   * Uses the new invoice_rules table with creation_date rules
    */
   async shouldAutoInvoice(sellerName: string): Promise<boolean> {
     try {
-      const { data } = await supabase
-        .from('partner_solution_config')
-        .select('auto_invoice_enabled, auto_invoice_sellers')
-        .single();
+      // Check new invoice_rules table for creation_date rules
+      const { data: rules, error } = await supabase
+        .from('invoice_rules')
+        .select('id, invoice_date_type, sellers, invoice_start_date, is_active')
+        .eq('is_active', true)
+        .eq('invoice_date_type', 'creation_date');
 
-      if (!data || !data.auto_invoice_enabled) {
-        return false;
+      if (error || !rules || rules.length === 0) {
+        // Fallback to old config table for backwards compatibility
+        const { data } = await supabase
+          .from('partner_solution_config')
+          .select('auto_invoice_enabled, auto_invoice_sellers')
+          .single();
+
+        if (!data || !data.auto_invoice_enabled) {
+          return false;
+        }
+
+        return data.auto_invoice_sellers?.includes(sellerName) || false;
       }
 
-      return data.auto_invoice_sellers?.includes(sellerName) || false;
+      // Check if seller is in any creation_date rule
+      for (const rule of rules) {
+        if (rule.sellers?.includes(sellerName)) {
+          console.log(`[InvoiceService] Seller ${sellerName} matches creation_date rule`);
+          return true;
+        }
+      }
+
+      return false;
     } catch (error) {
       console.error('Error checking auto-invoice config:', error);
       return false;
@@ -459,8 +481,13 @@ export class InvoiceService {
       };
     }
 
-    if (rule.invoice_date_type === 'travel') {
-      const travelDate = this.getPrimaryTravelDate(bookingData) || fallbackDate;
+    // Handle both old format ('travel'/'creation') and new format ('travel_date'/'creation_date')
+    const ruleType = rule.invoice_date_type;
+    const isTravel = ruleType === 'travel' || ruleType === 'travel_date';
+
+    if (isTravel) {
+      // Use latest travel date (newest activity date)
+      const travelDate = this.getLatestTravelDate(bookingData) || fallbackDate;
       return {
         yearMonth: this.formatYearMonth(travelDate),
         ruleType: 'travel',
@@ -480,7 +507,8 @@ export class InvoiceService {
   private async getInvoiceRuleForSeller(sellerName: string): Promise<InvoiceRule | null> {
     const { data: rules, error } = await supabase
       .from('invoice_rules')
-      .select('name, sellers, invoice_date_type, invoice_start_date');
+      .select('name, sellers, invoice_date_type, invoice_start_date, is_active')
+      .eq('is_active', true);
 
     if (error || !rules) {
       console.error('[InvoiceService] Error fetching invoice rules:', error);
@@ -496,9 +524,25 @@ export class InvoiceService {
     return null;
   }
 
-  private getPrimaryTravelDate(bookingData: BookingDataForInvoice): string | null {
-    const activity = bookingData.activities.find((entry) => entry.start_date_time);
-    return activity?.start_date_time || null;
+  /**
+   * Get the latest (newest) travel date from all activities
+   * If booking has multiple activities, use the latest one
+   */
+  private getLatestTravelDate(bookingData: BookingDataForInvoice): string | null {
+    if (!bookingData.activities || bookingData.activities.length === 0) return null;
+
+    let latestDate: string | null = null;
+
+    for (const activity of bookingData.activities) {
+      if (!activity.start_date_time) continue;
+      const dateStr = activity.start_date_time;
+
+      if (!latestDate || dateStr > latestDate) {
+        latestDate = dateStr;
+      }
+    }
+
+    return latestDate;
   }
 
   private formatYearMonth(dateValue: string): string {
@@ -608,9 +652,12 @@ export class InvoiceService {
       console.error(`[InvoiceService] Failed to create passeggero:`, error);
     }
 
+    // Pad booking_id to 9 characters with leading zeros (per spec)
+    const bookingIdPadded = String(bookingData.booking_id).padStart(9, '0');
+
     // Step 3-5: Create Servizi, Quote, Movimenti for each activity
     for (const activity of bookingData.activities) {
-      const activityDate = activity.start_date_time?.split('T')[0] || new Date().toISOString().split('T')[0];
+      const praticaCreationDate = now.split('T')[0];  // Always use pratica creation date per spec
 
       try {
         const productTitle = activity.product_title || 'Tour UE ed Extra UE';
@@ -619,17 +666,17 @@ export class InvoiceService {
         console.log(`[InvoiceService] Step 3: Creating Servizio for activity ${activity.activity_booking_id}...`);
         const servizio = await this.partnerSolution.createServizio({
           pratica: monthlyPratica.partner_pratica_id!,
-          tiposervizio: 'VIS', // Always VIS for tours
+          tiposervizio: 'PKG',                    // Always PKQ per spec
           tipovendita: 'ORG',
           regimevendita: '74T',
-          datainizioservizio: activityDate,
-          datafineservizio: activityDate,
+          datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
+          datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
           datacreazione: now,
-          nrpaxadulti: activity.participant_count || 1,
-          nrpaxchild: 0,
-          nrpaxinfant: 0,
+          nrpaxadulti: activity.participant_count || 1,  // Total participants
+          nrpaxchild: 0,                          // Always 0 per spec
+          nrpaxinfant: 0,                         // Always 0 per spec
           codicefornitore: 'IT09802381005',
-          codicefilefornitore: String(bookingData.booking_id),
+          codicefilefornitore: bookingIdPadded,   // Must be 9 chars, left-padded with 0
           ragsocfornitore: 'EnRoma Tours',
           tipodestinazione: 'CEENAZ',
           duratagg: 1,
@@ -644,7 +691,7 @@ export class InvoiceService {
         await this.partnerSolution.createQuota({
           servizio: servizio['@id'],
           descrizionequota: productTitle,
-          datavendita: activityDate,
+          datavendita: now,  // Use pratica creation date
           codiceisovalutacosto: 'EUR',
           codiceisovalutaricavo: 'EUR',
           quantitacosto: 1,
@@ -661,21 +708,22 @@ export class InvoiceService {
 
         // Create Movimento Finanziario (payment record)
         await this.partnerSolution.createMovimentoFinanziario({
-          externalid: String(bookingData.booking_id),
+          externalid: bookingIdPadded,            // Must be 9 chars, left-padded with 0
           tipomovimento: 'I',
-          codicefile: String(bookingData.booking_id),
+          codicefile: bookingIdPadded,            // Must be 9 chars, left-padded with 0
           codiceagenzia: agencyCode,
           tipocattura: 'PS',
           importo: activity.total_price,
           datacreazione: now,
           datamodifica: now,
-          datamovimento: activityDate,
+          datamovimento: praticaCreationDate,  // Use pratica creation date
           stato: 'INS',
           codcausale: 'PAGBOK',
           descrizione: `Tour UE ed Extra UE - ${bookingData.confirmation_code}`,
         });
 
-        // Create line item in DB
+        // Create line item in DB (store actual activity date for records)
+        const activityDateForDb = activity.start_date_time?.split('T')[0] || praticaCreationDate;
         await supabase.from('invoice_line_items').insert({
           invoice_id: invoiceId,
           activity_booking_id: activity.activity_booking_id,
@@ -684,7 +732,7 @@ export class InvoiceService {
           quantity: activity.participant_count || 1,
           unit_price: activity.total_price,
           total_price: activity.total_price,
-          activity_date: activityDate,
+          activity_date: activityDateForDb,
           participant_count: activity.participant_count || 1,
         });
       } catch (error) {

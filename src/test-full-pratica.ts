@@ -86,10 +86,10 @@ async function testFullPratica() {
     const servizioPayload = {
       pratica: praticaIri,
       externalid: bookingId,
-      tiposervizio: 'VIS',
+      tiposervizio: 'PKQ',
       tipovendita: 'ORG',
       regimevendita: '74T',
-      codicefornitore: '2773',
+      codicefornitore: 'IT09802381005',  // Supplier VAT per spec
       ragsocfornitore: 'EnRoma Tours',
       codicefilefornitore: bookingId,
       datacreazione: now,
@@ -142,7 +142,7 @@ async function testFullPratica() {
       datamodifica: now,
       datamovimento: now,
       stato: 'INS',
-      codcausale: 'PAGCC',
+      codcausale: 'PAGBOK',  // PAGBOK per spec
       descrizione: `Tour UE ed Extra UE - ${confirmationCode}`
     });
     console.log('✅ Movimento');

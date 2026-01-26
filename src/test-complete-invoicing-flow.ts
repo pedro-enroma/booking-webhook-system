@@ -64,7 +64,7 @@ async function testCompleteInvoicingFlow() {
     for (const activity of booking.activities) {
       const servizio = await partnerSolutionService.createServizio({
         pratica: pratica['@id'],
-        tiposervizio: 'VIS',
+        tiposervizio: 'PKQ',
         tipovendita: 'ORG',
         regimevendita: '74T',
         datainizioservizio: activity.date,

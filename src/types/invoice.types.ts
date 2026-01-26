@@ -13,7 +13,7 @@ export type InvoiceType = 'INVOICE' | 'CREDIT_NOTE';
 export type PSStatus = 'WP' | 'WS' | 'WPRELOAD' | 'INS' | 'MOD' | 'CANC';
 export type PSRegime = '74T' | 'ORD';
 export type PSSalesType = 'ORG' | 'INT';
-export type PSServiceType = 'PKG' | 'STR' | 'VIS' | 'ASS' | 'NOL' | 'RIST' | 'EVE' | 'ESC' | 'GEN' | 'COSTI';
+export type PSServiceType = 'PKG' | 'PKQ' | 'STR' | 'VIS' | 'ASS' | 'NOL' | 'RIST' | 'EVE' | 'ESC' | 'GEN' | 'COSTI';
 export type PSDestinationType = 'CEENAZ' | 'CEEINT' | 'FUORICEE' | 'ND'; // Italy, Europe, Rest of World, Not Defined
 export type AuditAction = 'CREATED' | 'SENT' | 'FAILED' | 'RETRIED' | 'FINALIZED' | 'BOOKING_ADDED';
 

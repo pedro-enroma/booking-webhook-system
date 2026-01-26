@@ -129,15 +129,15 @@ POST /api/invoices/send-to-partner
 {
   "pratica": "/prt_praticas/<pratica_id>",
   "externalid": "080404039",
-  "tiposervizio": "PKQ",
+  "tiposervizio": "PKG",
   "tipovendita": "ORG",
   "regimevendita": "74T",
   "codicefornitore": "IT09802381005",
   "ragsocfornitore": "EnRoma Tours",
   "codicefilefornitore": "080404039",
   "datacreazione": "2026-01-23T12:00:00.000Z",
-  "datainizioservizio": "2026-01-28",
-  "datafineservizio": "2026-01-28",
+  "datainizioservizio": "2026-01-23",
+  "datafineservizio": "2026-01-23",
   "duratant": 0,
   "duratagg": 1,
   "nrpaxadulti": 1,
@@ -158,17 +158,20 @@ POST /api/invoices/send-to-partner
 | `ragsocfornitore` | `EnRoma Tours` | Supplier name |
 | `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
 | `codicefilefornitore` | booking_id_padded | Our booking reference (9 chars, left-padded) |
-| `tiposervizio` | `PKQ` | Always PKQ |
+| `tiposervizio` | `PKG` | Always PKG |
 | `tipovendita` | `ORG` | Organized |
 | `regimevendita` | `74T` | Tax regime |
 | `tipodestinazione` | `CEENAZ` | Temporary destination type (will switch to new MISTO code when provided) |
+| `datainizioservizio` | pratica creation date | Always pratica creation date (NOT activity date) |
+| `datafineservizio` | pratica creation date | Always pratica creation date (NOT activity date) |
 | `stato` | `INS` | Inserted |
 
 **Notes:**
-- `tiposervizio` is always `PKQ`
+- `tiposervizio` is always `PKG`
 - `nrpaxadulti` = total participants for the booking_id (not per activity)
 - `nrpaxchild` and `nrpaxinfant` are always `0`
 - `descrizione` is always `"Tour UE ed Extra UE"`
+- `datainizioservizio` and `datafineservizio` are always the pratica creation date, never the activity travel date
 
 **Invalid Values:**
 - `tipodestinazione: 'MISTO'` - NOT VALID (API rejects it). Use `CEENAZ` until new MISTO code is provided.
@@ -393,7 +396,7 @@ FACILEWS_PASSWORD=InSpe2026!
 | `tipocattura` | `PS` | Account, Pratica, Movimento |
 | `codicefornitore` | `IT09802381005` | Servizio |
 | `ragsocfornitore` | `EnRoma Tours` | Servizio |
-| `tiposervizio` | `PKQ` | Servizio |
+| `tiposervizio` | `PKG` | Servizio |
 | `tipovendita` | `ORG` | Servizio |
 | `regimevendita` | `74T` | Servizio |
 | `tipodestinazione` | `CEENAZ` (temporary) | Servizio |

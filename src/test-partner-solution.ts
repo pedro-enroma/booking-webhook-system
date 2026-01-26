@@ -141,7 +141,7 @@ async function testBooking() {
     // Create Servizio
     const servizio = await partnerSolutionService.createServizio({
       pratica: praticaIri,
-      tiposervizio: 'VIS',
+      tiposervizio: 'PKQ',
       tipovendita: 'ORG',
       regimevendita: '74T',
       datainizioservizio: activityDate,

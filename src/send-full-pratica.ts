@@ -38,7 +38,7 @@ async function sendFullPratica() {
     for (const s of servizi) {
       const servizio = await partnerSolutionService.createServizio({
         pratica: pratica['@id'],
-        tiposervizio: 'VIS',
+        tiposervizio: 'PKQ',
         tipovendita: 'ORG',
         regimevendita: '74T',
         datainizioservizio: '2025-12-20',

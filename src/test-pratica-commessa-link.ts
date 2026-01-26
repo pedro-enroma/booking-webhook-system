@@ -8,8 +8,9 @@ async function testPraticaWithCommessaID() {
 
   // Commessa 2026-01 UUID from facilews3
   const commessaId = 'B53D23E5-3DB1-4CC2-8659-EFAED539336D';
-  
+
   const bookingId = '81893013';
+  const bookingIdPadded = bookingId.padStart(9, '0'); // Padded to 9 chars per spec
   const confirmationCode = 'CIV-81893013';
   const customerName = { firstName: 'Test', lastName: 'Commessa Link' };
   const amount = 100;
@@ -55,8 +56,8 @@ async function testPraticaWithCommessaID() {
       
       try {
         const praticaPayload = {
-          codicecliente: bookingId,
-          externalid: bookingId,
+          codicecliente: bookingIdPadded,  // Must be 9 chars, left-padded with 0
+          externalid: bookingIdPadded,     // Must be 9 chars, left-padded with 0
           cognomecliente: customerName.lastName,
           nomecliente: customerName.firstName,
           codiceagenzia: agencyCode,

@@ -2,201 +2,159 @@
 
 ## Overview
 
-Invoice Rules allow you to configure automatic invoicing behavior per seller. Each rule defines:
-- Which sellers it applies to
-- When to send invoices (on booking creation or after travel date)
-- Invoice configuration (regime, sales type)
-- Whether to auto-create credit notes on cancellation/refund
+Simple invoice rules that determine when bookings are automatically sent to Partner Solution.
 
-**Important:** Each seller can only belong to ONE rule.
+## Two Rule Types
+
+### 1. Travel Date Rule (`travel_date`)
+
+Sends booking data to Partner Solution **on the travel date** via a cron job.
+
+**Behavior:**
+- If a booking has multiple activities, uses the **latest (newest) activity date**
+- `invoice_start_date` filters by **travel date**: only bookings with travel date >= this date are processed
+- Example: A booking created in July 2025 with travel date in May 2026 will be invoiced on the May 2026 travel date (if >= invoice_start_date)
+
+**Fields:**
+| Field | Description |
+|-------|-------------|
+| `name` | Rule name |
+| `sellers` | Array of seller names |
+| `invoice_start_date` | Only invoice bookings with travel_date >= this date |
+| `execution_time` | Time of day when cron runs (e.g., `08:00:00`) |
 
 ---
 
-## How It Works
+### 2. Creation Date Rule (`creation_date`)
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           INVOICE RULES FLOW                                 │
-└─────────────────────────────────────────────────────────────────────────────┘
+Sends booking data to Partner Solution **immediately** when the booking is confirmed.
 
-1. Configure Rules (UI)
-   ┌──────────────────────────────────────────────────────────────────────────┐
-   │  Rule: "Civitatis Tours"                                                  │
-   │  ├── Sellers: [Civitatis]                                                │
-   │  ├── Auto Invoice: ON                                                    │
-   │  ├── Invoice Date Type: Travel (+7 days)                                 │
-   │  ├── Regime: 74T                                                         │
-   │  └── Start Date: 2026-01-01 (only bookings with travel >= this date)    │
-   └──────────────────────────────────────────────────────────────────────────┘
+**Behavior:**
+- Triggered instantly on `BOOKING_CONFIRMED` webhook
+- `invoice_start_date` filters by **creation date**: only bookings created >= this date are processed
+- Example: If invoice_start_date=2026-01-01, bookings created before that date are not auto-invoiced
 
-2. Apply Rules (Button click or scheduled job)
-   ┌────────────────┐     ┌────────────────┐     ┌─────────────────────────┐
-   │   Confirmed    │────▶│  Match seller  │────▶│  Create scheduled_      │
-   │   Bookings     │     │  to rule       │     │  invoices entry         │
-   └────────────────┘     └────────────────┘     └─────────────────────────┘
-
-3. Process Scheduled Invoices (separate job)
-   ┌─────────────────────────┐     ┌────────────────────────────────────────┐
-   │  scheduled_invoices     │────▶│  When scheduled_send_date <= today:    │
-   │  (status: pending)      │     │  Send to Partner Solution              │
-   └─────────────────────────┘     └────────────────────────────────────────┘
-```
+**Fields:**
+| Field | Description |
+|-------|-------------|
+| `name` | Rule name |
+| `sellers` | Array of seller names |
+| `invoice_start_date` | Only invoice bookings created >= this date |
 
 ---
 
 ## Database Schema
 
-### `invoice_rules` Table
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `name` | TEXT | Rule name (e.g., "Civitatis Tours") |
-| `sellers` | TEXT[] | Array of seller names this rule applies to |
-| `auto_invoice_enabled` | BOOLEAN | Whether to auto-create invoices |
-| `auto_credit_note_enabled` | BOOLEAN | Whether to auto-create credit notes |
-| `credit_note_trigger` | TEXT | When to trigger: `cancellation` or `refund` |
-| `default_regime` | TEXT | Invoice regime: `74T` or `ORD` |
-| `default_sales_type` | TEXT | Sales type: `ORG`, `INT`, etc. |
-| `invoice_date_type` | TEXT | When to send: `creation` or `travel` |
-| `travel_date_delay_days` | INTEGER | Days after travel date to send (if type=travel) |
-| `execution_time` | TIME | Time of day to send (e.g., `08:00`, `14:00`) |
-| `invoice_start_date` | DATE | Only process bookings with travel date >= this |
-| `created_at` | TIMESTAMP | When rule was created |
-| `updated_at` | TIMESTAMP | When rule was last updated |
-
-### `scheduled_invoices` Table
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | UUID | Primary key |
-| `booking_id` | INTEGER | References bookings.booking_id |
-| `rule_id` | UUID | References invoice_rules.id |
-| `scheduled_send_date` | DATE | Date when to send the invoice |
-| `scheduled_send_time` | TIME | Time of day to send (e.g., `08:00`) |
-| `status` | TEXT | `pending`, `sent`, `failed`, `cancelled` |
-| `sent_at` | TIMESTAMP | When invoice was actually sent |
-| `error_message` | TEXT | Error details if failed |
-| `created_at` | TIMESTAMP | When scheduled entry was created |
-
----
-
-## Rule Configuration
-
-### Invoice Date Type
-
-| Type | Description |
-|------|-------------|
-| `creation` | Send invoice immediately when rule is applied |
-| `travel` | Send invoice X days after travel date |
-
-**Example:** `invoice_date_type: 'travel'` + `travel_date_delay_days: 7`
-- Booking travel date: 2026-01-15
-- Scheduled send date: 2026-01-22
-
-### Invoice Start Date
-
-Filter to only process bookings with travel date on or after this date.
-
-**Use case:** Start invoicing for a new seller from a specific date, without retroactively invoicing old bookings.
+```sql
+CREATE TABLE invoice_rules (
+  id UUID PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  invoice_date_type VARCHAR(20) NOT NULL,  -- 'travel_date' or 'creation_date'
+  sellers TEXT[] NOT NULL,
+  invoice_start_date DATE NOT NULL,
+  execution_time TIME DEFAULT '08:00:00',  -- Only for travel_date rules
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+);
+```
 
 ---
 
 ## API Endpoints
 
-### POST /api/invoices/process-rules
+### CRUD Operations
 
-Processes all confirmed bookings against configured rules and creates `scheduled_invoices` entries.
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/invoices/rules` | GET | List all rules |
+| `/api/invoices/rules/:id` | GET | Get single rule |
+| `/api/invoices/rules` | POST | Create rule |
+| `/api/invoices/rules/:id` | PUT | Update rule |
+| `/api/invoices/rules/:id` | DELETE | Delete rule |
 
-**Request:**
-```json
+### Processing
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/invoices/rules/process-travel-date` | POST | Cron: Process travel_date rules for today |
+| `/api/invoices/rules/process-booking/:bookingId` | POST | Process single booking for creation_date rules |
+
+---
+
+## Examples
+
+### Create Travel Date Rule
+
+```bash
+POST /api/invoices/rules
 {
-  "dry_run": false
+  "name": "Civitatis Travel Rule",
+  "invoice_date_type": "travel_date",
+  "sellers": ["Civitatis", "GetYourGuide"],
+  "invoice_start_date": "2026-01-01",
+  "execution_time": "08:00:00"
 }
 ```
 
-**Response:**
-```json
+### Create Creation Date Rule
+
+```bash
+POST /api/invoices/rules
 {
-  "success": true,
-  "dry_run": false,
-  "total_bookings": 500,
-  "processed": 45,
-  "results": [
-    {
-      "booking_id": 80404039,
-      "confirmation_code": "CIV-80404039",
-      "seller": "Civitatis",
-      "action": "scheduled",
-      "scheduled_date": "2026-01-22"
-    }
-  ],
-  "message": "Scheduled 45 invoices"
+  "name": "EnRoma Instant Rule",
+  "invoice_date_type": "creation_date",
+  "sellers": ["EnRoma.com"],
+  "invoice_start_date": "2026-01-01"
 }
 ```
 
-**Dry Run:** Set `dry_run: true` to see what would be scheduled without creating entries.
+### Run Travel Date Cron (manually or via scheduler)
+
+```bash
+POST /api/invoices/rules/process-travel-date?date=2026-01-26
+
+# Dry run (see what would be processed)
+POST /api/invoices/rules/process-travel-date?date=2026-01-26&dry_run=true
+```
 
 ---
 
-## UI Location
+## Flow Diagram
 
-**Invoicing Page** → **Rules** button (top right)
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        INVOICE RULES FLOW                            │
+└─────────────────────────────────────────────────────────────────────┘
 
-### Rules List
-- View all configured rules
-- See which sellers are assigned to each rule
-- Edit or delete rules
-- Create new rules
+CREATION_DATE RULE:
+  Booking Confirmed → Check seller → Match creation_date rule?
+       │                                    │
+       │                              NO ───┘ (skip)
+       │                              YES
+       ▼
+  Check invoice_start_date vs creation_date
+       │
+       │ creation_date >= invoice_start_date
+       ▼
+  INSTANT: Send to Partner Solution (7-step flow)
 
-### Rule Form
-- **Rule Name:** Descriptive name
-- **Sellers:** Multi-select (sellers already assigned to other rules are grayed out)
-- **Auto Invoice:** Toggle ON/OFF
-- **Auto Credit Note:** Toggle ON/OFF
-  - **Trigger:** Cancellation or Refund
-- **Default Regime:** 74T or ORD
-- **Default Sales Type:** ORG, INT
-- **Invoice Date Type:** Creation or Travel
-  - **Delay Days:** (only if Travel) Number of days after travel
-- **Execution Time:** Time of day to send invoices (e.g., `08:00`, `14:00`)
-- **Start Date:** (optional) Only process bookings with travel date >= this
 
-### Apply Rules Button
-Runs the `process-rules` endpoint to create scheduled invoices for all matching bookings.
-
----
-
-## Workflow Example
-
-1. **Create Rule:**
-   - Name: "Civitatis Partners"
-   - Sellers: [Civitatis]
-   - Auto Invoice: ON
-   - Invoice Date Type: Travel (+7 days)
-   - Execution Time: 08:00
-   - Regime: 74T
-   - Start Date: 2026-01-01
-
-2. **Click "Apply Rules":**
-   - System finds all CONFIRMED bookings from Civitatis
-   - Filters to only those with travel date >= 2026-01-01
-   - Creates `scheduled_invoices` entries with calculated send dates
-
-3. **Scheduled Job (separate process):**
-   - Runs periodically (e.g., every hour or at specific times)
-   - Finds `scheduled_invoices` where `scheduled_send_date <= today`, `scheduled_send_time <= current_time`, and `status = pending`
-   - Sends each to Partner Solution using the 7-step flow (with auto-created Commessa)
-   - Updates status to `sent` or `failed`
-
----
-
-## Important Notes
-
-- **One seller per rule:** A seller can only belong to one rule. The UI prevents assigning a seller to multiple rules.
-- **Idempotent:** Running "Apply Rules" multiple times won't create duplicate entries (checks existing scheduled_invoices and invoices).
-- **Manual override:** You can still manually invoice bookings from the Pending tab, regardless of rules.
-- **Credit notes:** If `auto_credit_note_enabled` is ON, credit notes are created based on the trigger (cancellation or refund webhook).
+TRAVEL_DATE RULE:
+  Cron Job (daily at execution_time)
+       │
+       ▼
+  Find bookings where latest_activity_date = TODAY
+       │
+       ▼
+  Filter by seller (match travel_date rules)
+       │
+       ▼
+  Filter by travel_date >= invoice_start_date
+       │
+       ▼
+  Send each booking to Partner Solution (7-step flow)
+```
 
 ---
 
@@ -204,6 +162,6 @@ Runs the `process-rules` endpoint to create scheduled invoices for all matching 
 
 | File | Purpose |
 |------|---------|
-| `tourmageddon-saas/src/components/InvoicingPage.tsx` | UI for managing rules |
-| `tourmageddon-saas/src/app/api/invoices/process-rules/route.ts` | Apply rules endpoint |
-| `booking-webhook-system/src/routes/invoices.ts` | Partner Solution send endpoint |
+| `src/services/invoiceRulesService.ts` | Core rules logic |
+| `src/routes/invoices.ts` | API endpoints |
+| `src/migrations/create-invoice-rules.sql` | Database schema |

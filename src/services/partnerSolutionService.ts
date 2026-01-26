@@ -346,7 +346,8 @@ export class PartnerSolutionService {
       const current = await this.getPratica(praticaIri);
 
       // Build clean payload with only the fields the API accepts
-      const updatePayload = {
+      // IMPORTANT: Must preserve 'delivering' field for Commessa link
+      const updatePayload: Record<string, any> = {
         codiceagenzia: current.codiceagenzia,
         tipocattura: (current as any).tipocattura || 'API',
         stato: status,
@@ -360,6 +361,11 @@ export class PartnerSolutionService {
         noteinterne: (current as any).noteinterne,
         noteesterne: (current as any).noteesterne,
       };
+
+      // Preserve delivering field if present (links pratica to Commessa)
+      if ((current as any).delivering) {
+        updatePayload.delivering = (current as any).delivering;
+      }
 
       const response = await client.put(praticaIri, updatePayload);
       console.log('Pratica status updated successfully');
@@ -1304,9 +1310,13 @@ export class PartnerSolutionService {
     const supplierCode = 'IT09802381005'; // EnRoma Tours P.IVA - ALWAYS this value
     const now = new Date().toISOString();
 
+    // Pad booking_id to 9 characters with leading zeros (per spec)
+    const bookingIdPadded = params.bookingId.padStart(9, '0');
+
     console.log(`\n=== Creating Pratica for booking ${params.confirmationCode} ===`);
     console.log(`Customer: ${params.customer.firstName} ${params.customer.lastName}`);
     console.log(`Amount: €${params.amount}`);
+    console.log(`Booking ID (padded): ${bookingIdPadded}`);
 
     // Step 1: Get or create monthly Commessa
     const commessaInfo = params.commessaCode
@@ -1324,13 +1334,13 @@ export class PartnerSolutionService {
         cognome: params.customer.lastName,
         nome: params.customer.firstName,
         flagpersonafisica: 1,
-        codicefiscale: params.bookingId,
+        codicefiscale: bookingIdPadded,  // Must be 9 chars, left-padded with 0
         codiceagenzia: agencyCode,
         stato: 'INS',
         tipocattura: 'PS',
         iscliente: 1,
         isfornitore: 0,
-        externalid: params.bookingId,
+        externalid: bookingIdPadded,     // Must be 9 chars, left-padded with 0
       };
       const accountResponse = await client.post('/accounts', accountPayload);
       accountIri = accountResponse.data['@id'];
@@ -1342,7 +1352,7 @@ export class PartnerSolutionService {
     // Step 3: Create Pratica with Commessa link
     console.log('\nStep 2: Creating Pratica...');
     const praticaPayload: any = {
-      externalid: params.bookingId,
+      externalid: bookingIdPadded,       // Must be 9 chars, left-padded with 0
       cognomecliente: params.customer.lastName,
       nomecliente: params.customer.firstName,
       codiceagenzia: agencyCode,
@@ -1356,7 +1366,7 @@ export class PartnerSolutionService {
     };
     // Only add codicecliente if we created an Account (for Cliente linking)
     if (!params.skipAccount) {
-      praticaPayload.codicecliente = params.bookingId;
+      praticaPayload.codicecliente = bookingIdPadded;  // Must be 9 chars, left-padded with 0
     }
     const praticaResponse = await client.post('/prt_praticas', praticaPayload);
     const praticaIri = praticaResponse.data['@id'];
@@ -1377,27 +1387,25 @@ export class PartnerSolutionService {
 
     // Step 5: Add Servizio
     console.log('\nStep 4: Adding Servizio...');
-    const serviceDate = params.travelDate
-      ? params.travelDate.toISOString().split('T')[0]
-      : now.split('T')[0];
+    const praticaCreationDate = now.split('T')[0];  // Always use pratica creation date per spec
     const serviceTitle = params.serviceTitle || 'Tour UE ed Extra UE';
     const servizioPayload = {
       pratica: praticaIri,
-      externalid: params.bookingId,
-      tiposervizio: 'VIS',
+      externalid: bookingIdPadded,           // Must be 9 chars, left-padded with 0
+      tiposervizio: 'PKG',                   // Always PKQ per spec
       tipovendita: 'ORG',
       regimevendita: '74T',
       codicefornitore: supplierCode,
       ragsocfornitore: 'EnRoma Tours',
-      codicefilefornitore: params.bookingId,
+      codicefilefornitore: bookingIdPadded,  // Must be 9 chars, left-padded with 0
       datacreazione: now,
-      datainizioservizio: serviceDate,
-      datafineservizio: serviceDate,
+      datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
+      datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
       duratant: 0,
       duratagg: 1,
-      nrpaxadulti: 1,
-      nrpaxchild: 0,
-      nrpaxinfant: 0,
+      nrpaxadulti: 1,                        // Total participants
+      nrpaxchild: 0,                         // Always 0 per spec
+      nrpaxinfant: 0,                        // Always 0 per spec
       descrizione: serviceTitle,
       tipodestinazione: 'CEENAZ',
       annullata: 0,
@@ -1435,9 +1443,9 @@ export class PartnerSolutionService {
     // codicefile must match codicefilefornitore in Servizio to link payment to service
     console.log('\nStep 6: Adding Movimento Finanziario...');
     const movimentoPayload: MovimentoFinanziarioPayload = {
-      externalid: params.bookingId,
+      externalid: bookingIdPadded,   // Must be 9 chars, left-padded with 0
       tipomovimento: 'I',
-      codicefile: params.bookingId,  // Must match codicefilefornitore in Servizio to link
+      codicefile: bookingIdPadded,   // Must match codicefilefornitore in Servizio to link
       codiceagenzia: agencyCode,
       tipocattura: 'PS',
       importo: params.amount,
