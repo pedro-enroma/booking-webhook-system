@@ -127,6 +127,7 @@ export class InvoiceService {
     // 3. Create Pratica in Partner Solution
     try {
       const now = new Date().toISOString();
+      const commessaInfo = await this.partnerSolution.getOrCreateCommessaByCode(yearMonth);
       const psPratica = await this.partnerSolution.createPratica({
         codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
         tipocattura: 'PS',
@@ -137,7 +138,7 @@ export class InvoiceService {
         nomecliente: 'Invoice',
         descrizionepratica: `Monthly Invoice: ${yearMonth}`,
         externalid: `MONTHLY-${yearMonth}`,
-        delivering: `commessa:${yearMonth}`,
+        delivering: `commessa:${commessaInfo.id}`,
       } as any);
 
       // 4. Update DB record with Partner Solution IDs
@@ -441,6 +442,9 @@ export class InvoiceService {
       // Try to create it now
       try {
         const now = new Date().toISOString();
+        const commessaInfo = await this.partnerSolution.getOrCreateCommessaByCode(
+          monthlyPratica.year_month
+        );
         const psPratica = await this.partnerSolution.createPratica({
           codiceagenzia: process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206',
           tipocattura: 'PS',
@@ -451,7 +455,7 @@ export class InvoiceService {
           nomecliente: 'Invoice',
           descrizionepratica: `Monthly Invoice: ${monthlyPratica.year_month}`,
           externalid: `MONTHLY-${monthlyPratica.year_month}`,
-          delivering: `commessa:${monthlyPratica.year_month}`,
+          delivering: `commessa:${commessaInfo.id}`,
         } as any);
 
         await supabase
@@ -517,6 +521,8 @@ export class InvoiceService {
       const activityDate = activity.start_date_time?.split('T')[0] || new Date().toISOString().split('T')[0];
 
       try {
+        const productTitle = activity.product_title || 'Tour UE ed Extra UE';
+
         // Create Servizio in Partner Solution
         console.log(`[InvoiceService] Step 3: Creating Servizio for activity ${activity.activity_booking_id}...`);
         const servizio = await this.partnerSolution.createServizio({
@@ -532,12 +538,12 @@ export class InvoiceService {
           nrpaxinfant: 0,
           codicefornitore: 'IT09802381005',
           codicefilefornitore: String(bookingData.booking_id),
-          ragsocfornitore: 'AGENZIA VIAGGI PROPRI',
+          ragsocfornitore: 'EnRoma Tours',
           tipodestinazione: 'CEENAZ',
           duratagg: 1,
           duratant: 0,
           annullata: 0,
-          descrizione: 'Tour Italia e Vaticano',
+          descrizione: productTitle,
           codiceagenzia: agencyCode,
           stato: 'INS',
         } as any);
@@ -545,7 +551,7 @@ export class InvoiceService {
         // Create Quota for the servizio
         await this.partnerSolution.createQuota({
           servizio: servizio['@id'],
-          descrizionequota: `${bookingData.confirmation_code} - ${activity.activity_booking_id}`,
+          descrizionequota: productTitle,
           datavendita: activityDate,
           codiceisovalutacosto: 'EUR',
           codiceisovalutaricavo: 'EUR',
@@ -573,8 +579,8 @@ export class InvoiceService {
           datamodifica: now,
           datamovimento: activityDate,
           stato: 'INS',
-          codcausale: 'PAGCC',
-          descrizione: `${bookingData.confirmation_code} - ${activity.product_title}`,
+          codcausale: 'PAGBOK',
+          descrizione: `Tour UE ed Extra UE - ${bookingData.confirmation_code}`,
         });
 
         // Create line item in DB

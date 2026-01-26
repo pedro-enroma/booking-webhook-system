@@ -80,7 +80,7 @@ POST /api/invoices/send-to-partner
   "stato": "WP",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:2026-01"
+  "delivering": "commessa:B53D23E5-3DB1-4CC2-8659-EFAED539336D"
 }
 ```
 
@@ -89,7 +89,7 @@ POST /api/invoices/send-to-partner
 |-------|-------|-------------|
 | `codicecliente` | booking_id | Cliente reference (same as booking_id) |
 | `externalid` | booking_id | Our booking reference |
-| `delivering` | `commessa:{UUID}` | Links to Commessa by UUID |
+| `delivering` | `commessa:{UUID}` | Links to Commessa by UUID (auto-created if missing) |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
 | `tipocattura` | `PS` | Partner Solution |
 
@@ -199,6 +199,8 @@ POST /api/invoices/send-to-partner
 
 ---
 
+**Repeat Steps 4 and 5 for each activity** in the request payload. Each activity gets its own Servizio + Quota.
+
 ### Step 6: Add Movimento Finanziario
 
 **Endpoint:** `POST /mov_finanziarios`
@@ -249,9 +251,99 @@ POST /api/invoices/send-to-partner
   "stato": "INS",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:2026-01"
+  "delivering": "commessa:B53D23E5-3DB1-4CC2-8659-EFAED539336D"
 }
 ```
+
+---
+
+## Commessa Auto-Creation
+
+### Overview
+Each Pratica must be linked to a Commessa via the `delivering` field. The system automatically creates Commesse for each month if they don't exist.
+
+### FacileWS3 API (Commesse Management)
+
+**Base URL:** `https://facilews3.partnersolution.it/Api/Rest/{agencyCode}/Commesse`
+
+**Authentication:** Requires JWT token from FacileWS login.
+
+#### Login (FacileWS)
+```bash
+POST https://facilews.partnersolution.it/login.php
+Content-Type: application/x-www-form-urlencoded
+
+username=alberto@enroma.com&password=InSpe2026!
+
+# Response: { "jwt": "eyJ..." }
+```
+
+#### List Commesse
+```bash
+GET https://facilews3.partnersolution.it/Api/Rest/7206/Commesse?Token=<jwt_token>
+
+# Response:
+{
+  "data": {
+    "@Pagina": [
+      {
+        "id": "B53D23E5-3DB1-4CC2-8659-EFAED539336D",
+        "codice_commessa": "2026-01",
+        "descrizione": "Gennaio 2026"
+      },
+      {
+        "id": "6584B996-08CE-4B45-8A63-B9328EC070F4",
+        "codice_commessa": "2026-08",
+        "descrizione": "Agosto 2026"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+#### Create Commessa
+```bash
+POST https://facilews3.partnersolution.it/Api/Rest/7206/Commesse?Token=<jwt_token>
+Content-Type: application/json
+
+{
+  "CodiceCommessa": "2026-08",
+  "TitoloCommessa": "Agosto 2026",
+  "DescrizioneCommessa": "Tour UE ed Extra UE - Agosto 2026",
+  "ReferenteCommerciale": "",
+  "NoteInterne": ""
+}
+
+# Response:
+{
+  "data": {
+    "CommessaID": "6584B996-08CE-4B45-8A63-B9328EC070F4"
+  },
+  "code": 200
+}
+```
+
+### Flow
+1. Before creating a Pratica, system checks if Commessa exists for the booking's travel month
+2. If not found, system creates the Commessa via FacileWS3
+3. Pratica's `delivering` field is set to `commessa:{UUID}`
+
+### Italian Month Names
+| Month | Italian |
+|-------|---------|
+| 01 | Gennaio |
+| 02 | Febbraio |
+| 03 | Marzo |
+| 04 | Aprile |
+| 05 | Maggio |
+| 06 | Giugno |
+| 07 | Luglio |
+| 08 | Agosto |
+| 09 | Settembre |
+| 10 | Ottobre |
+| 11 | Novembre |
+| 12 | Dicembre |
 
 ---
 
@@ -260,9 +352,15 @@ POST /api/invoices/send-to-partner
 ### Environment Variables
 
 ```env
+# Partner Solution (Catture API)
 PARTNER_SOLUTION_USERNAME=enromacom
 PARTNER_SOLUTION_PASSWORD={q95j(t,v(N6
 PARTNER_SOLUTION_AGENCY_CODE=7206
+
+# FacileWS (Commesse API)
+FACILEWS_USERNAME=alberto@enroma.com
+FACILEWS_PASSWORD=InSpe2026!
+# (Optional legacy aliases: FACILE_WS3_USERNAME / FACILE_WS3_PASSWORD)
 ```
 
 ### Fixed Values
@@ -279,6 +377,15 @@ PARTNER_SOLUTION_AGENCY_CODE=7206
 | `tipodestinazione` | `CEENAZ` | Servizio |
 | `codcausale` | `PAGBOK` | Movimento |
 | `tipomovimento` | `I` | Movimento |
+
+---
+
+## Monthly Pratica (Auto-Invoice)
+
+The auto-invoice pipeline uses a monthly pratica model (see `src/services/invoiceService.ts`):
+- One Pratica per `year_month`
+- Each booking adds one Servizio + Quota per activity to that monthly Pratica
+- Accounts are deduplicated by `customer_id` (externalid `CUST-<id>`) when available
 
 ---
 
@@ -364,3 +471,5 @@ Error: tipodestinazione: The value you selected is not a valid choice.
 | 2026-01-23 | Changed codicefornitore to IT09802381005 |
 | 2026-01-23 | Changed codcausale to PAGBOK |
 | 2026-01-23 | Always create new account, link via codicecliente |
+| 2026-01-23 | Added Commessa auto-creation via FacileWS3 API |
+| 2026-01-23 | Delivering field now uses Commessa UUID (e.g., `commessa:UUID`) |

@@ -45,13 +45,20 @@ interface FacileWSLoginResponse {
 }
 
 interface CommessaResponse {
+  id?: string;
+  Id?: string;
+  codice_commessa?: string;
+  CodiceCommessa?: string;
+  Titolo_Commessa?: string;
+  Titolo?: string;
+  Descrizione?: string | null;
+  DataInizioValidita?: string;
+  DataFineValidita?: string | null;
+}
+
+interface CommessaInfo {
+  code: string;
   id: string;
-  codice_commessa: string;
-  Titolo_Commessa: string;
-  Titolo: string;
-  Descrizione: string | null;
-  DataInizioValidita: string;
-  DataFineValidita: string | null;
 }
 
 interface MovimentoFinanziarioPayload {
@@ -201,8 +208,14 @@ export class PartnerSolutionService {
       return this.facileToken;
     }
 
-    const username = process.env.FACILE_WS3_USERNAME || 'alberto@enroma.com';
-    const password = process.env.FACILE_WS3_PASSWORD || 'InSpe2026!';
+    const username =
+      process.env.FACILEWS_USERNAME ||
+      process.env.FACILE_WS3_USERNAME ||
+      'alberto@enroma.com';
+    const password =
+      process.env.FACILEWS_PASSWORD ||
+      process.env.FACILE_WS3_PASSWORD ||
+      'InSpe2026!';
 
     try {
       console.log('Authenticating with FacileWS3 API...');
@@ -1046,7 +1059,7 @@ export class PartnerSolutionService {
     codice: string;
     titolo: string;
     descrizione?: string;
-  }): Promise<{ CommessaID: string; Codice: string }> {
+  }): Promise<{ CommessaID: string }> {
     const token = await this.authenticateFacileWS3();
     const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
 
@@ -1077,38 +1090,83 @@ export class PartnerSolutionService {
   }
 
   /**
-   * Get or create a monthly Commessa
-   * Code format: YYYY-MM (e.g., "2026-01" for January 2026)
+   * Build Commessa title/description from a YYYY-MM code (or fallback)
    */
-  async getOrCreateMonthlyCommessa(date?: Date): Promise<string> {
-    const targetDate = date || new Date();
-    const year = targetDate.getFullYear();
-    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-    const commessaCode = `${year}-${month}`;
-
-    // List existing commesse
-    const commesse = await this.listCommesse();
-    const existing = commesse.find(c => c.codice_commessa === commessaCode);
-
-    if (existing) {
-      console.log(`Found existing Commessa: ${commessaCode}`);
-      return commessaCode;
-    }
-
-    // Create new commessa
+  private buildCommessaTitle(code: string, date?: Date): { title: string; description: string } {
     const monthNames = [
       'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
       'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
     ];
-    const monthName = monthNames[targetDate.getMonth()];
 
-    await this.createCommessa({
-      codice: commessaCode,
-      titolo: `${monthName} ${year}`,
-      descrizione: `Tour UE ed Extra UE - ${monthName} ${year}`,
+    let year: string | null = null;
+    let monthName: string | null = null;
+
+    if (date) {
+      year = String(date.getFullYear());
+      monthName = monthNames[date.getMonth()];
+    } else {
+      const match = code.match(/^(\d{4})-(\d{2})$/);
+      if (match) {
+        year = match[1];
+        const monthIndex = Number(match[2]) - 1;
+        monthName = monthNames[monthIndex] || null;
+      }
+    }
+
+    if (year && monthName) {
+      return {
+        title: `${monthName} ${year}`,
+        description: `Tour UE ed Extra UE - ${monthName} ${year}`,
+      };
+    }
+
+    return {
+      title: code,
+      description: `Tour UE ed Extra UE - ${code}`,
+    };
+  }
+
+  /**
+   * Get or create a Commessa by code and return its UUID
+   */
+  private async getOrCreateCommessaId(code: string, dateForTitle?: Date): Promise<string> {
+    const commesse = await this.listCommesse();
+    const existing = commesse.find(
+      c => c.codice_commessa === code || c.CodiceCommessa === code
+    );
+
+    const existingId = existing?.id || existing?.Id;
+    if (existingId) {
+      console.log(`Found existing Commessa: ${code}`);
+      return existingId;
+    }
+
+    const { title, description } = this.buildCommessaTitle(code, dateForTitle);
+    const created = await this.createCommessa({
+      codice: code,
+      titolo: title,
+      descrizione: description,
     });
 
-    return commessaCode;
+    return created.CommessaID;
+  }
+
+  /**
+   * Get or create a monthly Commessa
+   * Code format: YYYY-MM (e.g., "2026-01" for January 2026)
+   */
+  async getOrCreateMonthlyCommessa(date?: Date): Promise<CommessaInfo> {
+    const commessaCode = this.getMonthlyCommessaCode(date);
+    const commessaId = await this.getOrCreateCommessaId(commessaCode, date);
+    return { code: commessaCode, id: commessaId };
+  }
+
+  /**
+   * Get or create a Commessa by explicit code
+   */
+  async getOrCreateCommessaByCode(code: string): Promise<CommessaInfo> {
+    const commessaId = await this.getOrCreateCommessaId(code);
+    return { code, id: commessaId };
   }
 
   /**
@@ -1229,6 +1287,7 @@ export class PartnerSolutionService {
     amount: number;              // Customer price in EUR
     sellerTitle?: string;        // Optional: seller for tracking
     travelDate?: Date;           // Optional: date of service
+    serviceTitle?: string;       // Optional: servizio/quota description
     commessaCode?: string;       // Optional: override monthly commessa
     skipAccount?: boolean;       // Optional: skip Account/Cliente creation
   }): Promise<{
@@ -1239,6 +1298,7 @@ export class PartnerSolutionService {
     quotaIri: string;
     movimentoIri: string;
     commessaCode: string;
+    commessaId: string;
   }> {
     const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
     const supplierCode = 'IT09802381005'; // EnRoma Tours P.IVA - ALWAYS this value
@@ -1249,8 +1309,10 @@ export class PartnerSolutionService {
     console.log(`Amount: €${params.amount}`);
 
     // Step 1: Get or create monthly Commessa
-    const commessaCode = params.commessaCode || await this.getOrCreateMonthlyCommessa(params.travelDate);
-    console.log(`Using Commessa: ${commessaCode}`);
+    const commessaInfo = params.commessaCode
+      ? await this.getOrCreateCommessaByCode(params.commessaCode)
+      : await this.getOrCreateMonthlyCommessa(params.travelDate);
+    console.log(`Using Commessa: ${commessaInfo.code} (${commessaInfo.id})`);
 
     const client = await this.getClient();
 
@@ -1290,7 +1352,7 @@ export class PartnerSolutionService {
       stato: 'WP',
       descrizionepratica: 'Tour UE ed Extra UE',
       noteinterne: params.sellerTitle ? `Seller: ${params.sellerTitle}` : '',
-      delivering: `commessa:${commessaCode}`,
+      delivering: `commessa:${commessaInfo.id}`,
     };
     // Only add codicecliente if we created an Account (for Cliente linking)
     if (!params.skipAccount) {
@@ -1315,11 +1377,14 @@ export class PartnerSolutionService {
 
     // Step 5: Add Servizio
     console.log('\nStep 4: Adding Servizio...');
-    const serviceDate = params.travelDate ? params.travelDate.toISOString() : now;
+    const serviceDate = params.travelDate
+      ? params.travelDate.toISOString().split('T')[0]
+      : now.split('T')[0];
+    const serviceTitle = params.serviceTitle || 'Tour UE ed Extra UE';
     const servizioPayload = {
       pratica: praticaIri,
       externalid: params.bookingId,
-      tiposervizio: 'PKG',
+      tiposervizio: 'VIS',
       tipovendita: 'ORG',
       regimevendita: '74T',
       codicefornitore: supplierCode,
@@ -1333,7 +1398,7 @@ export class PartnerSolutionService {
       nrpaxadulti: 1,
       nrpaxchild: 0,
       nrpaxinfant: 0,
-      descrizione: 'Tour UE ed Extra UE',
+      descrizione: serviceTitle,
       tipodestinazione: 'CEENAZ',
       annullata: 0,
       codiceagenzia: agencyCode,
@@ -1347,7 +1412,7 @@ export class PartnerSolutionService {
     console.log('\nStep 5: Adding Quota...');
     const quotaPayload = {
       servizio: servizioIri,
-      descrizionequota: 'Tour UE ed Extra UE',
+      descrizionequota: serviceTitle,
       datavendita: now,
       codiceisovalutacosto: 'EUR',
       quantitacosto: 1,
@@ -1380,7 +1445,7 @@ export class PartnerSolutionService {
       datamodifica: now,
       datamovimento: now,
       stato: 'INS',
-      codcausale: 'PAGCC',
+      codcausale: 'PAGBOK',
       descrizione: `Tour UE ed Extra UE - ${params.confirmationCode}`,
     };
     const movimentoResponse = await this.createMovimentoFinanziario(movimentoPayload);
@@ -1394,7 +1459,7 @@ export class PartnerSolutionService {
 
     console.log('\n=== Pratica created successfully ===');
     console.log(`Pratica IRI: ${praticaIri}`);
-    console.log(`Commessa: ${commessaCode}`);
+    console.log(`Commessa: ${commessaInfo.code} (${commessaInfo.id})`);
 
     return {
       praticaIri,
@@ -1403,7 +1468,8 @@ export class PartnerSolutionService {
       servizioIri,
       quotaIri,
       movimentoIri,
-      commessaCode,
+      commessaCode: commessaInfo.code,
+      commessaId: commessaInfo.id,
     };
   }
 
