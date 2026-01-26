@@ -159,6 +159,7 @@ Processes all confirmed bookings against configured rules and creates `scheduled
 - **Default Sales Type:** ORG, INT
 - **Invoice Date Type:** Creation or Travel
   - **Delay Days:** (only if Travel) Number of days after travel
+- **Execution Time:** Time of day to send invoices (e.g., `08:00`, `14:00`)
 - **Start Date:** (optional) Only process bookings with travel date >= this
 
 ### Apply Rules Button
@@ -173,6 +174,7 @@ Runs the `process-rules` endpoint to create scheduled invoices for all matching 
    - Sellers: [Civitatis]
    - Auto Invoice: ON
    - Invoice Date Type: Travel (+7 days)
+   - Execution Time: 08:00
    - Regime: 74T
    - Start Date: 2026-01-01
 
@@ -182,9 +184,9 @@ Runs the `process-rules` endpoint to create scheduled invoices for all matching 
    - Creates `scheduled_invoices` entries with calculated send dates
 
 3. **Scheduled Job (separate process):**
-   - Runs daily
-   - Finds `scheduled_invoices` where `scheduled_send_date <= today` and `status = pending`
-   - Sends each to Partner Solution using the 7-step flow
+   - Runs periodically (e.g., every hour or at specific times)
+   - Finds `scheduled_invoices` where `scheduled_send_date <= today`, `scheduled_send_time <= current_time`, and `status = pending`
+   - Sends each to Partner Solution using the 7-step flow (with auto-created Commessa)
    - Updates status to `sent` or `failed`
 
 ---

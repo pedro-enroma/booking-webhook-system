@@ -502,16 +502,16 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     const {
       booking_id,
       confirmation_code,
-      year_month,
+      year_month: providedYearMonth,
       customer,          // { first_name, last_name }
       activities,        // [{ activity_booking_id, product_title, revenue, activity_date, pax_adults, pax_children, pax_infants }]
       seller_title,      // Optional seller name for notes
     } = req.body;
 
-    if (!booking_id || !confirmation_code || !year_month || !activities || activities.length === 0) {
+    if (!booking_id || !confirmation_code || !activities || activities.length === 0) {
       res.status(400).json({
         success: false,
-        error: 'Missing required fields: booking_id, confirmation_code, year_month, activities',
+        error: 'Missing required fields: booking_id, confirmation_code, activities',
       });
       return;
     }
@@ -523,19 +523,36 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       lastName: customer?.last_name || 'N/A',
     };
 
+    let resolvedYearMonth = providedYearMonth as string | undefined;
+
+    try {
+      const praticaMonth = await invoiceService.getPraticaYearMonthForBooking(Number(booking_id));
+      resolvedYearMonth = praticaMonth.yearMonth;
+      if (providedYearMonth && providedYearMonth !== resolvedYearMonth) {
+        console.log(`[Invoices] Overriding provided year_month ${providedYearMonth} with ${resolvedYearMonth} based on rules`);
+      }
+    } catch (error) {
+      console.warn('[Invoices] Failed to resolve pratica month, falling back to provided year_month:', error);
+    }
+
+    if (!resolvedYearMonth) {
+      const fallbackDate = new Date();
+      resolvedYearMonth = `${fallbackDate.getUTCFullYear()}-${String(fallbackDate.getUTCMonth() + 1).padStart(2, '0')}`;
+    }
+
     // Get axios client for direct API calls
     const client = await (partnerSolutionService as any).getClient();
 
     // Ensure Commessa exists for this year_month (creates if not exists)
-    console.log(`\n  Ensuring Commessa exists for ${year_month}...`);
-    const commessaId = await getCommessaId(year_month); // Creates the Commessa if it doesn't exist
+    console.log(`\n  Ensuring Commessa exists for ${resolvedYearMonth}...`);
+    const commessaId = await getCommessaId(resolvedYearMonth); // Creates the Commessa if it doesn't exist
     const deliveringValue = `commessa:${commessaId}`;
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
     console.log(`Customer: ${customerName.firstName} ${customerName.lastName}`);
     console.log(`Agency: ${agencyCode}`);
-    console.log(`Commessa: ${year_month} (${commessaId})`);
+    console.log(`Commessa: ${resolvedYearMonth} (${commessaId})`);
     console.log(`Delivering field: ${deliveringValue}\n`);
 
     // Step 1: Always create new Account
@@ -713,14 +730,14 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     console.log('Booking:', confirmation_code);
     console.log('Customer:', `${customerName.firstName} ${customerName.lastName}`);
     console.log('Amount: €', totalAmount);
-    console.log('Commessa:', `${year_month} (${commessaId})`);
+    console.log('Commessa:', `${resolvedYearMonth} (${commessaId})`);
     console.log('Agency:', agencyCode);
 
     res.json({
       success: true,
       booking_id,
       confirmation_code,
-      year_month,
+      year_month: resolvedYearMonth,
       pratica_id: praticaIri,
       account_id: accountIri,
       passeggero_id: passeggeroIri,

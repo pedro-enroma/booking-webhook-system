@@ -14,7 +14,7 @@ POST /api/invoices/send-to-partner
 
 ```json
 {
-  "booking_id": 80404039,
+  "booking_id": "080404039",
   "confirmation_code": "CIV-80404039",
   "year_month": "2026-01",
   "customer": {
@@ -36,6 +36,10 @@ POST /api/invoices/send-to-partner
 
 ## Complete 7-Step Flow
 
+### Booking ID Formatting
+- Define `booking_id_padded` = booking_id left-padded with `0` to 9 characters (when booking_id < 100000000)
+- Use `booking_id_padded` in all Partner Solution fields that reference the booking ID (`codicefiscale`, `codicecliente`, `externalid`, `codicefilefornitore`, `codicefile`)
+
 ### Step 1: Create Account (Always New)
 
 **Endpoint:** `POST /accounts`
@@ -46,7 +50,7 @@ POST /api/invoices/send-to-partner
   "cognome": "Sanchez",
   "nome": "Laura",
   "flagpersonafisica": 1,
-  "codicefiscale": "80404039",
+  "codicefiscale": "080404039",
   "codiceagenzia": "7206",
   "stato": "INS",
   "tipocattura": "PS",
@@ -57,7 +61,7 @@ POST /api/invoices/send-to-partner
 
 **Notes:**
 - Always create a new account (don't search for existing)
-- `codicefiscale` = booking_id
+- `codicefiscale` must be 9 characters: left-pad booking_id with `0` when booking_id < 100000000
 - Account ID is used to link to Pratica
 
 ---
@@ -69,8 +73,8 @@ POST /api/invoices/send-to-partner
 **Payload:**
 ```json
 {
-  "codicecliente": "80404039",
-  "externalid": "80404039",
+  "codicecliente": "080404039",
+  "externalid": "080404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
   "codiceagenzia": "7206",
@@ -87,8 +91,8 @@ POST /api/invoices/send-to-partner
 **Key Fields:**
 | Field | Value | Description |
 |-------|-------|-------------|
-| `codicecliente` | booking_id | Cliente reference (same as booking_id) |
-| `externalid` | booking_id | Our booking reference |
+| `codicecliente` | booking_id_padded | Cliente reference (9 chars, left-padded) |
+| `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
 | `delivering` | `commessa:{UUID}` | Links to Commessa by UUID (auto-created if missing) |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
 | `tipocattura` | `PS` | Partner Solution |
@@ -124,13 +128,13 @@ POST /api/invoices/send-to-partner
 ```json
 {
   "pratica": "/prt_praticas/<pratica_id>",
-  "externalid": "80404039",
-  "tiposervizio": "VIS",
+  "externalid": "080404039",
+  "tiposervizio": "PKQ",
   "tipovendita": "ORG",
   "regimevendita": "74T",
   "codicefornitore": "IT09802381005",
   "ragsocfornitore": "EnRoma Tours",
-  "codicefilefornitore": "80404039",
+  "codicefilefornitore": "080404039",
   "datacreazione": "2026-01-23T12:00:00.000Z",
   "datainizioservizio": "2026-01-28",
   "datafineservizio": "2026-01-28",
@@ -139,7 +143,7 @@ POST /api/invoices/send-to-partner
   "nrpaxadulti": 1,
   "nrpaxchild": 0,
   "nrpaxinfant": 0,
-  "descrizione": "Tour Vaticano",
+  "descrizione": "Tour UE ed Extra UE",
   "tipodestinazione": "CEENAZ",
   "annullata": 0,
   "codiceagenzia": "7206",
@@ -152,15 +156,22 @@ POST /api/invoices/send-to-partner
 |-------|-------|-------------|
 | `codicefornitore` | `IT09802381005` | Supplier tax code |
 | `ragsocfornitore` | `EnRoma Tours` | Supplier name |
-| `codicefilefornitore` | booking_id | Our booking reference |
-| `tiposervizio` | `VIS` | Visit/Tour |
+| `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
+| `codicefilefornitore` | booking_id_padded | Our booking reference (9 chars, left-padded) |
+| `tiposervizio` | `PKQ` | Always PKQ |
 | `tipovendita` | `ORG` | Organized |
 | `regimevendita` | `74T` | Tax regime |
-| `tipodestinazione` | `CEENAZ` | Destination type (valid values: CEENAZ, etc.) |
+| `tipodestinazione` | `CEENAZ` | Temporary destination type (will switch to new MISTO code when provided) |
 | `stato` | `INS` | Inserted |
 
+**Notes:**
+- `tiposervizio` is always `PKQ`
+- `nrpaxadulti` = total participants for the booking_id (not per activity)
+- `nrpaxchild` and `nrpaxinfant` are always `0`
+- `descrizione` is always `"Tour UE ed Extra UE"`
+
 **Invalid Values:**
-- `tipodestinazione: 'MISTO'` - NOT VALID (API rejects it)
+- `tipodestinazione: 'MISTO'` - NOT VALID (API rejects it). Use `CEENAZ` until new MISTO code is provided.
 
 ---
 
@@ -172,7 +183,7 @@ POST /api/invoices/send-to-partner
 ```json
 {
   "servizio": "/prt_praticaservizios/<servizio_id>",
-  "descrizionequota": "Tour Vaticano",
+  "descrizionequota": "Tour UE ed Extra UE",
   "datavendita": "2026-01-23T12:00:00.000Z",
   "codiceisovalutacosto": "EUR",
   "quantitacosto": 1,
@@ -199,6 +210,9 @@ POST /api/invoices/send-to-partner
 
 ---
 
+**Notes:**
+- `descrizionequota` is always `"Tour UE ed Extra UE"`
+
 **Repeat Steps 4 and 5 for each activity** in the request payload. Each activity gets its own Servizio + Quota.
 
 ### Step 6: Add Movimento Finanziario
@@ -208,9 +222,9 @@ POST /api/invoices/send-to-partner
 **Payload:**
 ```json
 {
-  "externalid": "80404039",
+  "externalid": "080404039",
   "tipomovimento": "I",
-  "codicefile": "80404039",
+  "codicefile": "080404039",
   "codiceagenzia": "7206",
   "tipocattura": "PS",
   "importo": 95,
@@ -226,6 +240,8 @@ POST /api/invoices/send-to-partner
 **Key Fields:**
 | Field | Value | Description |
 |-------|-------|-------------|
+| `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
+| `codicefile` | booking_id_padded | Our booking reference (9 chars, left-padded) |
 | `tipomovimento` | `I` | Income (Incasso) |
 | `codcausale` | `PAGBOK` | Payment cause code |
 | `importo` | amount | Total amount |
@@ -240,8 +256,8 @@ POST /api/invoices/send-to-partner
 
 ```json
 {
-  "codicecliente": "80404039",
-  "externalid": "80404039",
+  "codicecliente": "080404039",
+  "externalid": "080404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
   "codiceagenzia": "7206",
@@ -261,6 +277,11 @@ POST /api/invoices/send-to-partner
 
 ### Overview
 Each Pratica must be linked to a Commessa via the `delivering` field. The system automatically creates Commesse for each month if they don't exist.
+
+**Commessa Code Source**
+- Commessa code format is `YYYY-MM`, but it is **not always the travel month**.
+- `YYYY-MM` is the month **assigned to the Pratica** (based on seller rules in Tourmageddon).
+- Example: for `EnRoma.com`, Pratica is created immediately on booking confirmation, so `YYYY-MM` uses the **booking creation month**, even if travel is next year.
 
 ### FacileWS3 API (Commesse Management)
 
@@ -325,9 +346,10 @@ Content-Type: application/json
 ```
 
 ### Flow
-1. Before creating a Pratica, system checks if Commessa exists for the booking's travel month
-2. If not found, system creates the Commessa via FacileWS3
-3. Pratica's `delivering` field is set to `commessa:{UUID}`
+1. Before creating a Pratica, system determines the Pratica month (`YYYY-MM`) based on seller rules
+2. System checks if Commessa exists for that `YYYY-MM`
+3. If not found, system creates the Commessa via FacileWS3
+4. Pratica's `delivering` field is set to `commessa:{UUID}`
 
 ### Italian Month Names
 | Month | Italian |
@@ -371,10 +393,10 @@ FACILEWS_PASSWORD=InSpe2026!
 | `tipocattura` | `PS` | Account, Pratica, Movimento |
 | `codicefornitore` | `IT09802381005` | Servizio |
 | `ragsocfornitore` | `EnRoma Tours` | Servizio |
-| `tiposervizio` | `VIS` | Servizio |
+| `tiposervizio` | `PKQ` | Servizio |
 | `tipovendita` | `ORG` | Servizio |
 | `regimevendita` | `74T` | Servizio |
-| `tipodestinazione` | `CEENAZ` | Servizio |
+| `tipodestinazione` | `CEENAZ` (temporary) | Servizio |
 | `codcausale` | `PAGBOK` | Movimento |
 | `tipomovimento` | `I` | Movimento |
 
@@ -394,7 +416,7 @@ The auto-invoice pipeline uses a monthly pratica model (see `src/services/invoic
 ```json
 {
   "success": true,
-  "booking_id": 80404039,
+  "booking_id": "080404039",
   "confirmation_code": "CIV-80404039",
   "year_month": "2026-01",
   "pratica_id": "/prt_praticas/cad8910d-f859-11f0-bca8-000d3a3c3748",
@@ -456,7 +478,7 @@ Error: tipodestinazione: The value you selected is not a valid choice.
 **Solution:** Use `CEENAZ` (not `MISTO`)
 
 ### Consistent IDs across entities
-**Important:** `codicecliente` (pratica), `codicefilefornitore` (servizio), and `codicefile` (movimento) should all use the same value: `booking_id`
+**Important:** `codicecliente` (pratica), `externalid`, `codicefilefornitore` (servizio), and `codicefile` (movimento) should all use the same value: `booking_id_padded` (9 chars, left-padded)
 
 ### Missing Movimento Finanziario
 **Solution:** Step 6 must create movimento with `codcausale: 'PAGBOK'` and `tipomovimento: 'I'`

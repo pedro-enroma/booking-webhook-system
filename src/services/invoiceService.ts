@@ -26,6 +26,13 @@ import {
   PSStatus,
 } from '../types/invoice.types';
 
+interface InvoiceRule {
+  invoice_date_type: 'creation' | 'travel';
+  sellers: string[];
+  invoice_start_date?: string | null;
+  name?: string;
+}
+
 export class InvoiceService {
   private partnerSolution: PartnerSolutionService;
 
@@ -312,31 +319,14 @@ export class InvoiceService {
       }
 
       // 3. Determine year-month based on invoice rules
-      // Check if there's a rule for this seller
-      let yearMonth: string;
-      const sellerName = bookingData.activities?.[0]?.activity_seller || bookingData.seller_name;
-
-      if (sellerName) {
-        const { data: rules } = await supabase
-          .from('invoice_rules')
-          .select('invoice_date_type')
-          .contains('sellers', [sellerName])
-          .single();
-
-        if (rules?.invoice_date_type === 'travel' && bookingData.activities?.[0]?.start_date_time) {
-          // Use travel date for this seller
-          const travelDate = bookingData.activities[0].start_date_time.split('T')[0];
-          yearMonth = travelDate.substring(0, 7);
-          console.log(`[InvoiceService] Using travel date for ${sellerName}: ${travelDate} -> ${yearMonth}`);
-        } else {
-          // Use creation date
-          yearMonth = bookingData.creation_date.substring(0, 7);
-          console.log(`[InvoiceService] Using creation date: ${bookingData.creation_date} -> ${yearMonth}`);
-        }
+      const praticaMonth = await this.resolvePraticaYearMonth(bookingData);
+      const yearMonth = praticaMonth.yearMonth;
+      if (praticaMonth.ruleType === 'travel') {
+        console.log(`[InvoiceService] Using travel date for ${praticaMonth.sellerName || 'unknown seller'}: ${praticaMonth.sourceDate} -> ${yearMonth}`);
+      } else if (praticaMonth.ruleType === 'creation') {
+        console.log(`[InvoiceService] Using creation date for ${praticaMonth.sellerName || 'unknown seller'}: ${praticaMonth.sourceDate} -> ${yearMonth}`);
       } else {
-        // Fallback to creation date
-        yearMonth = bookingData.creation_date.substring(0, 7);
-        console.log(`[InvoiceService] No seller, using creation date: ${yearMonth}`);
+        console.log(`[InvoiceService] No seller rule, using creation date: ${yearMonth}`);
       }
 
       // 4. Get or create monthly pratica
@@ -425,6 +415,108 @@ export class InvoiceService {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  async getPraticaYearMonthForBooking(bookingId: number): Promise<{
+    yearMonth: string;
+    ruleType: 'creation' | 'travel' | 'none';
+    sellerName?: string;
+    sourceDate: string;
+  }> {
+    const bookingData = await this.fetchBookingData(bookingId);
+    if (!bookingData) {
+      throw new Error(`Booking ${bookingId} not found`);
+    }
+    return this.resolvePraticaYearMonth(bookingData);
+  }
+
+  private async resolvePraticaYearMonth(bookingData: BookingDataForInvoice): Promise<{
+    yearMonth: string;
+    ruleType: 'creation' | 'travel' | 'none';
+    sellerName?: string;
+    sourceDate: string;
+  }> {
+    const fallbackDate = bookingData.creation_date || new Date().toISOString();
+    const sellerName =
+      bookingData.seller_name ||
+      bookingData.activities.find((activity) => activity.activity_seller)?.activity_seller;
+
+    if (!sellerName) {
+      return {
+        yearMonth: this.formatYearMonth(fallbackDate),
+        ruleType: 'none',
+        sourceDate: fallbackDate,
+      };
+    }
+
+    const rule = await this.getInvoiceRuleForSeller(sellerName);
+    if (!rule) {
+      return {
+        yearMonth: this.formatYearMonth(fallbackDate),
+        ruleType: 'none',
+        sellerName,
+        sourceDate: fallbackDate,
+      };
+    }
+
+    if (rule.invoice_date_type === 'travel') {
+      const travelDate = this.getPrimaryTravelDate(bookingData) || fallbackDate;
+      return {
+        yearMonth: this.formatYearMonth(travelDate),
+        ruleType: 'travel',
+        sellerName,
+        sourceDate: travelDate,
+      };
+    }
+
+    return {
+      yearMonth: this.formatYearMonth(fallbackDate),
+      ruleType: 'creation',
+      sellerName,
+      sourceDate: fallbackDate,
+    };
+  }
+
+  private async getInvoiceRuleForSeller(sellerName: string): Promise<InvoiceRule | null> {
+    const { data: rules, error } = await supabase
+      .from('invoice_rules')
+      .select('name, sellers, invoice_date_type, invoice_start_date');
+
+    if (error || !rules) {
+      console.error('[InvoiceService] Error fetching invoice rules:', error);
+      return null;
+    }
+
+    for (const rule of rules as InvoiceRule[]) {
+      if (rule.sellers?.includes(sellerName)) {
+        return rule;
+      }
+    }
+
+    return null;
+  }
+
+  private getPrimaryTravelDate(bookingData: BookingDataForInvoice): string | null {
+    const activity = bookingData.activities.find((entry) => entry.start_date_time);
+    return activity?.start_date_time || null;
+  }
+
+  private formatYearMonth(dateValue: string): string {
+    const datePart = dateValue?.split('T')[0];
+    if (datePart) {
+      const [year, month] = datePart.split('-');
+      if (year && month) {
+        return `${year}-${month}`;
+      }
+    }
+
+    const parsed = new Date(dateValue);
+    if (Number.isNaN(parsed.getTime())) {
+      const now = new Date();
+      return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+    }
+
+    return `${parsed.getUTCFullYear()}-${String(parsed.getUTCMonth() + 1).padStart(2, '0')}`;
   }
 
   /**
