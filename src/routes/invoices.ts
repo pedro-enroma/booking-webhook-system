@@ -627,7 +627,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       const activityDate = activity.activity_date
         ? activity.activity_date.split('T')[0]
         : now.split('T')[0];
-      const productTitle = activity.product_title || 'Tour UE ed Extra UE';
+      const serviceDescription = 'Tour UE ed Extra UE';
 
       let paxAdults = Number(activity.pax_adults || 0);
       let paxChildren = Number(activity.pax_children || 0);
@@ -653,7 +653,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
         nrpaxadulti: paxAdults,
         nrpaxchild: paxChildren,
         nrpaxinfant: paxInfants,
-        descrizione: productTitle,
+        descrizione: serviceDescription,
         tipodestinazione: 'CEENAZ',
         annullata: 0,
         codiceagenzia: agencyCode,
@@ -667,7 +667,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       console.log('Step 5: Adding Quota...');
       const quotaPayload = {
         servizio: servizioIri,
-        descrizionequota: productTitle,
+        descrizionequota: serviceDescription,
         datavendita: now,
         codiceisovalutacosto: 'EUR',
         quantitacosto: 1,
