@@ -318,9 +318,6 @@ export class InvoiceRulesService {
         product_title,
         start_date_time,
         total_price,
-        pax_adults,
-        pax_children,
-        pax_infants,
         activity_seller
       `)
       .in('activity_seller', sellers)
@@ -353,9 +350,6 @@ export class InvoiceRulesService {
           product_title,
           start_date_time,
           total_price,
-          pax_adults,
-          pax_children,
-          pax_infants,
           activity_seller
         )
       `)
@@ -412,9 +406,9 @@ export class InvoiceRulesService {
           product_title: a.product_title,
           start_date_time: a.start_date_time,
           total_price: a.total_price,
-          pax_adults: a.pax_adults || 0,
-          pax_children: a.pax_children || 0,
-          pax_infants: a.pax_infants || 0,
+          pax_adults: 1,  // Default to 1 (pax columns don't exist in activity_bookings)
+          pax_children: 0,
+          pax_infants: 0,
           activity_seller: a.activity_seller,
         })),
         seller_name: sellerName,
