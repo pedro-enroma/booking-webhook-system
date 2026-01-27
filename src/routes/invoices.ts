@@ -651,7 +651,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       nrpaxchild: 0,
       nrpaxinfant: 0,
       descrizione: 'Tour UE ed Extra UE',
-      tipodestinazione: 'CEENAZ',
+      tipodestinazione: 'MISTO',
       annullata: 0,
       codiceagenzia: agencyCode,
       stato: 'INS'
@@ -1846,7 +1846,7 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
             nrpaxchild: 0,
             nrpaxinfant: 0,
             descrizione: 'Tour UE ed Extra UE',
-            tipodestinazione: 'CEENAZ',
+            tipodestinazione: 'MISTO',
             annullata: 0,
             codiceagenzia: agencyCode,
             stato: 'INS'
@@ -2152,7 +2152,7 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       nrpaxchild: 0,
       nrpaxinfant: 0,
       descrizione: 'Tour UE ed Extra UE',
-      tipodestinazione: 'CEENAZ',
+      tipodestinazione: 'MISTO',
       annullata: 0,
       codiceagenzia: agencyCode,
       stato: 'INS'
@@ -2462,7 +2462,7 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       nrpaxchild: 0,
       nrpaxinfant: 0,
       descrizione: 'Tour UE ed Extra UE',
-      tipodestinazione: 'CEENAZ',
+      tipodestinazione: 'MISTO',
       annullata: 0,
       codiceagenzia: agencyCode,
       stato: 'INS'

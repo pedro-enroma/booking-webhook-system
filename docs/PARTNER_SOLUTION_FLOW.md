@@ -161,7 +161,7 @@ POST /api/invoices/send-to-partner
 | `tiposervizio` | `PKG` | Always PKG |
 | `tipovendita` | `ORG` | Organized |
 | `regimevendita` | `74T` | Tax regime |
-| `tipodestinazione` | `CEENAZ` | Temporary destination type (will switch to new MISTO code when provided) |
+| `tipodestinazione` | `MISTO` | Mixed destination type (CEE/Fuori CEE) |
 | `datainizioservizio` | pratica creation date | Always pratica creation date (NOT activity date) |
 | `datafineservizio` | pratica creation date | Always pratica creation date (NOT activity date) |
 | `stato` | `INS` | Inserted |
@@ -173,9 +173,6 @@ POST /api/invoices/send-to-partner
 - `nrpaxchild` and `nrpaxinfant` are always `0`
 - `descrizione` is always `"Tour UE ed Extra UE"`
 - `datainizioservizio` and `datafineservizio` are always the pratica creation date, never the activity travel date
-
-**Invalid Values:**
-- `tipodestinazione: 'MISTO'` - NOT VALID (API rejects it). Use `CEENAZ` until new MISTO code is provided.
 
 ---
 
@@ -401,7 +398,7 @@ FACILEWS_PASSWORD=InSpe2026!
 | `tiposervizio` | `PKG` | Servizio |
 | `tipovendita` | `ORG` | Servizio |
 | `regimevendita` | `74T` | Servizio |
-| `tipodestinazione` | `CEENAZ` (temporary) | Servizio |
+| `tipodestinazione` | `MISTO` | Servizio |
 | `codcausale` | `PAGBOK` | Movimento |
 | `tipomovimento` | `I` | Movimento |
 
