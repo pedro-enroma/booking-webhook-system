@@ -35,6 +35,7 @@ export interface BookingForInvoicing {
   customer: {
     first_name: string;
     last_name: string;
+    phone_number?: string | null;
   } | null;
   activities: Array<{
     activity_booking_id: number;
@@ -343,7 +344,7 @@ export class InvoiceRulesService {
         total_price,
         currency,
         booking_customers(
-          customers(first_name, last_name)
+          customers(first_name, last_name, phone_number)
         ),
         activity_bookings(
           activity_booking_id,
@@ -400,6 +401,7 @@ export class InvoiceRulesService {
         customer: customer ? {
           first_name: (customer as any).first_name,
           last_name: (customer as any).last_name,
+          phone_number: (customer as any).phone_number,
         } : null,
         activities: activities.map((a: any) => ({
           activity_booking_id: a.activity_booking_id,

@@ -9,6 +9,7 @@ import { invoiceService } from '../services/invoiceService';
 import { partnerSolutionService } from '../services/partnerSolutionService';
 import { invoiceRulesService } from '../services/invoiceRulesService';
 import { supabase } from '../config/supabase';
+import { getCountryNameForPS } from '../utils/countryFromPhone';
 import {
   CreateInvoiceRequest,
   CreateBatchInvoiceRequest,
@@ -517,7 +518,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       return;
     }
 
-    // Fetch booking from database to get total_price
+    // Fetch booking and customer data from database
     const { data: bookingData, error: bookingError } = await supabase
       .from('bookings')
       .select('total_price')
@@ -531,6 +532,16 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       });
       return;
     }
+
+    // Fetch customer phone for country detection
+    const { data: customerData } = await supabase
+      .from('booking_customers')
+      .select('customers(phone_number)')
+      .eq('booking_id', booking_id)
+      .single();
+
+    const customerPhone = (customerData as any)?.customers?.phone_number || null;
+    const customerCountry = getCountryNameForPS(customerPhone);
 
     const totalAmount = bookingData.total_price || 0;
     const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
@@ -577,6 +588,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
 
     // Step 1: Always create new Account
     console.log('Step 1: Creating new account...');
+    console.log(`  Country from phone: ${customerCountry} (phone: ${customerPhone || 'none'})`);
     const accountPayload = {
       cognome: customerName.lastName,
       nome: customerName.firstName,
@@ -586,7 +598,8 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       stato: 'INS',
       tipocattura: 'PS',
       iscliente: 1,
-      isfornitore: 0
+      isfornitore: 0,
+      nazione: customerCountry,  // Country from phone number, fallback: Spain
     };
 
     const accountResponse = await client.post('/accounts', accountPayload);
@@ -1782,6 +1795,8 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
             firstName: booking.customer?.first_name || 'N/A',
             lastName: booking.customer?.last_name || 'N/A',
           };
+          const customerPhone = booking.customer?.phone_number || null;
+          const customerCountry = getCountryNameForPS(customerPhone);
 
           // Step 1: Create Account
           const accountPayload = {
@@ -1793,7 +1808,8 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
             stato: 'INS',
             tipocattura: 'PS',
             iscliente: 1,
-            isfornitore: 0
+            isfornitore: 0,
+            nazione: customerCountry,
           };
           await client.post('/accounts', accountPayload);
 
@@ -1988,7 +2004,7 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
         total_price,
         currency,
         booking_customers(
-          customers(first_name, last_name)
+          customers(first_name, last_name, phone_number)
         ),
         activity_bookings(
           activity_booking_id,
@@ -2043,6 +2059,7 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       customer: customer ? {
         first_name: (customer as any).first_name,
         last_name: (customer as any).last_name,
+        phone_number: (customer as any).phone_number,
       } : null,
       activities: activities.map((a: any) => ({
         activity_booking_id: a.activity_booking_id,
@@ -2088,6 +2105,8 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       firstName: bookingData.customer?.first_name || 'N/A',
       lastName: bookingData.customer?.last_name || 'N/A',
     };
+    const customerPhone = bookingData.customer?.phone_number || null;
+    const customerCountry = getCountryNameForPS(customerPhone);
 
     // Execute 7-step flow
     // Step 1: Create Account
@@ -2100,7 +2119,8 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       stato: 'INS',
       tipocattura: 'PS',
       iscliente: 1,
-      isfornitore: 0
+      isfornitore: 0,
+      nazione: customerCountry,
     });
 
     // Step 2: Create Pratica (WP)
@@ -2325,7 +2345,7 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
         total_price,
         currency,
         booking_customers(
-          customers(first_name, last_name)
+          customers(first_name, last_name, phone_number)
         ),
         activity_bookings(
           activity_booking_id,
@@ -2363,6 +2383,7 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       customer: customer ? {
         first_name: (customer as any).first_name,
         last_name: (customer as any).last_name,
+        phone_number: (customer as any).phone_number,
       } : null,
       activities: activities.map((a: any) => ({
         activity_booking_id: a.activity_booking_id,
@@ -2392,9 +2413,12 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       firstName: bookingData.customer?.first_name || 'N/A',
       lastName: bookingData.customer?.last_name || 'N/A',
     };
+    const customerPhone = bookingData.customer?.phone_number || null;
+    const customerCountry = getCountryNameForPS(customerPhone);
 
     console.log(`[Invoices] Sending ${booking.confirmation_code} to Partner Solution...`);
     console.log(`  Customer: ${customerName.firstName} ${customerName.lastName}`);
+    console.log(`  Country: ${customerCountry} (phone: ${customerPhone || 'none'})`);
     console.log(`  Commessa: ${yearMonthInfo.yearMonth}`);
 
     // Execute 7-step flow
@@ -2408,7 +2432,8 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       stato: 'INS',
       tipocattura: 'PS',
       iscliente: 1,
-      isfornitore: 0
+      isfornitore: 0,
+      nazione: customerCountry,
     });
 
     /// Step 2: Create Pratica (WP)
