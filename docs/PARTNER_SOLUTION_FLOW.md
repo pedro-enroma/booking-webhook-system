@@ -55,7 +55,8 @@ POST /api/invoices/send-to-partner
   "stato": "INS",
   "tipocattura": "PS",
   "iscliente": 1,
-  "isfornitore": 0
+  "isfornitore": 0,
+  "nazione": "Spagna"
 }
 ```
 
@@ -63,6 +64,8 @@ POST /api/invoices/send-to-partner
 - Always create a new account (don't search for existing)
 - `codicefiscale` must be 9 characters: left-pad booking_id with `0` when booking_id < 100000000
 - Account ID is used to link to Pratica
+- `nazione` is determined from customer's phone number country code (e.g., +34 → "Spagna", +39 → "Italia")
+- Fallback country: "Spagna" (Spain) when no phone number is available
 
 ---
 
@@ -496,3 +499,5 @@ Error: tipodestinazione: The value you selected is not a valid choice.
 | 2026-01-23 | Always create new account, link via codicecliente |
 | 2026-01-23 | Added Commessa auto-creation via FacileWS3 API |
 | 2026-01-23 | Delivering field now uses Commessa UUID (e.g., `commessa:UUID`) |
+| 2026-01-27 | Added `nazione` field to accounts (derived from customer phone country code) |
+| 2026-01-27 | Fallback country: Spain when no phone number available |
