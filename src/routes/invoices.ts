@@ -1343,20 +1343,20 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
 
     const invoicedBookingIds = new Set(invoicedBookings?.map(i => i.booking_id) || []);
 
-    // Get all active invoice rules
+    // Get ALL invoice rules (including paused) so we can show all sellers in the dropdown
     const { data: rules } = await supabase
       .from('invoice_rules')
-      .select('*')
-      .eq('is_active', true);
+      .select('*');
 
-    // Build a map of seller -> rule
-    const sellerRuleMap: Record<string, { rule_name: string; rule_type: 'travel_date' | 'creation_date'; start_date: string }> = {};
+    // Build a map of seller -> rule (including is_active status)
+    const sellerRuleMap: Record<string, { rule_name: string; rule_type: 'travel_date' | 'creation_date'; start_date: string; is_active: boolean }> = {};
     for (const rule of (rules || [])) {
       for (const s of (rule.sellers || [])) {
         sellerRuleMap[s] = {
           rule_name: rule.name,
           rule_type: rule.invoice_date_type,
           start_date: rule.invoice_start_date,
+          is_active: rule.is_active,
         };
       }
     }
@@ -1439,6 +1439,7 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
       rule_name: string | null;
       rule_type: 'travel_date' | 'creation_date' | null;
       rule_start_date: string | null;
+      rule_is_active: boolean | null;
     }>();
 
     for (const ab of (activityBookings || [])) {
@@ -1479,6 +1480,7 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
           rule_name: ruleInfo?.rule_name || null,
           rule_type: ruleInfo?.rule_type || null,
           rule_start_date: ruleInfo?.start_date || null,
+          rule_is_active: ruleInfo?.is_active ?? null,
         });
       }
     }
