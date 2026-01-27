@@ -800,14 +800,15 @@ export class BookingService {
     if (error) throw error;
   }
 
-  // Funzione per aggiornare i totali del booking (somma delle activity_bookings)
+  // Funzione per aggiornare i totali del booking (somma delle activity_bookings non cancellate)
   private async updateBookingPricingTotals(bookingId: number): Promise<void> {
     try {
       // Get all activity bookings for this booking
       const { data: activities, error: fetchError } = await supabase
         .from('activity_bookings')
         .select('original_price, total_price, discount_amount, commission_amount, net_price')
-        .eq('booking_id', bookingId);
+        .eq('booking_id', bookingId)
+        .or('status.neq.CANCELLED,status.is.null');
 
       if (fetchError) {
         console.error('❌ Error fetching activities for pricing totals:', fetchError);
