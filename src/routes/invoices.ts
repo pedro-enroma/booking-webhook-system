@@ -1394,6 +1394,7 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
           )
         `)
         .eq('bookings.status', 'CONFIRMED')
+        .eq('status', 'CONFIRMED')  // Also filter activity_bookings by status
         .range(offset, offset + batchSize - 1);
 
       // Filter by seller if specified
@@ -2007,7 +2008,8 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
           product_title,
           start_date_time,
           total_price,
-          activity_seller
+          activity_seller,
+          status
         )
       `)
       .eq('booking_id', bookingId)
@@ -2040,7 +2042,8 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
 
     // Transform to BookingForInvoicing format
     const customer = booking.booking_customers?.[0]?.customers;
-    const activities = booking.activity_bookings || [];
+    // Filter out cancelled activities
+    const activities = (booking.activity_bookings || []).filter((a: any) => a.status === 'CONFIRMED');
     const sellerName = activities.find((a: any) => a.activity_seller)?.activity_seller || null;
 
     const bookingData = {
@@ -2354,7 +2357,8 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
           product_title,
           start_date_time,
           total_price,
-          activity_seller
+          activity_seller,
+          status
         )
       `)
       .eq('booking_id', bookingId)
@@ -2370,7 +2374,8 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
 
     // Transform to format needed for send-to-partner
     const customer = booking.booking_customers?.[0]?.customers;
-    const activities = booking.activity_bookings || [];
+    // Filter out cancelled activities
+    const activities = (booking.activity_bookings || []).filter((a: any) => a.status === 'CONFIRMED');
     const sellerName = activities.find((a: any) => a.activity_seller)?.activity_seller || null;
 
     const bookingData = {
