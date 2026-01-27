@@ -410,6 +410,10 @@ export class BookingService {
       console.log('✅ Attività cancellata:', bookingData.bookingId);
       console.log('   ⏩ Il prossimo BOOKING_UPDATED con nuova activity sarà un REBOOK!');
 
+      if (activityBefore?.booking_id) {
+        await this.updateBookingEurTotals(activityBefore.booking_id);
+      }
+
       // NUOVO: Sincronizza disponibilità dopo cancellazione
       await this.syncAvailabilityForBooking(bookingData);
 
