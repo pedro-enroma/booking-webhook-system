@@ -87,7 +87,7 @@ POST /api/invoices/send-to-partner
   "stato": "WP",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:B53D23E5-3DB1-4CC2-8659-EFAED539336D"
+  "delivering": "commessa:202601"
 }
 ```
 
@@ -96,7 +96,7 @@ POST /api/invoices/send-to-partner
 |-------|-------|-------------|
 | `codicecliente` | booking_id_padded | Cliente reference (9 chars, left-padded) |
 | `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
-| `delivering` | `commessa:{UUID}` | Links to Commessa by UUID (auto-created if missing) |
+| `delivering` | `commessa:{nrcommessa}` | Links to Commessa by nrcommessa (e.g., `202601` for Jan 2026) |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
 | `tipocattura` | `PS` | Partner Solution |
 
@@ -147,7 +147,7 @@ POST /api/invoices/send-to-partner
   "nrpaxchild": 0,
   "nrpaxinfant": 0,
   "descrizione": "Tour UE ed Extra UE",
-  "tipodestinazione": "CEENAZ",
+  "tipodestinazione": "MISTO",
   "annullata": 0,
   "codiceagenzia": "7206",
   "stato": "INS"
@@ -272,7 +272,7 @@ POST /api/invoices/send-to-partner
   "stato": "INS",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:B53D23E5-3DB1-4CC2-8659-EFAED539336D"
+  "delivering": "commessa:202601"
 }
 ```
 
@@ -354,7 +354,7 @@ Content-Type: application/json
 1. Before creating a Pratica, system determines the Pratica month (`YYYY-MM`) based on seller rules
 2. System checks if Commessa exists for that `YYYY-MM`
 3. If not found, system creates the Commessa via FacileWS3
-4. Pratica's `delivering` field is set to `commessa:{UUID}`
+4. Pratica's `delivering` field is set to `commessa:{nrcommessa}` (e.g., `commessa:202601`)
 
 ### Italian Month Names
 | Month | Italian |
@@ -474,12 +474,6 @@ curl -H "Authorization: Bearer <token>" \
 ---
 
 ## Troubleshooting
-
-### Invalid tipodestinazione
-```
-Error: tipodestinazione: The value you selected is not a valid choice.
-```
-**Solution:** Use `CEENAZ` (not `MISTO`)
 
 ### Consistent IDs across entities
 **Important:** `codicecliente` (pratica), `externalid`, `codicefilefornitore` (servizio), and `codicefile` (movimento) should all use the same value: `booking_id_padded` (9 chars, left-padded)
