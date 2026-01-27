@@ -509,14 +509,30 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       seller_title,      // Optional seller name for notes
     } = req.body;
 
-    if (!booking_id || !confirmation_code || !activities || activities.length === 0) {
+    if (!booking_id || !confirmation_code) {
       res.status(400).json({
         success: false,
-        error: 'Missing required fields: booking_id, confirmation_code, activities',
+        error: 'Missing required fields: booking_id, confirmation_code',
       });
       return;
     }
 
+    // Fetch booking from database to get total_price
+    const { data: bookingData, error: bookingError } = await supabase
+      .from('bookings')
+      .select('total_price')
+      .eq('booking_id', booking_id)
+      .single();
+
+    if (bookingError || !bookingData) {
+      res.status(404).json({
+        success: false,
+        error: `Booking ${booking_id} not found in database`,
+      });
+      return;
+    }
+
+    const totalAmount = bookingData.total_price || 0;
     const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
     const now = new Date().toISOString();
     const customerName = {
@@ -613,85 +629,61 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     const passeggeroIri = passeggeroResponse.data['@id'];
     console.log('  ✅ Passeggero added:', passeggeroIri);
 
-    // Step 4-5: Add Servizio + Quota for each activity
-    console.log('\nStep 4: Adding Servizi (one per activity)...');
-    let totalAmount = 0;
-    const services: Array<{
-      activity_booking_id: string;
-      servizio_id: string;
-      quota_id: string;
-      amount: number;
-    }> = [];
+    // Step 4: Add ONE Servizio per booking (amount = bookings.total_price)
+    console.log('\nStep 4: Adding Servizio...');
+    const praticaCreationDate = now.split('T')[0];
 
-    for (const activity of activities) {
-      const rawAmount = activity.revenue ?? activity.total_price ?? 0;
-      const amount = Number.isFinite(Number(rawAmount)) ? Number(rawAmount) : 0;
-      totalAmount += amount;
+    const servizioPayload = {
+      pratica: praticaIri,
+      externalid: bookingIdPadded,
+      tiposervizio: 'PKG',
+      tipovendita: 'ORG',
+      regimevendita: '74T',
+      codicefornitore: 'IT09802381005',
+      ragsocfornitore: 'EnRoma Tours',
+      codicefilefornitore: bookingIdPadded,
+      datacreazione: now,
+      datainizioservizio: praticaCreationDate,
+      datafineservizio: praticaCreationDate,
+      duratant: 0,
+      duratagg: 1,
+      nrpaxadulti: 1,
+      nrpaxchild: 0,
+      nrpaxinfant: 0,
+      descrizione: 'Tour UE ed Extra UE',
+      tipodestinazione: 'CEENAZ',
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    };
 
-      const praticaCreationDate = now.split('T')[0];
-      const serviceDescription = 'Tour UE ed Extra UE';
+    const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
+    const servizioIri = servizioResponse.data['@id'];
+    console.log('  ✅ Servizio added:', servizioIri);
 
-      // Per spec: nrpaxadulti = total participants for the booking_id, nrpaxchild and nrpaxinfant are always 0
-      const paxAdults = Math.max(1, Number(activity.pax_adults || 0) + Number(activity.pax_children || 0) + Number(activity.pax_infants || 0));
+    // Step 5: Add ONE Quota per booking (amount = bookings.total_price)
+    console.log('\nStep 5: Adding Quota...');
+    const quotaPayload = {
+      servizio: servizioIri,
+      descrizionequota: 'Tour UE ed Extra UE',
+      datavendita: now,
+      codiceisovalutacosto: 'EUR',
+      quantitacosto: 1,
+      costovalutaprimaria: totalAmount,
+      quantitaricavo: 1,
+      ricavovalutaprimaria: totalAmount,
+      codiceisovalutaricavo: 'EUR',
+      commissioniattivevalutaprimaria: 0,
+      commissionipassivevalutaprimaria: 0,
+      progressivo: 1,
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    };
 
-      const servizioPayload = {
-        pratica: praticaIri,
-        externalid: bookingIdPadded,           // Must be 9 chars, left-padded with 0
-        tiposervizio: 'PKG',                   // Always PKQ per spec
-        tipovendita: 'ORG',
-        regimevendita: '74T',
-        codicefornitore: 'IT09802381005',
-        ragsocfornitore: 'EnRoma Tours',
-        codicefilefornitore: bookingIdPadded,  // Must be 9 chars, left-padded with 0
-        datacreazione: now,
-        datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
-        datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
-        duratant: 0,
-        duratagg: 1,
-        nrpaxadulti: paxAdults,                // Total participants
-        nrpaxchild: 0,                         // Always 0 per spec
-        nrpaxinfant: 0,                        // Always 0 per spec
-        descrizione: serviceDescription,
-        tipodestinazione: 'CEENAZ',
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      };
-
-      const servizioResponse = await client.post('/prt_praticaservizios', servizioPayload);
-      const servizioIri = servizioResponse.data['@id'];
-      console.log('  ✅ Servizio added:', servizioIri);
-
-      console.log('Step 5: Adding Quota...');
-      const quotaPayload = {
-        servizio: servizioIri,
-        descrizionequota: serviceDescription,
-        datavendita: now,
-        codiceisovalutacosto: 'EUR',
-        quantitacosto: 1,
-        costovalutaprimaria: amount,
-        quantitaricavo: 1,
-        ricavovalutaprimaria: amount,
-        codiceisovalutaricavo: 'EUR',
-        commissioniattivevalutaprimaria: 0,
-        commissionipassivevalutaprimaria: 0,
-        progressivo: 1,
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      };
-
-      const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
-      const quotaIri = quotaResponse.data['@id'];
-      console.log('  ✅ Quota added:', quotaIri);
-
-      services.push({
-        activity_booking_id: String(activity.activity_booking_id || ''),
-        servizio_id: servizioIri,
-        quota_id: quotaIri,
-        amount,
-      });
-    }
+    const quotaResponse = await client.post('/prt_praticaservizioquotas', quotaPayload);
+    const quotaIri = quotaResponse.data['@id'];
+    console.log('  ✅ Quota added:', quotaIri);
 
     // Step 6: Add Movimento Finanziario
     console.log('\nStep 6: Adding Movimento Finanziario...');
@@ -739,10 +731,10 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
       pratica_id: praticaIri,
       account_id: accountIri,
       passeggero_id: passeggeroIri,
-      services,
+      servizio_id: servizioIri,
+      quota_id: quotaIri,
       movimento_id: movimentoResponse.data['@id'],
       total_amount: totalAmount,
-      activity_count: activities.length,
     });
   } catch (error: any) {
     console.error('\n=== ERROR ===');
@@ -1832,57 +1824,52 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
             iscontraente: 1
           });
 
-          // Step 4-5: Add Servizio + Quota for each activity
-          let totalAmount = 0;
-          for (const activity of booking.activities) {
-            const amount = activity.total_price || 0;
-            totalAmount += amount;
+          // Step 4: Add ONE Servizio per booking (amount = bookings.total_price)
+          const totalAmount = booking.total_price || 0;
+          const praticaCreationDate = now.split('T')[0];
 
-            const praticaCreationDate = now.split('T')[0];
-            const paxAdults = Math.max(1, (activity.pax_adults || 0) + (activity.pax_children || 0) + (activity.pax_infants || 0));
+          const servizioResponse = await client.post('/prt_praticaservizios', {
+            pratica: praticaIri,
+            externalid: bookingIdPadded,
+            tiposervizio: 'PKG',
+            tipovendita: 'ORG',
+            regimevendita: '74T',
+            codicefornitore: 'IT09802381005',
+            ragsocfornitore: 'EnRoma Tours',
+            codicefilefornitore: bookingIdPadded,
+            datacreazione: now,
+            datainizioservizio: praticaCreationDate,
+            datafineservizio: praticaCreationDate,
+            duratant: 0,
+            duratagg: 1,
+            nrpaxadulti: 1,
+            nrpaxchild: 0,
+            nrpaxinfant: 0,
+            descrizione: 'Tour UE ed Extra UE',
+            tipodestinazione: 'CEENAZ',
+            annullata: 0,
+            codiceagenzia: agencyCode,
+            stato: 'INS'
+          });
 
-            const servizioResponse = await client.post('/prt_praticaservizios', {
-              pratica: praticaIri,
-              externalid: bookingIdPadded,
-              tiposervizio: 'PKG',
-              tipovendita: 'ORG',
-              regimevendita: '74T',
-              codicefornitore: 'IT09802381005',
-              ragsocfornitore: 'EnRoma Tours',
-              codicefilefornitore: bookingIdPadded,
-              datacreazione: now,
-              datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
-              datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
-              duratant: 0,
-              duratagg: 1,
-              nrpaxadulti: paxAdults,
-              nrpaxchild: 0,
-              nrpaxinfant: 0,
-              descrizione: 'Tour UE ed Extra UE',
-              tipodestinazione: 'CEENAZ',
-              annullata: 0,
-              codiceagenzia: agencyCode,
-              stato: 'INS'
-            });
-
-            await client.post('/prt_praticaservizioquotas', {
-              servizio: servizioResponse.data['@id'],
-              descrizionequota: 'Tour UE ed Extra UE',
-              datavendita: now,
-              codiceisovalutacosto: 'EUR',
-              quantitacosto: 1,
-              costovalutaprimaria: amount,
-              quantitaricavo: 1,
-              ricavovalutaprimaria: amount,
-              codiceisovalutaricavo: 'EUR',
-              commissioniattivevalutaprimaria: 0,
-              commissionipassivevalutaprimaria: 0,
-              progressivo: 1,
-              annullata: 0,
-              codiceagenzia: agencyCode,
-              stato: 'INS'
-            });
-          }
+          // Step 5: Add ONE Quota per booking (amount = bookings.total_price)
+          await client.post('/prt_praticaservizioquotas', {
+            servizio: servizioResponse.data['@id'],
+            descrizionequota: 'Tour UE ed Extra UE',
+            datavendita: now,
+            codiceisovalutacosto: 'EUR',
+            quantitacosto: 1,
+            costovalutaprimaria: totalAmount,
+            quantitaricavo: 1,
+            ricavovalutaprimaria: totalAmount,
+            codiceisovalutaricavo: 'EUR',
+            commissioniattivevalutaprimaria: 0,
+            commissionipassivevalutaprimaria: 0,
+            progressivo: 1,
+            annullata: 0,
+            codiceagenzia: agencyCode,
+            stato: 'INS'
+          });
 
           // Step 6: Add Movimento Finanziario
           await client.post('/mov_finanziarios', {
@@ -2143,66 +2130,52 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       iscontraente: 1
     });
 
-    // Step 4-5: Add Servizio + Quota for each activity
-    let totalAmount = 0;
-    const services: any[] = [];
+    // Step 4: Add ONE Servizio per booking (amount = bookings.total_price)
+    const totalAmount = booking.total_price || 0;
+    const praticaCreationDate = now.split('T')[0];
 
-    for (const activity of bookingData.activities) {
-      const amount = activity.total_price || 0;
-      totalAmount += amount;
+    const servizioResponse = await client.post('/prt_praticaservizios', {
+      pratica: praticaIri,
+      externalid: bookingIdPadded,
+      tiposervizio: 'PKG',
+      tipovendita: 'ORG',
+      regimevendita: '74T',
+      codicefornitore: 'IT09802381005',
+      ragsocfornitore: 'EnRoma Tours',
+      codicefilefornitore: bookingIdPadded,
+      datacreazione: now,
+      datainizioservizio: praticaCreationDate,
+      datafineservizio: praticaCreationDate,
+      duratant: 0,
+      duratagg: 1,
+      nrpaxadulti: 1,
+      nrpaxchild: 0,
+      nrpaxinfant: 0,
+      descrizione: 'Tour UE ed Extra UE',
+      tipodestinazione: 'CEENAZ',
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    });
 
-      const praticaCreationDate = now.split('T')[0];
-      const paxAdults = Math.max(1, (activity.pax_adults || 0) + (activity.pax_children || 0) + (activity.pax_infants || 0));
-
-      const servizioResponse = await client.post('/prt_praticaservizios', {
-        pratica: praticaIri,
-        externalid: bookingIdPadded,
-        tiposervizio: 'PKG',
-        tipovendita: 'ORG',
-        regimevendita: '74T',
-        codicefornitore: 'IT09802381005',
-        ragsocfornitore: 'EnRoma Tours',
-        codicefilefornitore: bookingIdPadded,
-        datacreazione: now,
-        datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
-        datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
-        duratant: 0,
-        duratagg: 1,
-        nrpaxadulti: paxAdults,
-        nrpaxchild: 0,
-        nrpaxinfant: 0,
-        descrizione: 'Tour UE ed Extra UE',
-        tipodestinazione: 'CEENAZ',
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      });
-
-      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
-        servizio: servizioResponse.data['@id'],
-        descrizionequota: 'Tour UE ed Extra UE',
-        datavendita: now,
-        codiceisovalutacosto: 'EUR',
-        quantitacosto: 1,
-        costovalutaprimaria: amount,
-        quantitaricavo: 1,
-        ricavovalutaprimaria: amount,
-        codiceisovalutaricavo: 'EUR',
-        commissioniattivevalutaprimaria: 0,
-        commissionipassivevalutaprimaria: 0,
-        progressivo: 1,
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      });
-
-      services.push({
-        activity_booking_id: activity.activity_booking_id,
-        servizio_id: servizioResponse.data['@id'],
-        quota_id: quotaResponse.data['@id'],
-        amount,
-      });
-    }
+    // Step 5: Add ONE Quota per booking (amount = bookings.total_price)
+    const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+      servizio: servizioResponse.data['@id'],
+      descrizionequota: 'Tour UE ed Extra UE',
+      datavendita: now,
+      codiceisovalutacosto: 'EUR',
+      quantitacosto: 1,
+      costovalutaprimaria: totalAmount,
+      quantitaricavo: 1,
+      ricavovalutaprimaria: totalAmount,
+      codiceisovalutaricavo: 'EUR',
+      commissioniattivevalutaprimaria: 0,
+      commissionipassivevalutaprimaria: 0,
+      progressivo: 1,
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    });
 
     // Step 6: Add Movimento Finanziario
     const movimentoResponse = await client.post('/mov_finanziarios', {
@@ -2251,10 +2224,12 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       booking_id: booking.booking_id,
       confirmation_code: booking.confirmation_code,
       pratica_id: praticaIri,
+      servizio_id: servizioResponse.data['@id'],
+      quota_id: quotaResponse.data['@id'],
+      movimento_id: movimentoResponse.data['@id'],
       year_month: yearMonthInfo.yearMonth,
       total_amount: totalAmount,
       rule_name: rule!.name,
-      services,
     });
   } catch (error: any) {
     console.error('[Invoices] Error processing booking for auto-invoice:', error);
@@ -2466,64 +2441,51 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       iscontraente: 1,
     });
 
-    // Step 4 & 5: Add Servizio and Quota for each activity
-    let totalAmount = 0;
-    const services: any[] = [];
+    // Step 4: Add ONE Servizio per booking (amount = bookings.total_price)
+    const totalAmount = booking.total_price || 0;
 
-    for (const activity of bookingData.activities) {
-      const amount = activity.total_price || 0;
-      totalAmount += amount;
-      const paxAdults = Math.max(1, (activity.pax_adults || 0) + (activity.pax_children || 0) + (activity.pax_infants || 0));
+    const servizioResponse = await client.post('/prt_praticaservizios', {
+      pratica: praticaIri,
+      externalid: bookingIdPadded,
+      tiposervizio: 'PKG',
+      tipovendita: 'ORG',
+      regimevendita: '74T',
+      codicefornitore: 'IT09802381005',
+      ragsocfornitore: 'EnRoma Tours',
+      codicefilefornitore: bookingIdPadded,
+      datacreazione: now,
+      datainizioservizio: praticaCreationDate,
+      datafineservizio: praticaCreationDate,
+      duratant: 0,
+      duratagg: 1,
+      nrpaxadulti: 1,
+      nrpaxchild: 0,
+      nrpaxinfant: 0,
+      descrizione: 'Tour UE ed Extra UE',
+      tipodestinazione: 'CEENAZ',
+      annullata: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS'
+    });
 
-      const servizioResponse = await client.post('/prt_praticaservizios', {
-        pratica: praticaIri,
-        externalid: bookingIdPadded,
-        tiposervizio: 'PKG',
-        tipovendita: 'ORG',
-        regimevendita: '74T',
-        codicefornitore: 'IT09802381005',
-        ragsocfornitore: 'EnRoma Tours',
-        codicefilefornitore: bookingIdPadded,
-        datacreazione: now,
-        datainizioservizio: praticaCreationDate,
-        datafineservizio: praticaCreationDate,
-        duratant: 0,
-        duratagg: 1,
-        nrpaxadulti: paxAdults,
-        nrpaxchild: 0,
-        nrpaxinfant: 0,
-        descrizione: 'Tour UE ed Extra UE',
-        tipodestinazione: 'CEENAZ',
-        annullata: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS'
-      });
-
-      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
-        servizio: servizioResponse.data['@id'],
-        descrizionequota: activity.product_title || 'Tour UE ed Extra UE',
-        datavendita: now,
-        codiceisovalutacosto: 'EUR',
-        codiceisovalutaricavo: 'EUR',
-        quantitacosto: 1,
-        quantitaricavo: 1,
-        costovalutaprimaria: amount,
-        ricavovalutaprimaria: amount,
-        progressivo: 1,
-        annullata: 0,
-        commissioniattivevalutaprimaria: 0,
-        commissionipassivevalutaprimaria: 0,
-        codiceagenzia: agencyCode,
-        stato: 'INS',
-      });
-
-      services.push({
-        activity_booking_id: activity.activity_booking_id,
-        servizio_id: servizioResponse.data['@id'],
-        quota_id: quotaResponse.data['@id'],
-        amount,
-      });
-    }
+    // Step 5: Add ONE Quota per booking (amount = bookings.total_price)
+    const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+      servizio: servizioResponse.data['@id'],
+      descrizionequota: 'Tour UE ed Extra UE',
+      datavendita: now,
+      codiceisovalutacosto: 'EUR',
+      codiceisovalutaricavo: 'EUR',
+      quantitacosto: 1,
+      quantitaricavo: 1,
+      costovalutaprimaria: totalAmount,
+      ricavovalutaprimaria: totalAmount,
+      progressivo: 1,
+      annullata: 0,
+      commissioniattivevalutaprimaria: 0,
+      commissionipassivevalutaprimaria: 0,
+      codiceagenzia: agencyCode,
+      stato: 'INS',
+    });
 
     // Step 6: Add Movimento Finanziario
     const movimentoResponse = await client.post('/mov_finanziarios', {
@@ -2574,9 +2536,11 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
         confirmation_code: booking.confirmation_code,
         pratica_iri: praticaIri,
         account_iri: accountResponse.data['@id'],
+        servizio_iri: servizioResponse.data['@id'],
+        quota_iri: quotaResponse.data['@id'],
+        movimento_iri: movimentoResponse.data['@id'],
         commessa: yearMonthInfo.yearMonth,
         total_amount: totalAmount,
-        services,
       },
     });
   } catch (error) {

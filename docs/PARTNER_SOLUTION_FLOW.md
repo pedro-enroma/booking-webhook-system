@@ -120,7 +120,7 @@ POST /api/invoices/send-to-partner
 
 ---
 
-### Step 4: Add Servizio
+### Step 4: Add Servizio (ONE per booking)
 
 **Endpoint:** `POST /prt_praticaservizios`
 
@@ -167,8 +167,9 @@ POST /api/invoices/send-to-partner
 | `stato` | `INS` | Inserted |
 
 **Notes:**
+- **ONE Servizio per booking** (not per activity)
 - `tiposervizio` is always `PKG`
-- `nrpaxadulti` = total participants for the booking_id (not per activity)
+- `nrpaxadulti` = total participants for the booking_id
 - `nrpaxchild` and `nrpaxinfant` are always `0`
 - `descrizione` is always `"Tour UE ed Extra UE"`
 - `datainizioservizio` and `datafineservizio` are always the pratica creation date, never the activity travel date
@@ -178,7 +179,7 @@ POST /api/invoices/send-to-partner
 
 ---
 
-### Step 5: Add Quota
+### Step 5: Add Quota (ONE per booking)
 
 **Endpoint:** `POST /prt_praticaservizioquotas`
 
@@ -206,17 +207,15 @@ POST /api/invoices/send-to-partner
 **Key Fields:**
 | Field | Value | Description |
 |-------|-------|-------------|
-| `costovalutaprimaria` | amount | Cost in EUR |
-| `ricavovalutaprimaria` | amount | Revenue in EUR |
+| `costovalutaprimaria` | `bookings.total_price` | Cost in EUR (from bookings table) |
+| `ricavovalutaprimaria` | `bookings.total_price` | Revenue in EUR (from bookings table) |
 | `codiceisovalutacosto` | `EUR` | Currency (uppercase) |
 | `codiceisovalutaricavo` | `EUR` | Currency (uppercase) |
 
----
-
 **Notes:**
+- **ONE Quota per booking** (not per activity)
 - `descrizionequota` is always `"Tour UE ed Extra UE"`
-
-**Repeat Steps 4 and 5 for each activity** in the request payload. Each activity gets its own Servizio + Quota.
+- Amount (`costovalutaprimaria`, `ricavovalutaprimaria`) = `bookings.total_price` (NOT sum of activity prices)
 
 ### Step 6: Add Movimento Finanziario
 
@@ -247,7 +246,10 @@ POST /api/invoices/send-to-partner
 | `codicefile` | booking_id_padded | Our booking reference (9 chars, left-padded) |
 | `tipomovimento` | `I` | Income (Incasso) |
 | `codcausale` | `PAGBOK` | Payment cause code |
-| `importo` | amount | Total amount |
+| `importo` | `bookings.total_price` | Total amount (from bookings table) |
+
+**Notes:**
+- `importo` = `bookings.total_price` (same value as Quota `costovalutaprimaria` and `ricavovalutaprimaria`)
 
 ---
 
@@ -405,12 +407,17 @@ FACILEWS_PASSWORD=InSpe2026!
 
 ---
 
-## Monthly Pratica (Auto-Invoice)
+## Summary: One Booking = One Pratica
 
-The auto-invoice pipeline uses a monthly pratica model (see `src/services/invoiceService.ts`):
-- One Pratica per `year_month`
-- Each booking adds one Servizio + Quota per activity to that monthly Pratica
-- Accounts are deduplicated by `customer_id` (externalid `CUST-<id>`) when available
+Each booking creates:
+- **1 Account** (per booking)
+- **1 Pratica** (per booking)
+- **1 Passeggero** (per Pratica)
+- **1 Servizio** (per Pratica)
+- **1 Quota** (per Servizio)
+- **1 Movimento Finanziario** (per Pratica)
+
+**Amount** = `bookings.total_price` everywhere (Quota and Movimento)
 
 ---
 
@@ -425,15 +432,9 @@ The auto-invoice pipeline uses a monthly pratica model (see `src/services/invoic
   "pratica_id": "/prt_praticas/cad8910d-f859-11f0-bca8-000d3a3c3748",
   "account_id": "/accounts/cac2fa4b-f859-11f0-bca8-000d3a3c3748",
   "passeggero_id": "/prt_praticapasseggeros/caf0b976-f859-11f0-bca8-000d3a3c3748",
+  "servizio_id": "/prt_praticaservizios/cb0ef4d8-f859-11f0-bca8-000d3a3c3748",
+  "quota_id": "/prt_praticaservizioquotas/cb2faed3-f859-11f0-bca8-000d3a3c3748",
   "movimento_id": "/mov_finanziarios/cb46a176-f859-11f0-bca8-000d3a3c3748",
-  "services": [
-    {
-      "activity_booking_id": "60222222",
-      "servizio_id": "/prt_praticaservizios/cb0ef4d8-f859-11f0-bca8-000d3a3c3748",
-      "quota_id": "/prt_praticaservizioquotas/cb2faed3-f859-11f0-bca8-000d3a3c3748",
-      "amount": 95
-    }
-  ],
   "total_amount": 95
 }
 ```
