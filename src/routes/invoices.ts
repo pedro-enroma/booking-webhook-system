@@ -566,7 +566,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     // Ensure Commessa exists for this year_month (creates if not exists)
     console.log(`\n  Ensuring Commessa exists for ${resolvedYearMonth}...`);
     const commessaId = await getCommessaId(resolvedYearMonth); // Creates the Commessa if it doesn't exist
-    const deliveringValue = `commessa:${commessaId}`;
+    const deliveringValue = `commessa:${resolvedYearMonth}`; // Use codice (2026-01), not UUID
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
@@ -1776,7 +1776,7 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
 
           // Ensure Commessa exists
           const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
-          const deliveringValue = `commessa:${commessaId}`;
+          const deliveringValue = `commessa:${yearMonthInfo.yearMonth}`; // Use codice (2026-01), not UUID
 
           const customerName = {
             firstName: booking.customer?.first_name || 'N/A',
@@ -2082,7 +2082,7 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
 
     // Ensure Commessa exists
     const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
-    const deliveringValue = `commessa:${commessaId}`;
+    const deliveringValue = `commessa:${yearMonthInfo.yearMonth}`; // Use codice (2026-01), not UUID
 
     const customerName = {
       firstName: bookingData.customer?.first_name || 'N/A',
@@ -2386,7 +2386,7 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
 
     // Ensure Commessa exists
     const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
-    const deliveringValue = `commessa:${commessaId}`;
+    const deliveringValue = `commessa:${yearMonthInfo.yearMonth}`; // Use codice (2026-01), not UUID
 
     const customerName = {
       firstName: bookingData.customer?.first_name || 'N/A',
