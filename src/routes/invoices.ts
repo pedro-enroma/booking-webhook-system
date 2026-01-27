@@ -578,7 +578,7 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     console.log(`\n  Ensuring Commessa exists for ${resolvedYearMonth}...`);
     const commessaId = await getCommessaId(resolvedYearMonth); // Creates the Commessa if it doesn't exist
     const nrCommessa = resolvedYearMonth.replace('-', ''); // Convert 2026-01 to 202601
-    const deliveringValue = `commessa:${nrCommessa}`; // Use nrcommessa to link to Commessa
+    const deliveringValue = `/commesses/${nrCommessa}`; // Use IRI format with nrcommessa to link to Commessa
 
     console.log('\n=== Sending to Partner Solution ===');
     console.log(`Booking: ${confirmation_code}`);
@@ -1791,7 +1791,7 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
           // Ensure Commessa exists
           const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
           const nrCommessa = yearMonthInfo.yearMonth.replace('-', ''); // Convert 2026-01 to 202601
-          const deliveringValue = `commessa:${nrCommessa}`; // Use nrcommessa to link to Commessa
+          const deliveringValue = `/commesses/${nrCommessa}`; // Use IRI format with nrcommessa to link to Commessa
 
           const customerName = {
             firstName: booking.customer?.first_name || 'N/A',
@@ -2102,7 +2102,7 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
     // Ensure Commessa exists
     const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
     const nrCommessa = yearMonthInfo.yearMonth.replace('-', ''); // Convert 2026-01 to 202601
-    const deliveringValue = `commessa:${nrCommessa}`; // Use nrcommessa to link to Commessa
+    const deliveringValue = `/commesses/${nrCommessa}`; // Use IRI format with nrcommessa to link to Commessa
 
     const customerName = {
       firstName: bookingData.customer?.first_name || 'N/A',
@@ -2411,7 +2411,7 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
     // Ensure Commessa exists
     const commessaId = await getCommessaId(yearMonthInfo.yearMonth);
     const nrCommessa = yearMonthInfo.yearMonth.replace('-', ''); // Convert 2026-01 to 202601
-    const deliveringValue = `commessa:${nrCommessa}`; // Use nrcommessa to link to Commessa
+    const deliveringValue = `/commesses/${nrCommessa}`; // Use IRI format with nrcommessa to link to Commessa
 
     const customerName = {
       firstName: bookingData.customer?.first_name || 'N/A',
