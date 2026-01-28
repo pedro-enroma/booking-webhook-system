@@ -608,10 +608,10 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
     const accountId = accountResponse.data.id;
     console.log('  ✅ Account created:', accountIri, '(id:', accountId, ')');
 
-    // Step 2: Create Pratica (status WP) - codicecliente is booking_id_padded
+    // Step 2: Create Pratica (status WP) - codicecliente links to Account
     console.log('\nStep 2: Creating Pratica...');
     const praticaPayload = {
-      codicecliente: bookingIdPadded,  // Must be 9 chars, left-padded with 0
+      codicecliente: accountIri,  // Link to Account IRI
       externalid: bookingIdPadded,     // Must be 9 chars, left-padded with 0
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
@@ -1813,11 +1813,12 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
             isfornitore: 0,
             nazione: customerCountry,
           };
-          await client.post('/accounts', accountPayload);
+          const accountResponse = await client.post('/accounts', accountPayload);
+          const accountIri = accountResponse.data['@id'];
 
           // Step 2: Create Pratica (WP)
           const praticaPayload = {
-            codicecliente: bookingIdPadded,
+            codicecliente: accountIri,
             externalid: bookingIdPadded,
             cognomecliente: customerName.lastName,
             nomecliente: customerName.firstName,
@@ -2125,10 +2126,11 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       isfornitore: 0,
       nazione: customerCountry,
     });
+    const accountIri = accountResponse.data['@id'];
 
     // Step 2: Create Pratica (WP)
     const praticaPayload = {
-      codicecliente: bookingIdPadded,
+      codicecliente: accountIri,
       externalid: bookingIdPadded,
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
@@ -2439,11 +2441,12 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       isfornitore: 0,
       nazione: customerCountry,
     });
+    const accountIri = accountResponse.data['@id'];
 
     /// Step 2: Create Pratica (WP)
     const praticaCreationDate = now.split('T')[0];
     const praticaPayload = {
-      codicecliente: bookingIdPadded,
+      codicecliente: accountIri,
       externalid: bookingIdPadded,
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,

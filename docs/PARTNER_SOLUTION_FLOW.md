@@ -38,7 +38,8 @@ POST /api/invoices/send-to-partner
 
 ### Booking ID Formatting
 - Define `booking_id_padded` = booking_id left-padded with `0` to 9 characters (when booking_id < 100000000)
-- Use `booking_id_padded` in all Partner Solution fields that reference the booking ID (`codicefiscale`, `codicecliente`, `externalid`, `codicefilefornitore`, `codicefile`)
+- Use `booking_id_padded` in these fields: `codicefiscale`, `externalid`, `codicefilefornitore`, `codicefile`
+- **Note:** `codicecliente` in pratica uses the **Account IRI** (not booking_id_padded) to link the account
 
 ### Step 1: Create Account (Always New)
 
@@ -64,7 +65,8 @@ POST /api/invoices/send-to-partner
 - Always create a new account (don't search for existing)
 - `codicefiscale` must be 9 characters: left-pad booking_id with `0` when booking_id < 100000000
 - Account ID is used to link to Pratica
-- `nazione` is determined from customer's phone number country code (e.g., +34 → "Spagna", +39 → "Italia")
+- `nazione` is determined from customer's phone number country code (e.g., +34 → "Spagna", +33 → "Francia")
+- **Italy exception:** +39 (Italy) is always mapped to "Spagna" to avoid Italian invoicing rules
 - Fallback country: "Spagna" (Spain) when no phone number is available
 
 ---
@@ -76,7 +78,7 @@ POST /api/invoices/send-to-partner
 **Payload:**
 ```json
 {
-  "codicecliente": "080404039",
+  "codicecliente": "/accounts/abc123-uuid",
   "externalid": "080404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
@@ -94,7 +96,7 @@ POST /api/invoices/send-to-partner
 **Key Fields:**
 | Field | Value | Description |
 |-------|-------|-------------|
-| `codicecliente` | booking_id_padded | Cliente reference (9 chars, left-padded) |
+| `codicecliente` | Account IRI | Links pratica to account (e.g., `/accounts/abc123-uuid`) |
 | `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
 | `delivering` | `commessa: {codice_commessa}` | Links to Commessa by codice_commessa (e.g., `commessa: 202601` for Jan 2026). **Note:** space after colon is required |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
@@ -261,7 +263,7 @@ POST /api/invoices/send-to-partner
 
 ```json
 {
-  "codicecliente": "080404039",
+  "codicecliente": "/accounts/abc123-uuid",
   "externalid": "080404039",
   "cognomecliente": "Sanchez",
   "nomecliente": "Laura",
@@ -476,7 +478,9 @@ curl -H "Authorization: Bearer <token>" \
 ## Troubleshooting
 
 ### Consistent IDs across entities
-**Important:** `codicecliente` (pratica), `externalid`, `codicefilefornitore` (servizio), and `codicefile` (movimento) should all use the same value: `booking_id_padded` (9 chars, left-padded)
+**Important:**
+- `codicecliente` (pratica) must be the **Account IRI** (e.g., `/accounts/abc123-uuid`) to link pratica to account
+- `externalid`, `codicefilefornitore` (servizio), and `codicefile` (movimento) should use `booking_id_padded` (9 chars, left-padded)
 
 ### Missing Movimento Finanziario
 **Solution:** Step 6 must create movimento with `codcausale: 'PAGBOK'` and `tipomovimento: 'I'`
@@ -495,3 +499,6 @@ curl -H "Authorization: Bearer <token>" \
 | 2026-01-23 | Delivering field now uses Commessa UUID (e.g., `commessa:UUID`) |
 | 2026-01-27 | Added `nazione` field to accounts (derived from customer phone country code) |
 | 2026-01-27 | Fallback country: Spain when no phone number available |
+| 2026-01-28 | Fixed `delivering` format to `commessa: {codice}` (with space after colon) |
+| 2026-01-28 | Fixed `codicecliente` to use Account IRI instead of booking_id_padded |
+| 2026-01-28 | Italy (+39) now maps to Spain to avoid Italian invoicing rules |

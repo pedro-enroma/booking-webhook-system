@@ -17,7 +17,7 @@ const PHONE_COUNTRY_MAP: Record<string, { code: string; name: string }> = {
   '33': { code: 'FR', name: 'Francia' },
   '34': { code: 'ES', name: 'Spagna' },
   '36': { code: 'HU', name: 'Ungheria' },
-  '39': { code: 'IT', name: 'Italia' },
+  '39': { code: 'ES', name: 'Spagna' },  // Italy → Spain (avoid Italian invoicing rules)
   '40': { code: 'RO', name: 'Romania' },
   '41': { code: 'CH', name: 'Svizzera' },
   '43': { code: 'AT', name: 'Austria' },
