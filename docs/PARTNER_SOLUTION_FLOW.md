@@ -87,7 +87,7 @@ POST /api/invoices/send-to-partner
   "stato": "WP",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:202601"
+  "delivering": "commessa: 202601"
 }
 ```
 
@@ -96,7 +96,7 @@ POST /api/invoices/send-to-partner
 |-------|-------|-------------|
 | `codicecliente` | booking_id_padded | Cliente reference (9 chars, left-padded) |
 | `externalid` | booking_id_padded | Our booking reference (9 chars, left-padded) |
-| `delivering` | `commessa:{nrcommessa}` | Links to Commessa by nrcommessa (e.g., `202601` for Jan 2026) |
+| `delivering` | `commessa: {codice_commessa}` | Links to Commessa by codice_commessa (e.g., `commessa: 202601` for Jan 2026). **Note:** space after colon is required |
 | `stato` | `WP` | Work in Progress (updated to INS at end) |
 | `tipocattura` | `PS` | Partner Solution |
 
@@ -272,7 +272,7 @@ POST /api/invoices/send-to-partner
   "stato": "INS",
   "descrizionepratica": "Tour UE ed Extra UE",
   "noteinterne": "Seller: Civitatis",
-  "delivering": "commessa:202601"
+  "delivering": "commessa: 202601"
 }
 ```
 
@@ -314,12 +314,12 @@ GET https://facilews3.partnersolution.it/Api/Rest/7206/Commesse?Token=<jwt_token
     "@Pagina": [
       {
         "id": "B53D23E5-3DB1-4CC2-8659-EFAED539336D",
-        "codice_commessa": "2026-01",
+        "codice_commessa": "202601",
         "descrizione": "Gennaio 2026"
       },
       {
         "id": "6584B996-08CE-4B45-8A63-B9328EC070F4",
-        "codice_commessa": "2026-08",
+        "codice_commessa": "202608",
         "descrizione": "Agosto 2026"
       }
     ]
@@ -354,7 +354,7 @@ Content-Type: application/json
 1. Before creating a Pratica, system determines the Pratica month (`YYYY-MM`) based on seller rules
 2. System checks if Commessa exists for that `YYYY-MM`
 3. If not found, system creates the Commessa via FacileWS3
-4. Pratica's `delivering` field is set to `commessa:{nrcommessa}` (e.g., `commessa:202601`)
+4. Pratica's `delivering` field is set to `commessa: {codice_commessa}` (e.g., `commessa: 202601`). **Note:** space after colon is required
 
 ### Italian Month Names
 | Month | Italian |
