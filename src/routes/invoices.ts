@@ -605,13 +605,13 @@ router.post('/api/invoices/send-to-partner', validateApiKey, async (req: Request
 
     const accountResponse = await client.post('/accounts', accountPayload);
     const accountIri = accountResponse.data['@id'];
-    const accountId = accountResponse.data.id;
+    const accountId = accountIri.split('/').pop();  // Extract UUID from IRI
     console.log('  ✅ Account created:', accountIri, '(id:', accountId, ')');
 
     // Step 2: Create Pratica (status WP) - codicecliente links to Account
     console.log('\nStep 2: Creating Pratica...');
     const praticaPayload = {
-      codicecliente: accountIri,  // Link to Account IRI
+      codicecliente: accountId,  // Link to Account UUID (36 chars max)
       externalid: bookingIdPadded,     // Must be 9 chars, left-padded with 0
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
@@ -1494,6 +1494,7 @@ router.get('/api/invoices/pending-bookings', validateApiKey, async (req: Request
 
     // Filter based on rule logic and date filters
     const uninvoicedBookings = Array.from(bookingMap.values())
+      .filter(b => b.total_price > 0) // Skip zero-amount bookings
       .filter(b => {
         if (!b.rule_type || !b.rule_start_date) {
           return true; // No rule - include all
@@ -1815,10 +1816,11 @@ router.post('/api/invoices/rules/process-travel-date', validateApiKey, async (re
           };
           const accountResponse = await client.post('/accounts', accountPayload);
           const accountIri = accountResponse.data['@id'];
+          const accountId = accountIri.split('/').pop();  // Extract UUID
 
           // Step 2: Create Pratica (WP)
           const praticaPayload = {
-            codicecliente: accountIri,
+            codicecliente: accountId,
             externalid: bookingIdPadded,
             cognomecliente: customerName.lastName,
             nomecliente: customerName.firstName,
@@ -2046,6 +2048,17 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       return;
     }
 
+    // Skip bookings with total_price = 0
+    if (!booking.total_price || booking.total_price <= 0) {
+      console.log(`[InvoiceRules] Skipping booking ${bookingId} - total_price is ${booking.total_price}`);
+      res.json({
+        success: true,
+        message: 'Booking skipped - zero amount',
+        skipped: true,
+      });
+      return;
+    }
+
     // Transform to BookingForInvoicing format
     const customer = booking.booking_customers?.[0]?.customers;
     // Filter out cancelled activities
@@ -2127,10 +2140,11 @@ router.post('/api/invoices/rules/process-booking/:bookingId', validateApiKey, as
       nazione: customerCountry,
     });
     const accountIri = accountResponse.data['@id'];
+    const accountId = accountIri.split('/').pop();  // Extract UUID
 
     // Step 2: Create Pratica (WP)
     const praticaPayload = {
-      codicecliente: accountIri,
+      codicecliente: accountId,
       externalid: bookingIdPadded,
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,
@@ -2442,11 +2456,12 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
       nazione: customerCountry,
     });
     const accountIri = accountResponse.data['@id'];
+    const accountId = accountIri.split('/').pop();  // Extract UUID
 
     /// Step 2: Create Pratica (WP)
     const praticaCreationDate = now.split('T')[0];
     const praticaPayload = {
-      codicecliente: accountIri,
+      codicecliente: accountId,
       externalid: bookingIdPadded,
       cognomecliente: customerName.lastName,
       nomecliente: customerName.firstName,

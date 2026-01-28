@@ -139,18 +139,29 @@ export class BookingService {
       // 9. NUOVO: Valida età partecipanti e auto-fix swap OTA
       await this.validateBookingAges(bookingData.bookingId);
 
-      // 10. NUOVO: Auto-fatturazione se abilitata
+      // 10. NUOVO: Auto-fatturazione se abilitata (individual pratica flow)
       try {
         const shouldInvoice = await this.invoiceService.shouldAutoInvoice(sellerName);
         if (shouldInvoice) {
-          console.log('💰 Triggering auto-invoice for seller:', sellerName);
-          await this.invoiceService.createInvoiceFromBooking(
-            parentBooking.bookingId,
-            'webhook'
+          console.log('💰 Triggering auto-invoice (individual pratica) for seller:', sellerName);
+          // Call the process-booking endpoint for individual pratica creation
+          const port = process.env.PORT || 3000;
+          const apiKey = process.env.API_KEY || '';
+          const response = await axios.post(
+            `http://localhost:${port}/api/invoices/rules/process-booking/${parentBooking.bookingId}`,
+            {},
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+              },
+              timeout: 30000, // 30 seconds timeout for PS API calls
+            }
           );
+          console.log('✅ Auto-invoice result:', response.data);
         }
-      } catch (invoiceError) {
-        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError);
+      } catch (invoiceError: any) {
+        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError?.response?.data || invoiceError);
         // Non propagare l'errore - la fatturazione non deve bloccare il webhook
       }
 
