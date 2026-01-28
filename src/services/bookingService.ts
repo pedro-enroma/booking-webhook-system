@@ -144,24 +144,22 @@ export class BookingService {
         const shouldInvoice = await this.invoiceService.shouldAutoInvoice(sellerName);
         if (shouldInvoice) {
           console.log('💰 Triggering auto-invoice (individual pratica) for seller:', sellerName);
-          // Call the process-booking endpoint for individual pratica creation
-          const port = process.env.PORT || 3000;
-          const apiKey = process.env.API_KEY || '';
-          const response = await axios.post(
-            `http://localhost:${port}/api/invoices/rules/process-booking/${parentBooking.bookingId}`,
-            {},
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-              },
-              timeout: 30000, // 30 seconds timeout for PS API calls
+          // Call the service method directly (no HTTP call)
+          const result = await this.invoiceService.createIndividualPratica(parentBooking.bookingId);
+          if (result.success) {
+            if (result.alreadyInvoiced) {
+              console.log('✅ Auto-invoice: Booking already invoiced');
+            } else if (result.skipped) {
+              console.log('✅ Auto-invoice: Skipped (zero amount)');
+            } else {
+              console.log('✅ Auto-invoice: Individual pratica created:', result.praticaIri);
             }
-          );
-          console.log('✅ Auto-invoice result:', response.data);
+          } else {
+            console.error('⚠️ Auto-invoice failed:', result.error);
+          }
         }
       } catch (invoiceError: any) {
-        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError?.response?.data || invoiceError);
+        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError);
         // Non propagare l'errore - la fatturazione non deve bloccare il webhook
       }
 

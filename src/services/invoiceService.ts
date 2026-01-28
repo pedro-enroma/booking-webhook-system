@@ -105,6 +105,270 @@ export class InvoiceService {
   }
 
   // ============================================
+  // INDIVIDUAL PRATICA CREATION (for creation_date rules)
+  // ============================================
+
+  /**
+   * Create an individual pratica for a booking (instant invoicing)
+   * Used by creation_date rules - one pratica per booking
+   */
+  async createIndividualPratica(bookingId: number): Promise<{
+    success: boolean;
+    praticaIri?: string;
+    error?: string;
+    skipped?: boolean;
+    alreadyInvoiced?: boolean;
+  }> {
+    try {
+      console.log(`[InvoiceService] Creating individual pratica for booking ${bookingId}...`);
+
+      // Check if already invoiced
+      const { data: existingInvoice } = await supabase
+        .from('invoices')
+        .select('id')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE')
+        .single();
+
+      if (existingInvoice) {
+        console.log(`[InvoiceService] Booking ${bookingId} already invoiced`);
+        return { success: true, alreadyInvoiced: true };
+      }
+
+      // Fetch booking data
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .select(`
+          booking_id,
+          confirmation_code,
+          creation_date,
+          status,
+          total_price,
+          currency,
+          booking_customers(
+            customers(first_name, last_name, phone_number)
+          ),
+          activity_bookings(
+            activity_booking_id,
+            product_title,
+            start_date_time,
+            total_price,
+            activity_seller,
+            status
+          )
+        `)
+        .eq('booking_id', bookingId)
+        .single();
+
+      if (bookingError || !booking) {
+        return { success: false, error: `Booking ${bookingId} not found` };
+      }
+
+      // Skip zero-amount bookings
+      if (!booking.total_price || booking.total_price <= 0) {
+        console.log(`[InvoiceService] Skipping booking ${bookingId} - zero amount`);
+        return { success: true, skipped: true };
+      }
+
+      // Get customer and seller info
+      const customer = (booking as any).booking_customers?.[0]?.customers;
+      const activities = ((booking as any).activity_bookings || []).filter((a: any) => a.status === 'CONFIRMED');
+      const sellerName = activities.find((a: any) => a.activity_seller)?.activity_seller || null;
+
+      // Check if seller matches a creation_date rule
+      const rule = await this.getInvoiceRuleForSeller(sellerName);
+      if (!rule || (rule.invoice_date_type !== 'creation_date' && rule.invoice_date_type !== 'creation')) {
+        console.log(`[InvoiceService] No creation_date rule for seller ${sellerName}`);
+        return { success: false, error: 'No creation_date rule for this seller' };
+      }
+
+      // Get PS client
+      const client = await (this.partnerSolution as any).getClient();
+      const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+      const now = new Date().toISOString();
+      const bookingIdPadded = String(bookingId).padStart(9, '0');
+
+      // Get year-month for commessa
+      const yearMonth = this.formatYearMonth(booking.creation_date || now);
+      const nrCommessa = yearMonth.replace('-', '');
+      const deliveringValue = `commessa: ${nrCommessa}`;
+
+      const customerName = {
+        firstName: customer?.first_name || 'N/A',
+        lastName: customer?.last_name || 'N/A',
+      };
+      const customerPhone = customer?.phone_number || null;
+      const customerCountry = this.getCountryFromPhone(customerPhone);
+
+      // Step 1: Create Account
+      const accountResponse = await client.post('/accounts', {
+        cognome: customerName.lastName,
+        nome: customerName.firstName,
+        flagpersonafisica: 1,
+        codicefiscale: bookingIdPadded,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0,
+        nazione: customerCountry,
+      });
+      const accountIri = accountResponse.data['@id'];
+      const accountId = accountIri.split('/').pop();
+
+      // Step 2: Create Pratica (WP)
+      const praticaPayload = {
+        codicecliente: accountId,
+        externalid: bookingIdPadded,
+        cognomecliente: customerName.lastName,
+        nomecliente: customerName.firstName,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        datacreazione: now,
+        datamodifica: now,
+        stato: 'WP',
+        descrizionepratica: 'Tour UE ed Extra UE',
+        noteinterne: sellerName ? `Seller: ${sellerName}` : null,
+        delivering: deliveringValue
+      };
+      const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+      const praticaIri = praticaResponse.data['@id'];
+
+      // Step 3: Add Passeggero
+      const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
+        pratica: praticaIri,
+        cognomepax: customerName.lastName,
+        nomepax: customerName.firstName,
+        annullata: 0,
+        iscontraente: 1
+      });
+
+      // Step 4: Add Servizio
+      const totalAmount = booking.total_price || 0;
+      const praticaCreationDate = now.split('T')[0];
+
+      const servizioResponse = await client.post('/prt_praticaservizios', {
+        pratica: praticaIri,
+        externalid: bookingIdPadded,
+        tiposervizio: 'PKG',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        codicefornitore: 'IT09802381005',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: bookingIdPadded,
+        datacreazione: now,
+        datainizioservizio: praticaCreationDate,
+        datafineservizio: praticaCreationDate,
+        duratant: 0,
+        duratagg: 1,
+        nrpaxadulti: 1,
+        nrpaxchild: 0,
+        nrpaxinfant: 0,
+        descrizione: 'Tour UE ed Extra UE',
+        tipodestinazione: 'MISTO',
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      });
+
+      // Step 5: Add Quota
+      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+        servizio: servizioResponse.data['@id'],
+        descrizionequota: 'Tour UE ed Extra UE',
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
+        quantitacosto: 1,
+        costovalutaprimaria: totalAmount,
+        quantitaricavo: 1,
+        ricavovalutaprimaria: totalAmount,
+        codiceisovalutaricavo: 'EUR',
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+        progressivo: 1,
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      });
+
+      // Step 6: Add Movimento Finanziario
+      const movimentoResponse = await client.post('/mov_finanziarios', {
+        externalid: bookingIdPadded,
+        tipomovimento: 'I',
+        codicefile: bookingIdPadded,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        importo: totalAmount,
+        datacreazione: now,
+        datamodifica: now,
+        datamovimento: now,
+        stato: 'INS',
+        codcausale: 'PAGBOK',
+        descrizione: `Tour UE ed Extra UE - ${booking.confirmation_code}`
+      });
+
+      // Step 7: Update Pratica to INS
+      await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+
+      // Record in invoices table
+      await supabase.from('invoices').upsert({
+        booking_id: booking.booking_id,
+        confirmation_code: booking.confirmation_code,
+        invoice_type: 'INVOICE',
+        status: 'sent',
+        total_amount: totalAmount,
+        currency: 'EUR',
+        customer_name: `${customerName.firstName} ${customerName.lastName}`,
+        seller_name: sellerName,
+        booking_creation_date: booking.creation_date?.split('T')[0],
+        sent_at: now,
+        ps_pratica_iri: praticaIri,
+        ps_account_iri: accountIri,
+        ps_passeggero_iri: passeggeroResponse.data['@id'],
+        ps_movimento_iri: movimentoResponse.data['@id'],
+        ps_commessa_code: yearMonth,
+        created_by: 'creation_date_auto',
+      }, { onConflict: 'booking_id,invoice_type' });
+
+      console.log(`[InvoiceService] Successfully created individual pratica for booking ${bookingId}: ${praticaIri}`);
+
+      return { success: true, praticaIri };
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.['hydra:description'] || error.message;
+      console.error(`[InvoiceService] Error creating individual pratica for ${bookingId}:`, errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  /**
+   * Get country name from phone number for Partner Solution
+   */
+  private getCountryFromPhone(phone: string | null): string {
+    if (!phone) return 'Spagna';
+
+    const phoneClean = phone.replace(/\D/g, '');
+    const prefixMap: Record<string, string> = {
+      '34': 'Spagna',
+      '39': 'Spagna',  // Italy maps to Spain (avoid Italian invoicing rules)
+      '33': 'Francia',
+      '44': 'Regno Unito',
+      '49': 'Germania',
+      '1': 'Stati Uniti',
+      '351': 'Portogallo',
+      '31': 'Paesi Bassi',
+      '32': 'Belgio',
+      '41': 'Svizzera',
+      '43': 'Austria',
+    };
+
+    for (const [prefix, country] of Object.entries(prefixMap)) {
+      if (phoneClean.startsWith(prefix)) {
+        return country;
+      }
+    }
+    return 'Spagna';
+  }
+
+  // ============================================
   // MONTHLY PRATICA MANAGEMENT
   // ============================================
 
