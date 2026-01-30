@@ -144,8 +144,9 @@ export class BookingService {
         const shouldInvoice = await this.invoiceService.shouldAutoInvoice(sellerName);
         if (shouldInvoice) {
           console.log('💰 Triggering auto-invoice (individual pratica) for seller:', sellerName);
-          // Call the service method directly (no HTTP call)
-          const result = await this.invoiceService.createIndividualPratica(parentBooking.bookingId);
+          console.log('💰 Using webhook totalPrice:', parentBooking.totalPrice);
+          // Call the service method directly with webhook's total price to avoid multi-activity race condition
+          const result = await this.invoiceService.createIndividualPratica(parentBooking.bookingId, parentBooking.totalPrice);
           if (result.success) {
             if (result.alreadyInvoiced) {
               console.log('✅ Auto-invoice: Booking already invoiced');

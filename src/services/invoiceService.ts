@@ -112,7 +112,7 @@ export class InvoiceService {
    * Create an individual pratica for a booking (instant invoicing)
    * Used by creation_date rules - one pratica per booking
    */
-  async createIndividualPratica(bookingId: number): Promise<{
+  async createIndividualPratica(bookingId: number, overrideTotalPrice?: number): Promise<{
     success: boolean;
     praticaIri?: string;
     error?: string;
@@ -121,6 +121,9 @@ export class InvoiceService {
   }> {
     try {
       console.log(`[InvoiceService] Creating individual pratica for booking ${bookingId}...`);
+      if (overrideTotalPrice !== undefined) {
+        console.log(`[InvoiceService] Using webhook total price: ${overrideTotalPrice}`);
+      }
 
       // Check if already invoiced
       const { data: existingInvoice } = await supabase
@@ -164,8 +167,9 @@ export class InvoiceService {
         return { success: false, error: `Booking ${bookingId} not found` };
       }
 
-      // Skip zero-amount bookings
-      if (!booking.total_price || booking.total_price <= 0) {
+      // Skip zero-amount bookings (use override if provided)
+      const effectiveTotal = overrideTotalPrice ?? booking.total_price ?? 0;
+      if (effectiveTotal <= 0) {
         console.log(`[InvoiceService] Skipping booking ${bookingId} - zero amount`);
         return { success: true, skipped: true };
       }
@@ -244,7 +248,8 @@ export class InvoiceService {
       });
 
       // Step 4: Add Servizio
-      const totalAmount = booking.total_price || 0;
+      // Use override from webhook if provided (fixes multi-activity race condition)
+      const totalAmount = overrideTotalPrice ?? booking.total_price ?? 0;
       const praticaCreationDate = now.split('T')[0];
 
       const servizioResponse = await client.post('/prt_praticaservizios', {
