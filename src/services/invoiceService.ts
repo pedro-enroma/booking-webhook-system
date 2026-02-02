@@ -253,7 +253,7 @@ export class InvoiceService {
       // Step 4: Add Servizio
       // Use override from webhook if provided (fixes multi-activity race condition)
       const totalAmount = overrideTotalPrice ?? booking.total_price ?? 0;
-      const praticaCreationDate = now.split('T')[0];
+      const todayDate = now.split('T')[0];  // datacreazione, datainizioservizio, datafineservizio always now
 
       const servizioResponse = await client.post('/prt_praticaservizios', {
         pratica: praticaIri,
@@ -265,8 +265,8 @@ export class InvoiceService {
         ragsocfornitore: 'EnRoma Tours',
         codicefilefornitore: bookingIdPadded,
         datacreazione: now,
-        datainizioservizio: praticaCreationDate,
-        datafineservizio: praticaCreationDate,
+        datainizioservizio: todayDate,
+        datafineservizio: todayDate,
         duratant: 0,
         duratagg: 1,
         nrpaxadulti: 1,
@@ -522,7 +522,7 @@ export class InvoiceService {
 
       // Step 4: Add Servizio
       const totalAmount = booking.total_price || 0;
-      const praticaCreationDate = now.split('T')[0];
+      const todayDate = now.split('T')[0];  // datacreazione, datainizioservizio, datafineservizio always now
 
       const servizioResponse = await client.post('/prt_praticaservizios', {
         pratica: praticaIri,
@@ -534,8 +534,8 @@ export class InvoiceService {
         ragsocfornitore: 'EnRoma Tours',
         codicefilefornitore: bookingIdPadded,
         datacreazione: now,
-        datainizioservizio: praticaCreationDate,
-        datafineservizio: praticaCreationDate,
+        datainizioservizio: todayDate,
+        datafineservizio: todayDate,
         duratant: 0,
         duratagg: 1,
         nrpaxadulti: 1,
@@ -1194,9 +1194,9 @@ export class InvoiceService {
     const bookingIdPadded = String(bookingData.booking_id).padStart(9, '0');
 
     // Step 3-5: Create Servizi, Quote, Movimenti for each activity
-    for (const activity of bookingData.activities) {
-      const praticaCreationDate = now.split('T')[0];  // Always use pratica creation date per spec
+    const todayDate = now.split('T')[0];  // datacreazione, datainizioservizio, datafineservizio always now
 
+    for (const activity of bookingData.activities) {
       try {
         const productTitle = activity.product_title || 'Tour UE ed Extra UE';
 
@@ -1207,8 +1207,8 @@ export class InvoiceService {
           tiposervizio: 'PKG',                    // Always PKQ per spec
           tipovendita: 'ORG',
           regimevendita: '74T',
-          datainizioservizio: praticaCreationDate,  // Always pratica creation date per spec
-          datafineservizio: praticaCreationDate,    // Always pratica creation date per spec
+          datainizioservizio: todayDate,  // Always now
+          datafineservizio: todayDate,    // Always now
           datacreazione: now,
           nrpaxadulti: activity.participant_count || 1,  // Total participants
           nrpaxchild: 0,                          // Always 0 per spec
@@ -1254,14 +1254,14 @@ export class InvoiceService {
           importo: activity.total_price,
           datacreazione: now,
           datamodifica: now,
-          datamovimento: praticaCreationDate,  // Use pratica creation date
+          datamovimento: now,  // Always now
           stato: 'INS',
           codcausale: 'PAGBOK',
           descrizione: `Tour UE ed Extra UE - ${bookingData.confirmation_code}`,
         });
 
         // Create line item in DB (store actual activity date for records)
-        const activityDateForDb = activity.start_date_time?.split('T')[0] || praticaCreationDate;
+        const activityDateForDb = activity.start_date_time?.split('T')[0] || todayDate;
         await supabase.from('invoice_line_items').insert({
           invoice_id: invoiceId,
           activity_booking_id: activity.activity_booking_id,
