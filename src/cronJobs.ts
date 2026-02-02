@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { OctoService } from './services/octoService';
+import { InvoiceService } from './services/invoiceService';
 import { supabase } from './config/supabase';
 
 // Prodotti con diverse priorità
@@ -169,6 +170,7 @@ export function initializeCronJobs() {
   });
   
   // 8. INVOICE RULES - Process travel_date rules at 14:00 every day
+  const invoiceService = new InvoiceService();
   cron.schedule('0 14 * * *', async () => {
     const jobId = `invoice-travel-date-${Date.now()}`;
     logCronStart('Invoice Rules - Travel Date Processing', jobId);
@@ -177,29 +179,14 @@ export function initializeCronJobs() {
       const today = new Date().toISOString().split('T')[0];
       console.log(`[InvoiceRules CRON] Processing travel_date rules for ${today}`);
 
-      // Call the internal API endpoint to process travel_date invoicing
-      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
-      const apiKey = process.env.INVOICE_API_KEY || '';
+      // Call the service method directly (no HTTP request)
+      const result = await invoiceService.processTravelDateInvoicing(today);
 
-      const response = await fetch(`${baseUrl}/api/invoices/rules/process-travel-date?date=${today}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-        },
-      });
-
-      const result = await response.json() as {
-        success: boolean;
-        error?: string;
-        summary?: { total: number; sent: number; failed: number };
-      };
-
-      if (result.success && result.summary) {
+      if (result.success) {
         console.log(`[InvoiceRules CRON] Summary: ${result.summary.sent} sent, ${result.summary.failed} failed out of ${result.summary.total} bookings`);
         logCronEnd(jobId, result.summary.total, result.summary.failed === 0);
       } else {
-        throw new Error(result.error || 'Unknown error');
+        throw new Error('Failed to process travel_date invoicing');
       }
     } catch (error) {
       logCronEnd(jobId, 0, false, error);

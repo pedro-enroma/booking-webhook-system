@@ -10,6 +10,7 @@
 
 import { supabase } from '../config/supabase';
 import { PartnerSolutionService } from './partnerSolutionService';
+import { InvoiceRulesService } from './invoiceRulesService';
 import {
   Invoice,
   InvoiceLineItem,
@@ -36,9 +37,11 @@ interface InvoiceRule {
 
 export class InvoiceService {
   private partnerSolution: PartnerSolutionService;
+  private invoiceRulesService: InvoiceRulesService;
 
   constructor() {
     this.partnerSolution = new PartnerSolutionService();
+    this.invoiceRulesService = new InvoiceRulesService();
   }
 
   // ============================================
@@ -340,6 +343,272 @@ export class InvoiceService {
     } catch (error: any) {
       const errorMsg = error.response?.data?.['hydra:description'] || error.message;
       console.error(`[InvoiceService] Error creating individual pratica for ${bookingId}:`, errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  /**
+   * Process travel_date invoicing for a given date (called by cron)
+   * Finds bookings where the latest activity date = targetDate and sends to Partner Solution
+   */
+  async processTravelDateInvoicing(targetDate: string): Promise<{
+    success: boolean;
+    summary: { total: number; sent: number; failed: number };
+    bookings: Array<{
+      booking_id: number;
+      confirmation_code: string;
+      status: 'sent' | 'failed';
+      error?: string;
+    }>;
+  }> {
+    console.log(`[InvoiceService] Processing travel_date invoicing for ${targetDate}`);
+
+    const processedBookings: Array<{
+      booking_id: number;
+      confirmation_code: string;
+      status: 'sent' | 'failed';
+      error?: string;
+    }> = [];
+
+    try {
+      const results = await this.invoiceRulesService.getBookingsForTravelDateInvoicing(targetDate);
+
+      for (const { bookings, rule } of results) {
+        console.log(`[InvoiceService] Processing ${bookings.length} bookings for rule: ${rule.name}`);
+
+        for (const booking of bookings) {
+          try {
+            // Use createIndividualPratica which already has the full 7-step flow
+            const result = await this.createIndividualPraticaForTravelDate(booking);
+
+            if (result.success) {
+              processedBookings.push({
+                booking_id: booking.booking_id,
+                confirmation_code: booking.confirmation_code,
+                status: 'sent',
+              });
+              console.log(`  [OK] Sent ${booking.confirmation_code} to Partner Solution`);
+            } else {
+              processedBookings.push({
+                booking_id: booking.booking_id,
+                confirmation_code: booking.confirmation_code,
+                status: 'failed',
+                error: result.error,
+              });
+              console.error(`  [ERROR] Failed to send ${booking.confirmation_code}: ${result.error}`);
+            }
+          } catch (error: any) {
+            processedBookings.push({
+              booking_id: booking.booking_id,
+              confirmation_code: booking.confirmation_code,
+              status: 'failed',
+              error: error.message,
+            });
+            console.error(`  [ERROR] Failed to send ${booking.confirmation_code}:`, error.message);
+          }
+        }
+      }
+
+      const sent = processedBookings.filter(b => b.status === 'sent').length;
+      const failed = processedBookings.filter(b => b.status === 'failed').length;
+
+      console.log(`[InvoiceService] Travel date invoicing complete: ${sent} sent, ${failed} failed`);
+
+      return {
+        success: true,
+        summary: { total: processedBookings.length, sent, failed },
+        bookings: processedBookings,
+      };
+    } catch (error: any) {
+      console.error('[InvoiceService] Error processing travel_date invoicing:', error);
+      return {
+        success: false,
+        summary: { total: 0, sent: 0, failed: 0 },
+        bookings: [],
+      };
+    }
+  }
+
+  /**
+   * Create individual pratica for a travel_date booking
+   */
+  private async createIndividualPraticaForTravelDate(booking: any): Promise<{
+    success: boolean;
+    praticaIri?: string;
+    error?: string;
+  }> {
+    try {
+      const bookingId = booking.booking_id;
+
+      // Check if already invoiced
+      const { data: existingInvoice } = await supabase
+        .from('invoices')
+        .select('id')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE')
+        .single();
+
+      if (existingInvoice) {
+        console.log(`[InvoiceService] Booking ${bookingId} already invoiced`);
+        return { success: true };
+      }
+
+      // Skip zero-amount bookings
+      if (!booking.total_price || booking.total_price <= 0) {
+        console.log(`[InvoiceService] Skipping booking ${bookingId} - zero amount`);
+        return { success: true };
+      }
+
+      // Get PS client
+      const client = await (this.partnerSolution as any).getClient();
+      const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+      const now = new Date().toISOString();
+      const bookingIdPadded = String(bookingId).padStart(9, '0');
+
+      // Get year-month for commessa
+      const yearMonthInfo = await this.invoiceRulesService.resolveYearMonthForBooking(booking);
+      const nrCommessa = yearMonthInfo.yearMonth.replace('-', '');
+      const deliveringValue = `commessa: ${nrCommessa}`;
+
+      const customerName = {
+        firstName: booking.customer?.first_name || 'N/A',
+        lastName: booking.customer?.last_name || 'N/A',
+      };
+      const customerPhone = booking.customer?.phone_number || null;
+      const customerCountry = this.getCountryFromPhone(customerPhone);
+
+      // Step 1: Create Account
+      const accountResponse = await client.post('/accounts', {
+        cognome: customerName.lastName,
+        nome: customerName.firstName,
+        flagpersonafisica: 1,
+        codicefiscale: bookingIdPadded,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0,
+        nazione: customerCountry,
+      });
+      const accountIri = accountResponse.data['@id'];
+      const accountId = accountIri.split('/').pop();
+
+      // Step 2: Create Pratica (WP)
+      const praticaPayload = {
+        codicecliente: accountId,
+        externalid: bookingIdPadded,
+        cognomecliente: customerName.lastName,
+        nomecliente: customerName.firstName,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        datacreazione: now,
+        datamodifica: now,
+        stato: 'WP',
+        descrizionepratica: 'Tour UE ed Extra UE',
+        noteinterne: booking.seller_name ? `Seller: ${booking.seller_name}` : null,
+        delivering: deliveringValue
+      };
+      const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+      const praticaIri = praticaResponse.data['@id'];
+
+      // Step 3: Add Passeggero
+      const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
+        pratica: praticaIri,
+        cognomepax: customerName.lastName,
+        nomepax: customerName.firstName,
+        annullata: 0,
+        iscontraente: 1
+      });
+
+      // Step 4: Add Servizio
+      const totalAmount = booking.total_price || 0;
+      const praticaCreationDate = now.split('T')[0];
+
+      const servizioResponse = await client.post('/prt_praticaservizios', {
+        pratica: praticaIri,
+        externalid: bookingIdPadded,
+        tiposervizio: 'PKG',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        codicefornitore: 'IT09802381005',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: bookingIdPadded,
+        datacreazione: now,
+        datainizioservizio: praticaCreationDate,
+        datafineservizio: praticaCreationDate,
+        duratant: 0,
+        duratagg: 1,
+        nrpaxadulti: 1,
+        nrpaxchild: 0,
+        nrpaxinfant: 0,
+        descrizione: 'Tour UE ed Extra UE',
+        tipodestinazione: 'MISTO',
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      });
+
+      // Step 5: Add Quota
+      await client.post('/prt_praticaservizioquotas', {
+        servizio: servizioResponse.data['@id'],
+        descrizionequota: 'Tour UE ed Extra UE',
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
+        quantitacosto: 1,
+        costovalutaprimaria: totalAmount,
+        quantitaricavo: 1,
+        ricavovalutaprimaria: totalAmount,
+        codiceisovalutaricavo: 'EUR',
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+        progressivo: 1,
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS'
+      });
+
+      // Step 6: Add Movimento Finanziario
+      const movimentoResponse = await client.post('/mov_finanziarios', {
+        externalid: bookingIdPadded,
+        tipomovimento: 'I',
+        codicefile: bookingIdPadded,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        importo: totalAmount,
+        datacreazione: now,
+        datamodifica: now,
+        datamovimento: now,
+        stato: 'INS',
+        codcausale: 'PAGBOK',
+        descrizione: `Tour UE ed Extra UE - ${booking.confirmation_code}`
+      });
+
+      // Step 7: Update Pratica to INS
+      await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+
+      // Record in invoices table
+      await supabase.from('invoices').upsert({
+        booking_id: bookingId,
+        confirmation_code: booking.confirmation_code,
+        invoice_type: 'INVOICE',
+        status: 'sent',
+        total_amount: totalAmount,
+        currency: 'EUR',
+        customer_name: `${customerName.firstName} ${customerName.lastName}`,
+        seller_name: booking.seller_name,
+        booking_creation_date: booking.creation_date?.split('T')[0],
+        sent_at: now,
+        ps_pratica_iri: praticaIri,
+        ps_account_iri: accountIri,
+        ps_passeggero_iri: passeggeroResponse.data['@id'],
+        ps_movimento_iri: movimentoResponse.data['@id'],
+        ps_commessa_code: yearMonthInfo.yearMonth,
+        created_by: 'travel_date_cron',
+      }, { onConflict: 'booking_id,invoice_type' });
+
+      return { success: true, praticaIri };
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.['hydra:description'] || error.message;
       return { success: false, error: errorMsg };
     }
   }
