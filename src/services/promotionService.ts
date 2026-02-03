@@ -134,8 +134,9 @@ export class PromotionService {
 
   /**
    * Extract and track promotions from booking webhook data
-   * @param parentBooking - The root booking object (contains offers array)
-   * @param activityData - The current activity being processed
+   * Uses activityData.offerUsage which contains {id, offerId, discount}
+   * @param parentBooking - The root booking object
+   * @param activityData - The current activity being processed (contains offerUsage)
    * @param parentBookingId - The parent booking ID
    * @param confirmationCode - The booking confirmation code
    * @param webhookType - BOOKING_CONFIRMED or BOOKING_UPDATED
@@ -148,117 +149,91 @@ export class PromotionService {
     webhookType: string
   ): Promise<void> {
     try {
-      // Check if there are offers in the PARENT booking (not activity level)
-      if (!parentBooking?.offers || parentBooking.offers.length === 0) {
-        console.log('   📊 No offers found in parentBooking');
+      // Check for offerUsage at the ACTIVITY level (not parentBooking.offers)
+      const offerUsage = activityData?.offerUsage;
+
+      if (!offerUsage || !offerUsage.offerId) {
+        console.log('   📊 No offer applied to this activity');
         return;
       }
 
       console.log(`\n🎁 PROMOTION DETECTION`);
-      console.log(`   Found ${parentBooking.offers.length} offer(s) in parentBooking`);
+      console.log(`   🎯 Offer ID: ${offerUsage.offerId}`);
+      console.log(`      Discount: ${offerUsage.discount}%`);
+      console.log(`      Usage ID: ${offerUsage.id}`);
 
-      for (const offer of parentBooking.offers) {
-        const isMultiActivity = offer.activities && offer.activities.length > 1;
+      // Get current activity info
+      const currentActivityBookingId = activityData.bookingId;
+      const currentProductId = activityData.productId || activityData.product?.id;
+      const currentProductTitle = activityData.title;
 
-        console.log(`\n   🎯 Offer ID: ${offer.id}`);
-        console.log(`      Discount: ${offer.discount}%`);
-        console.log(`      Owner ID: ${offer.ownerId}`);
-        console.log(`      Type: ${isMultiActivity ? 'MULTI-ACTIVITY' : 'SINGLE ACTIVITY'}`);
+      // Check if this is part of a multi-activity offer
+      const { data: existingPromotions } = await supabase
+        .from('booking_promotions')
+        .select('activity_booking_id, product_id, product_title')
+        .eq('booking_id', parentBookingId)
+        .eq('offer_id', offerUsage.offerId)
+        .order('created_at', { ascending: true });
 
-        if (isMultiActivity) {
-          console.log(`      📋 Applies to ${offer.activities.length} activities:`);
-          offer.activities.forEach((activity: any, index: number) => {
-            console.log(`         ${index + 1}. ${activity.title} (ID: ${activity.id})`);
-          });
-        }
+      let firstActivityInfo = null;
+      let activitySequence = 1;
+      let isMultiActivity = false;
 
-        // Get current activity info from activityData
-        const currentActivityBookingId = activityData.bookingId;
-        const currentProductId = activityData.productId || activityData.product?.id;
-        const currentProductTitle = activityData.title;
+      if (existingPromotions && existingPromotions.length > 0) {
+        // This is a subsequent activity in a multi-activity offer
+        isMultiActivity = true;
+        firstActivityInfo = {
+          bookingId: existingPromotions[0].activity_booking_id,
+          productId: existingPromotions[0].product_id,
+          title: existingPromotions[0].product_title
+        };
+        activitySequence = existingPromotions.length + 1;
 
-        // Determine if this is the first activity or a subsequent one
-        let firstActivityInfo = null;
-        let activitySequence = 1;
+        console.log(`      📋 Multi-activity offer - Activity #${activitySequence}`);
+        console.log(`      📌 First activity was: ${firstActivityInfo.title}`);
+      }
 
-        if (isMultiActivity) {
-          // Check if there are already activities with this offer for this booking
-          const { data: existingPromotions } = await supabase
-            .from('booking_promotions')
-            .select('*')
-            .eq('booking_id', parentBookingId)
-            .eq('offer_id', offer.id)
-            .order('created_at', { ascending: true });
+      // Calculate pricing from activity data
+      const originalPrice = activityData.totalPrice || 0;
+      const discountedPrice = activityData.priceWithDiscount || activityData.totalPrice || 0;
+      const discountAmount = activityData.discountAmount || (originalPrice - discountedPrice);
 
-          if (existingPromotions && existingPromotions.length > 0) {
-            // This is a subsequent activity - use info from first
-            firstActivityInfo = {
-              bookingId: existingPromotions[0].activity_booking_id,
-              productId: existingPromotions[0].product_id,
-              title: existingPromotions[0].product_title
-            };
-            activitySequence = existingPromotions.length + 1;
+      console.log(`      💰 Pricing: €${originalPrice} → €${discountedPrice} (saved €${discountAmount.toFixed(2)})`);
 
-            console.log(`\n      ➕ This is activity #${activitySequence} in multi-activity offer`);
-            console.log(`      📌 First activity was: ${firstActivityInfo.title}`);
-          } else {
-            // This is the first activity
-            console.log(`\n      🎬 This is the FIRST activity in multi-activity offer`);
-            console.log(`      📌 Will track as trigger activity`);
-          }
-        }
+      // Track the promotion
+      await this.trackPromotion({
+        offerId: offerUsage.offerId,
+        offerOwnerId: undefined, // Not available in offerUsage
+        discountPercentage: offerUsage.discount || activityData.discountPercentage || 0,
+        bookingId: parentBookingId,
+        confirmationCode: confirmationCode,
+        activityBookingId: currentActivityBookingId,
+        productId: currentProductId,
+        productTitle: currentProductTitle,
+        isMultiActivityOffer: isMultiActivity,
+        totalActivitiesInOffer: activitySequence, // Will be updated as more activities come in
+        firstActivityBookingId: firstActivityInfo?.bookingId || currentActivityBookingId,
+        firstActivityProductId: firstActivityInfo?.productId || currentProductId,
+        firstActivityTitle: firstActivityInfo?.title || currentProductTitle,
+        activitySequenceInOffer: activitySequence,
+        originalPrice: originalPrice,
+        discountedPrice: discountedPrice,
+        discountAmount: discountAmount,
+        currency: activityData.currency || 'EUR',
+        webhookType: webhookType,
+        rawOfferData: offerUsage
+      });
 
-        // Calculate discount amounts if we have pricing data
-        let originalPrice = activityData.totalPrice;
-        let discountedPrice = activityData.totalPrice;
-        let discountAmount = 0;
-
-        // Try to get pre-discount price from pricingCategoryBookings
-        if (activityData.pricingCategoryBookings && activityData.pricingCategoryBookings.length > 0) {
-          const totalBeforeDiscount = activityData.pricingCategoryBookings.reduce(
-            (sum: number, pcb: any) => sum + (pcb.total || 0),
-            0
-          );
-          const totalAfterDiscount = activityData.pricingCategoryBookings.reduce(
-            (sum: number, pcb: any) => sum + (pcb.totalDiscounted || pcb.total || 0),
-            0
-          );
-
-          if (totalBeforeDiscount > 0) {
-            originalPrice = totalBeforeDiscount;
-            discountedPrice = totalAfterDiscount;
-            discountAmount = originalPrice - discountedPrice;
-
-            console.log(`\n      💰 Pricing:`);
-            console.log(`         Original: €${originalPrice.toFixed(2)}`);
-            console.log(`         Discounted: €${discountedPrice.toFixed(2)}`);
-            console.log(`         Saved: €${discountAmount.toFixed(2)}`);
-          }
-        }
-
-        // Track the promotion
-        await this.trackPromotion({
-          offerId: offer.id,
-          offerOwnerId: offer.ownerId,
-          discountPercentage: offer.discount,
-          bookingId: parentBookingId,
-          confirmationCode: confirmationCode,
-          activityBookingId: currentActivityBookingId,
-          productId: currentProductId,
-          productTitle: currentProductTitle,
-          isMultiActivityOffer: isMultiActivity,
-          totalActivitiesInOffer: isMultiActivity ? offer.activities.length : 1,
-          firstActivityBookingId: firstActivityInfo?.bookingId || currentActivityBookingId,
-          firstActivityProductId: firstActivityInfo?.productId || currentProductId,
-          firstActivityTitle: firstActivityInfo?.title || currentProductTitle,
-          activitySequenceInOffer: activitySequence,
-          originalPrice: originalPrice,
-          discountedPrice: discountedPrice,
-          discountAmount: discountAmount,
-          currency: activityData.currency || 'EUR',
-          webhookType: webhookType,
-          rawOfferData: offer
-        });
+      // Update multi-activity count for previous records if this is part of multi-activity
+      if (isMultiActivity && existingPromotions) {
+        await supabase
+          .from('booking_promotions')
+          .update({
+            is_multi_activity_offer: true,
+            total_activities_in_offer: activitySequence
+          })
+          .eq('booking_id', parentBookingId)
+          .eq('offer_id', offerUsage.offerId);
       }
 
       console.log(`✅ Promotion processing completed`);
