@@ -117,8 +117,9 @@ export class BookingService {
         console.log('✅ Partecipanti salvati:', bookingData.pricingCategoryBookings.length);
       }
       
-      // 7. NUOVO: Traccia promozioni/offerte
+      // 7. NUOVO: Traccia promozioni/offerte (offers are in parentBooking, not activity level)
       await this.promotionService.processWebhookOffers(
+        parentBooking,
         bookingData,
         parentBooking.bookingId,
         bookingData.confirmationCode,
@@ -319,8 +320,9 @@ export class BookingService {
         console.log('✅ Partecipanti sincronizzati intelligentemente');
       }
 
-      // 5. NUOVO: Traccia promozioni/offerte
+      // 5. NUOVO: Traccia promozioni/offerte (offers are in parentBooking, not activity level)
       await this.promotionService.processWebhookOffers(
+        parentBooking,
         bookingData,
         parentBooking.bookingId,
         bookingData.confirmationCode,

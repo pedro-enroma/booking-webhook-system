@@ -134,24 +134,30 @@ export class PromotionService {
 
   /**
    * Extract and track promotions from booking webhook data
+   * @param parentBooking - The root booking object (contains offers array)
+   * @param activityData - The current activity being processed
+   * @param parentBookingId - The parent booking ID
+   * @param confirmationCode - The booking confirmation code
+   * @param webhookType - BOOKING_CONFIRMED or BOOKING_UPDATED
    */
   async processWebhookOffers(
-    bookingData: any,
+    parentBooking: any,
+    activityData: any,
     parentBookingId: number,
     confirmationCode: string,
     webhookType: string
   ): Promise<void> {
     try {
-      // Check if there are offers
-      if (!bookingData.offers || bookingData.offers.length === 0) {
-        console.log('   📊 No offers found in webhook');
+      // Check if there are offers in the PARENT booking (not activity level)
+      if (!parentBooking?.offers || parentBooking.offers.length === 0) {
+        console.log('   📊 No offers found in parentBooking');
         return;
       }
 
       console.log(`\n🎁 PROMOTION DETECTION`);
-      console.log(`   Found ${bookingData.offers.length} offer(s) in webhook`);
+      console.log(`   Found ${parentBooking.offers.length} offer(s) in parentBooking`);
 
-      for (const offer of bookingData.offers) {
+      for (const offer of parentBooking.offers) {
         const isMultiActivity = offer.activities && offer.activities.length > 1;
 
         console.log(`\n   🎯 Offer ID: ${offer.id}`);
@@ -166,10 +172,10 @@ export class PromotionService {
           });
         }
 
-        // Get current activity info
-        const currentActivityBookingId = bookingData.bookingId;
-        const currentProductId = bookingData.productId || bookingData.product?.id;
-        const currentProductTitle = bookingData.title;
+        // Get current activity info from activityData
+        const currentActivityBookingId = activityData.bookingId;
+        const currentProductId = activityData.productId || activityData.product?.id;
+        const currentProductTitle = activityData.title;
 
         // Determine if this is the first activity or a subsequent one
         let firstActivityInfo = null;
@@ -203,17 +209,17 @@ export class PromotionService {
         }
 
         // Calculate discount amounts if we have pricing data
-        let originalPrice = bookingData.totalPrice;
-        let discountedPrice = bookingData.totalPrice;
+        let originalPrice = activityData.totalPrice;
+        let discountedPrice = activityData.totalPrice;
         let discountAmount = 0;
 
         // Try to get pre-discount price from pricingCategoryBookings
-        if (bookingData.pricingCategoryBookings && bookingData.pricingCategoryBookings.length > 0) {
-          const totalBeforeDiscount = bookingData.pricingCategoryBookings.reduce(
+        if (activityData.pricingCategoryBookings && activityData.pricingCategoryBookings.length > 0) {
+          const totalBeforeDiscount = activityData.pricingCategoryBookings.reduce(
             (sum: number, pcb: any) => sum + (pcb.total || 0),
             0
           );
-          const totalAfterDiscount = bookingData.pricingCategoryBookings.reduce(
+          const totalAfterDiscount = activityData.pricingCategoryBookings.reduce(
             (sum: number, pcb: any) => sum + (pcb.totalDiscounted || pcb.total || 0),
             0
           );
@@ -249,7 +255,7 @@ export class PromotionService {
           originalPrice: originalPrice,
           discountedPrice: discountedPrice,
           discountAmount: discountAmount,
-          currency: bookingData.currency || 'EUR',
+          currency: activityData.currency || 'EUR',
           webhookType: webhookType,
           rawOfferData: offer
         });
