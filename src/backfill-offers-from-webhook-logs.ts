@@ -1,5 +1,4 @@
 import { supabase } from './config/supabase';
-import { getFullPayload } from './services/payloadStorage';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -58,7 +57,7 @@ async function backfillOffersFromWebhookLogs(): Promise<void> {
 
       const { data: page, error: queryError } = await supabase
         .from('webhook_logs')
-        .select('id, booking_id, confirmation_code, action, raw_payload, payload_storage_key, received_at')
+        .select('id, booking_id, confirmation_code, action, raw_payload, received_at')
         .eq('webhook_type', 'BOOKING')
         .order('received_at', { ascending: true })
         .range(offset, offset + PAGE_SIZE - 1);
@@ -77,7 +76,7 @@ async function backfillOffersFromWebhookLogs(): Promise<void> {
       for (const webhook of page) {
         stats.totalWebhooksProcessed++;
 
-        const payload = await getFullPayload(webhook);
+        const payload = webhook.raw_payload;
         const offerUsage = payload?.offerUsage;
 
         // Skip if no offer applied

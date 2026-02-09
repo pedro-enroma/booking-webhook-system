@@ -8,12 +8,6 @@ import Stripe from 'stripe';
 import axios from 'axios';
 import { supabase } from '../config/supabase';
 import { invoiceService } from '../services/invoiceService';
-import {
-  isOffloadEnabled,
-  uploadPayload,
-  buildPayloadSummary,
-  incrementMetric,
-} from '../services/payloadStorage';
 
 const router = express.Router();
 
@@ -240,7 +234,7 @@ async function logStripeWebhook(
   rawPayload: any
 ) {
   try {
-    const insertData: any = {
+    await supabase.from('webhook_logs').insert({
       booking_id: bookingId?.toString() || null,
       confirmation_code: confirmationCode || 'N/A',
       action: eventType,
@@ -251,27 +245,7 @@ async function logStripeWebhook(
       processing_result: status,
       raw_payload: rawPayload,
       error_message: status === 'ERROR' ? message : null,
-    };
-
-    // Payload offloading (when enabled)
-    if (isOffloadEnabled()) {
-      try {
-        const { storageKey, checksum } = await uploadPayload(
-          rawPayload,
-          bookingId?.toString() || eventId,
-          'STRIPE'
-        );
-        insertData.raw_payload = buildPayloadSummary(rawPayload);
-        insertData.payload_storage_key = storageKey;
-        insertData.payload_checksum = checksum;
-        await incrementMetric('upload_success');
-      } catch (uploadError: any) {
-        await incrementMetric('upload_failure', uploadError.message);
-        console.warn('[Stripe] Storage upload failed, storing full payload in DB:', uploadError.message);
-      }
-    }
-
-    await supabase.from('webhook_logs').insert(insertData);
+    });
   } catch (error) {
     console.error('[Stripe] Failed to log webhook:', error);
   }

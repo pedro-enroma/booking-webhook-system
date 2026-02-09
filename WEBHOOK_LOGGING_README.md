@@ -141,10 +141,7 @@ The `webhook_logs` table stores:
 - `processing_started_at`: When processing began
 - `processing_completed_at`: When processing finished
 - `processing_duration_ms`: Processing time in milliseconds
-- `raw_payload`: Webhook payload (JSONB) — full payload or compact summary if offloaded
-- `payload_storage_key`: Storage path if payload is offloaded to Supabase Storage
-- `payload_checksum`: SHA-256 checksum of the offloaded payload
-- `payload_verified_at`: Timestamp of last checksum verification
+- `raw_payload`: Complete webhook payload (JSONB)
 - `processing_result`: SUCCESS, ERROR, or SKIPPED
 - `error_message`: Error details if any
 - `out_of_order`: Flag for out-of-order detection
@@ -216,24 +213,11 @@ LIMIT 10;
 - **Database errors**: Verify webhook_logs table exists
 - **Skipping not working**: Check the out-of-order detection logic
 
-## Payload Offloading
-
-When `ENABLE_PAYLOAD_OFFLOAD=true`, new webhook payloads are stored in Supabase Storage (`webhook-payloads` bucket) instead of inline in the database. The `raw_payload` column stores a compact summary, and `payload_storage_key` points to the full JSON in storage.
-
-To read the full payload from code, use `getFullPayload(logEntry)` from `src/services/payloadStorage.ts`. This transparently handles both DB-stored and storage-backed payloads.
-
-### Monitoring
-- **DB size**: `SELECT check_database_size()` returns total and per-table sizes
-- **Storage health**: `payload_storage_health` table tracks upload failures and checksum mismatches
-- **Verification**: Hourly cron job verifies recent uploads via SHA-256 checksum
-- **Orphan scan**: Daily cron job at 3:00 AM detects storage objects without DB references
-
 ## Production Deployment
 
 1. **Environment Variables**:
    - Ensure all database connections are configured
    - Set appropriate log levels
-   - `ENABLE_PAYLOAD_OFFLOAD=true` to enable payload offloading
 
 2. **Log Rotation**:
    - Implement log rotation for file logs
@@ -242,12 +226,10 @@ To read the full payload from code, use `getFullPayload(logEntry)` from `src/ser
 3. **Monitoring**:
    - Set up alerts for high error rates
    - Monitor out-of-order webhook frequency
-   - Monitor DB size via `check_database_size()` RPC
 
 4. **Performance**:
    - Index webhook_logs table properly (already included in SQL)
-   - Payload offloading reduces TOAST storage growth
-   - Dedup index prevents duplicate webhook entries
+   - Consider partitioning for high-volume scenarios
 
 ## Contact & Support
 

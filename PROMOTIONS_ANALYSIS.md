@@ -177,18 +177,14 @@ if (this.hasMultiActivityPromotion(bookingData)) {
 To see if any recent bookings had offers/discounts, check webhook_logs:
 
 ```sql
--- Note: raw_payload may be a compact summary if payload offloading is enabled.
--- For full payload access, use getFullPayload() from payloadStorage.ts in code,
--- or query rows where payload_storage_key IS NULL for non-offloaded data.
 SELECT
   confirmation_code,
   action,
   raw_payload->'offers' as offers,
   raw_payload->'pricingCategoryBookings'->0->'discount' as discount
 FROM webhook_logs
-WHERE payload_storage_key IS NULL  -- Only non-offloaded rows have full raw_payload
-  AND (raw_payload->'offers' IS NOT NULL
-    OR raw_payload->'pricingCategoryBookings'->0->'discount' != '0')
+WHERE raw_payload->'offers' IS NOT NULL
+  OR raw_payload->'pricingCategoryBookings'->0->'discount' != '0'
 ORDER BY received_at DESC
 LIMIT 10;
 ```
