@@ -1,0 +1,13 @@
+node_modules
+dist
+.env
+.env.*
+*.log
+.DS_Store
+.git
+.claude
+webhook-logs
+*.xlsx
+cancelled-activity-bookings-from-2026.json
+ps-refund-iris.json
+report*.xlsx
