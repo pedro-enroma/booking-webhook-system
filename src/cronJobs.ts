@@ -2,6 +2,12 @@ import cron from 'node-cron';
 import { OctoService } from './services/octoService';
 import { InvoiceService } from './services/invoiceService';
 import { supabase } from './config/supabase';
+import {
+  isOffloadEnabled,
+  getStorageHealthMetrics,
+  verifyRecentUploads,
+  scanOrphanPayloads,
+} from './services/payloadStorage';
 
 // Prodotti con diverse priorità
 const PRIORITY_PRODUCTS = ['216954', '217949', '220107', '840868', '841414', '841874', '892386', '901938', '901972'];
@@ -200,7 +206,7 @@ export function initializeCronJobs() {
       const running = Object.values(cronExecutions).filter(
         e => e.start && !e.end && (now.getTime() - e.start.getTime()) > 3600000 // Running da più di 1 ora
       );
-      
+
       if (running.length > 0) {
         console.log(`⚠️ [HEALTH] ${running.length} job in esecuzione da più di 1 ora`);
         running.forEach(job => {
@@ -208,18 +214,35 @@ export function initializeCronJobs() {
           console.log(`   - Running da ${minutes} minuti`);
         });
       }
-      
+
       // Controlla prodotti non sincronizzati
       const { data: staleProducts } = await supabase
         .from('activity_availability')
         .select('activity_id')
         .lt('updated_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
         .limit(10);
-      
+
       if (staleProducts && staleProducts.length > 0) {
         console.log(`⚠️ [HEALTH] ${staleProducts.length} prodotti non aggiornati da 7+ giorni`);
       }
-      
+
+      // Database size check (Pro plan = 8 GB)
+      const { data: sizeCheck } = await supabase.rpc('check_database_size');
+      if (sizeCheck) {
+        const totalMb = sizeCheck.total_mb;
+        const pct = Math.round((totalMb / 8192) * 100);
+        console.log(`📊 [HEALTH] DB size: ${totalMb} MB (${pct}% of 8 GB)`);
+        if (totalMb > 6144) console.log(`⚠️ [HEALTH] DB size WARNING: ${totalMb} MB (${pct}%)`);
+        if (totalMb > 7168) console.log(`🚨 [HEALTH] DB size CRITICAL: ${totalMb} MB (${pct}%)`);
+      }
+
+      // Storage health (if offload enabled)
+      if (isOffloadEnabled()) {
+        const health = await getStorageHealthMetrics();
+        if (health.uploadFailures > 0) console.log(`⚠️ [HEALTH] Storage upload failures: ${health.uploadFailures}`);
+        if (health.checksumMismatches > 0) console.log(`🚨 [HEALTH] Checksum mismatches: ${health.checksumMismatches}`);
+      }
+
     } catch (error) {
       console.error('❌ [HEALTH] Errore health check:', error);
     }
@@ -242,14 +265,42 @@ export function initializeCronJobs() {
     }
   });
   
+  // 11. Verify recent payload uploads — hourly
+  cron.schedule('15 * * * *', async () => {
+    if (!isOffloadEnabled()) return;
+    const jobId = `verify-uploads-${Date.now()}`;
+    logCronStart('Verify recent payload uploads', jobId);
+    try {
+      const result = await verifyRecentUploads(2); // last 2 hours
+      logCronEnd(jobId, result.verified, result.mismatches === 0);
+    } catch (error) {
+      logCronEnd(jobId, 0, false, error);
+    }
+  });
+
+  // 12. Orphan payload scan — daily at 3:00 AM
+  cron.schedule('0 3 * * *', async () => {
+    if (!isOffloadEnabled()) return;
+    const jobId = `orphan-scan-${Date.now()}`;
+    logCronStart('Orphan payload scan', jobId);
+    try {
+      const result = await scanOrphanPayloads();
+      logCronEnd(jobId, result.total, result.orphans === 0);
+    } catch (error) {
+      logCronEnd(jobId, 0, false, error);
+    }
+  });
+
   console.log('✅ Cron jobs ottimizzati inizializzati:');
   console.log('   - Prodotti: ogni giorno alle 1:00 AM');
   console.log('   - Prioritari: ogni 4 ore (15gg) + 2:00 AM (60gg) [BATCH]');
   console.log('   - Secondari: ogni 12 ore (15gg) + 4:00 AM (30gg) [BATCH]');
   console.log('   - Altri: 6:00 AM (30gg) + venerdì (90gg) [CHECKPOINT]');
   console.log('   - Invoice Rules (travel_date): ogni giorno alle 14:00');
-  console.log('   - Health check: ogni 30 minuti');
+  console.log('   - Health check: ogni 30 minuti (+ DB size + storage health)');
   console.log('   - Cleanup: ogni domenica');
+  console.log('   - Verify uploads: ogni ora (se offload abilitato)');
+  console.log('   - Orphan scan: ogni giorno alle 3:00 AM (se offload abilitato)');
   console.log(`   - Esclusi: ${EXCLUDED_PRODUCTS.length} prodotti`);
 }
 

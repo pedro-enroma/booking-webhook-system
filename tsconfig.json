@@ -30,6 +30,13 @@
     "dist",
     "**/*.test.ts",
     "**/test-*.ts",
-    "test-*.ts"
+    "test-*.ts",
+    "src/check-*.ts",
+    "src/find-*.ts",
+    "src/inspect-*.ts",
+    "src/setup-*.ts",
+    "src/import-*.ts",
+    "src/run-*.ts",
+    "src/migrations/backfill-*.ts"
   ]
 }
