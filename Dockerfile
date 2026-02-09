@@ -23,4 +23,4 @@ EXPOSE 8080
 
 # Start the application
 # Environment variables are injected at runtime by Railway, not build time
-CMD ["npm", "start"]
+CMD ["sh", "-c", "echo 'Starting app...' && node dist/index.js 2>&1 || echo 'EXIT CODE:' $?"]
