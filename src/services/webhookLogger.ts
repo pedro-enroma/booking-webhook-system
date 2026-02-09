@@ -1,6 +1,13 @@
 import { supabase } from '../config/supabase';
 import * as fs from 'fs';
 import * as path from 'path';
+import {
+  isOffloadEnabled,
+  uploadPayload,
+  buildPayloadSummary,
+  incrementMetric,
+  getFullPayload,
+} from './payloadStorage';
 
 export interface WebhookLogEntry {
   id?: number;
@@ -15,6 +22,8 @@ export interface WebhookLogEntry {
   processing_completed_at?: string;
   processing_duration_ms?: number;
   raw_payload: any;
+  payload_storage_key?: string;
+  payload_checksum?: string;
   processing_result?: 'SUCCESS' | 'ERROR' | 'SKIPPED';
   error_message?: string;
   sequence_number?: number;
@@ -113,29 +122,59 @@ export class WebhookLogger {
       title: data.title
     }, null, 2));
 
+    // Prepare insert data
+    const insertData: any = {
+      booking_id: logEntry.booking_id,
+      parent_booking_id: logEntry.parent_booking_id,
+      confirmation_code: logEntry.confirmation_code,
+      action: logEntry.action,
+      status: logEntry.status,
+      webhook_type: logEntry.webhook_type,
+      received_at: logEntry.received_at,
+      raw_payload: logEntry.raw_payload,
+      webhook_source_timestamp: logEntry.webhook_source_timestamp,
+      out_of_order: logEntry.out_of_order,
+      is_duplicate: logEntry.is_duplicate,
+    };
+
+    // Payload offloading (when enabled)
+    if (isOffloadEnabled()) {
+      try {
+        const { storageKey, checksum } = await uploadPayload(
+          data,
+          logEntry.booking_id,
+          webhookType
+        );
+        insertData.raw_payload = buildPayloadSummary(data);
+        insertData.payload_storage_key = storageKey;
+        insertData.payload_checksum = checksum;
+        logEntry.payload_storage_key = storageKey;
+        logEntry.payload_checksum = checksum;
+        await incrementMetric('upload_success');
+        this.writeToFile(`Payload offloaded to storage: ${storageKey}`);
+      } catch (uploadError: any) {
+        // Fallback: store full payload in raw_payload as-is
+        await incrementMetric('upload_failure', uploadError.message);
+        this.writeToFile(`⚠️ Storage upload failed, storing full payload in DB: ${uploadError.message}`);
+      }
+    }
+
     // Store in database
     try {
       const { data: savedLog, error } = await supabase
         .from('webhook_logs')
-        .insert({
-          booking_id: logEntry.booking_id,
-          parent_booking_id: logEntry.parent_booking_id,
-          confirmation_code: logEntry.confirmation_code,
-          action: logEntry.action,
-          status: logEntry.status,
-          webhook_type: logEntry.webhook_type,
-          received_at: logEntry.received_at,
-          raw_payload: logEntry.raw_payload,
-          webhook_source_timestamp: logEntry.webhook_source_timestamp,
-          out_of_order: logEntry.out_of_order,
-          is_duplicate: logEntry.is_duplicate
-        })
+        .insert(insertData)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
+        if (error.code === '23505') {
+          logEntry.is_duplicate = true;
+          this.writeToFile('⚠️ DUPLICATE: DB-level dedup caught this webhook');
+          return logEntry;
+        }
         this.writeToFile(`ERROR saving to database: ${error.message}`);
-      } else {
+      } else if (savedLog) {
         logEntry.id = savedLog.id;
         this.writeToFile(`Saved to database with ID: ${savedLog.id}`);
       }
