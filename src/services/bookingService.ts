@@ -442,20 +442,8 @@ export class BookingService {
       // NUOVO: Sincronizza disponibilità dopo cancellazione
       await this.syncAvailabilityForBooking(bookingData);
 
-      // Always create credit note on cancellation (if invoice exists)
-      try {
-        if (activityBefore) {
-          console.log('💸 Creating credit note for cancelled activity:', bookingData.bookingId);
-          await this.invoiceService.createCreditNote(
-            activityBefore.booking_id,
-            bookingData.bookingId,
-            'webhook'
-          );
-        }
-      } catch (creditNoteError) {
-        console.error('⚠️ Errore in credit note (non-blocking):', creditNoteError);
-        // Non propagare l'errore - la nota di credito non deve bloccare il webhook
-      }
+      // Credit notes are created via Stripe charge.refunded webhook, not here
+      // See routes/stripe.ts for the refund -> RIMBOK flow
 
       // Trigger notification rules evaluation
       try {

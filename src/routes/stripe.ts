@@ -364,7 +364,39 @@ async function processRefund(
  * Note: Raw body parsing is handled in index.ts before bodyParser.json()
  */
 router.post('/webhook/stripe', async (req: Request, res: Response) => {
-  console.log('[Stripe] Webhook received');
+  console.log('\n' + '='.repeat(80));
+  console.log('[Stripe] WEBHOOK RECEIVED - FULL LOG');
+  console.log('='.repeat(80));
+  console.log('[Stripe] Timestamp:', new Date().toISOString());
+  console.log('[Stripe] Headers:', JSON.stringify(req.headers, null, 2));
+
+  // Log raw body
+  const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+  console.log('[Stripe] Raw body type:', typeof req.body);
+  console.log('[Stripe] Raw body (first 2000 chars):', rawBody.substring(0, 2000));
+
+  // Try to parse and log structured data
+  try {
+    const parsed = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    console.log('[Stripe] Event type:', parsed?.type);
+    console.log('[Stripe] Event ID:', parsed?.id);
+    if (parsed?.data?.object) {
+      const obj = parsed.data.object;
+      console.log('[Stripe] Charge ID:', obj.id);
+      console.log('[Stripe] Amount:', obj.amount);
+      console.log('[Stripe] Amount Refunded:', obj.amount_refunded);
+      console.log('[Stripe] Currency:', obj.currency);
+      console.log('[Stripe] Metadata:', JSON.stringify(obj.metadata, null, 2));
+      console.log('[Stripe] Description:', obj.description);
+      console.log('[Stripe] Receipt Email:', obj.receipt_email);
+      console.log('[Stripe] Customer:', obj.customer);
+      console.log('[Stripe] Payment Intent:', obj.payment_intent);
+      console.log('[Stripe] Invoice:', obj.invoice);
+    }
+  } catch (e) {
+    console.log('[Stripe] Could not parse body for logging');
+  }
+  console.log('='.repeat(80) + '\n');
 
   const sig = req.headers['stripe-signature'] as string;
   let event: Stripe.Event;
