@@ -319,13 +319,15 @@ async function passB(): Promise<void> {
   let totalProcessed = 0;
   let totalReplaced = 0;
   let totalErrors = 0;
+  let lastId = 0; // Cursor for pagination
 
   while (true) {
-    // Get rows that have a storage key but raw_payload is not yet a summary
+    // Get rows that have a storage key, using cursor to skip already-processed rows
     const { data: rows, error } = await supabase
       .from('webhook_logs')
       .select('id, raw_payload')
       .not('payload_storage_key', 'is', null)
+      .gt('id', lastId)
       .order('id', { ascending: true })
       .limit(BATCH_SIZE);
 
@@ -339,21 +341,17 @@ async function passB(): Promise<void> {
       break;
     }
 
+    // Update cursor to the last row in this batch
+    lastId = rows[rows.length - 1].id;
+
     // Filter to only rows where raw_payload is not already a summary
     const toReplace = rows.filter(
       (r) => r.raw_payload && r.raw_payload._storage_ref !== true
     );
 
     if (toReplace.length === 0) {
-      // All rows in this batch are already summaries; check if there are more
-      // by looking at the next batch
-      const { count: remaining } = await supabase
-        .from('webhook_logs')
-        .select('id', { count: 'exact', head: true })
-        .not('payload_storage_key', 'is', null);
-
-      // If we got rows but none needed replacement, we're done
-      break;
+      // All rows in this batch are already summaries, continue to next batch
+      continue;
     }
 
     for (const row of toReplace) {
