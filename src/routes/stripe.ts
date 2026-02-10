@@ -349,6 +349,21 @@ async function processRefund(
       : 'Credit note created (no pratica in PS)';
     await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SUCCESS', message, rawPayload);
     console.log(`[Stripe] ${message} for booking ${bookingId}`);
+
+    // Update stripe_refunds to PROCESSED
+    const { error: updateError } = await supabase
+      .from('stripe_refunds')
+      .update({
+        status: 'PROCESSED',
+        ps_movimento_iri: psResult.movimentoIri || null,
+        processed_at: new Date().toISOString()
+      })
+      .eq('stripe_event_id', eventId);
+
+    if (updateError) {
+      console.error(`[Stripe] Failed to update stripe_refunds status:`, updateError);
+    }
+
     return { success: true, message, movimentoIri: psResult.movimentoIri };
   } else {
     await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', result.error || 'Failed to create credit note', rawPayload);
@@ -491,6 +506,15 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
         } else if (metadata.confirmation_code) {
           const booking = await getBooking(undefined, metadata.confirmation_code);
           bookingId = booking?.booking_id || null;
+        }
+
+        // Validate booking exists in our DB
+        if (bookingId) {
+          const booking = await getBooking(bookingId);
+          if (!booking) {
+            console.warn(`[Stripe] WARNING: Booking ${bookingId} from metadata not found in DB. Metadata may be incorrect.`);
+            console.warn(`[Stripe] Metadata source: ${JSON.stringify({ booking_id: metadata.booking_id, 'bokun-booking-id': metadata['bokun-booking-id'], 'booking-reference': metadata['booking-reference'] })}`);
+          }
         }
 
         // Always store refund in stripe_refunds table
