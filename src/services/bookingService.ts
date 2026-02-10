@@ -165,6 +165,19 @@ export class BookingService {
         // Non propagare l'errore - la fatturazione non deve bloccare il webhook
       }
 
+      // 11. Trigger notification rules evaluation
+      try {
+        const activityData = {
+          product_title: bookingData.title,
+          start_date_time: bookingData.startDateTime,
+          booking_id: parentBooking.bookingId,
+          activity_booking_id: bookingData.bookingId,
+        };
+        await this.triggerNotificationRules('booking_created', activityData, bookingData);
+      } catch (rulesError) {
+        console.error('⚠️ Errore in notification rules (non-blocking):', rulesError);
+      }
+
       console.log('🎉 BOOKING_CONFIRMED completato!');
 
     } catch (error) {
