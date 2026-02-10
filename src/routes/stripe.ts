@@ -470,6 +470,12 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           }
         }
 
+        // Get refund amount (Stripe amounts are in cents)
+        const refundAmount = charge.amount_refunded ? charge.amount_refunded / 100 : null;
+        const totalRefunded = charge.amount_refunded ? charge.amount_refunded / 100 : null;
+        const currency = charge.currency?.toUpperCase() || 'EUR';
+        const paymentIntentId = typeof charge.payment_intent === 'string' ? charge.payment_intent : null;
+
         let bookingId: number | null = null;
 
         // Get booking reference from metadata
@@ -483,19 +489,38 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           bookingId = booking?.booking_id || null;
         }
 
+        // Always store refund in stripe_refunds table
+        const { data: refundRecord, error: refundError } = await supabase
+          .from('stripe_refunds')
+          .insert({
+            stripe_event_id: event.id,
+            stripe_charge_id: charge.id,
+            stripe_payment_intent_id: paymentIntentId,
+            booking_id: bookingId,
+            confirmation_code: metadata.confirmation_code || metadata['bokun-booking-id'] ? `ENRO-${bookingId}` : null,
+            refund_amount: refundAmount,
+            total_amount_refunded: totalRefunded,
+            currency: currency,
+            metadata: metadata,
+            status: 'RECEIVED'
+          })
+          .select()
+          .single();
+
+        if (refundError) {
+          console.error(`[Stripe] Failed to store refund:`, refundError);
+        } else {
+          console.log(`[Stripe] Refund stored with id: ${refundRecord.id}`);
+        }
+
         // Log all metadata keys for debugging
         console.log(`[Stripe] All metadata keys:`, Object.keys(metadata));
 
         if (!bookingId) {
           console.log(`[Stripe] No booking reference found in metadata: ${charge.id}`);
-          // Use event.id as fallback for booking_id to avoid NOT NULL constraint
           await logStripeWebhook('charge.refunded', event.id, 0, 'UNKNOWN', 'SKIPPED', `No booking reference in metadata. Keys: ${Object.keys(metadata).join(', ')}`, event);
-          return res.json({ received: true, message: 'No booking reference found in metadata', metadata_keys: Object.keys(metadata) });
+          return res.json({ received: true, message: 'No booking reference found in metadata', metadata_keys: Object.keys(metadata), refund_stored: !!refundRecord });
         }
-
-        // Get refund amount (Stripe amounts are in cents)
-        const refundAmount = charge.amount_refunded ? charge.amount_refunded / 100 : null;
-        const currency = charge.currency?.toUpperCase() || 'EUR';
 
         const result = await processRefund(bookingId, refundAmount, currency, event.id, event);
         return res.json({ received: true, ...result });
