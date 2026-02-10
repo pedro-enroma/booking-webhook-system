@@ -1546,7 +1546,8 @@ export class InvoiceService {
   async createCreditNote(
     bookingId: number,
     activityBookingId?: number,
-    triggeredBy: string = 'webhook'
+    triggeredBy: string = 'webhook',
+    refundAmount?: number
   ): Promise<InvoiceResult> {
     console.log(`[InvoiceService] Creating credit note for booking ${bookingId}...`);
 
@@ -1598,6 +1599,7 @@ export class InvoiceService {
           invoice_type: 'CREDIT_NOTE',
           status: 'pending' as InvoiceStatus,
           total_amount: -Math.abs(creditAmount),
+          refund_amount: refundAmount ? -Math.abs(refundAmount) : null,
           currency: originalInvoice.currency,
           customer_name: originalInvoice.customer_name,
           customer_email: originalInvoice.customer_email,

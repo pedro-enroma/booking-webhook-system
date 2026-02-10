@@ -330,8 +330,12 @@ async function processRefund(
     return { success: true, message: `Rule is configured for ${rule.credit_note_trigger} trigger, not refund` };
   }
 
-  // Determine refund amount
-  const finalRefundAmount = refundAmount || booking.total_price;
+  // Determine refund amount - must come from Stripe, no fallback
+  if (!refundAmount) {
+    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', 'No refund amount in Stripe event', rawPayload);
+    return { success: false, message: 'No refund amount in Stripe event' };
+  }
+  const finalRefundAmount = refundAmount;
   console.log(`[Stripe] Processing refund for booking ${bookingId} (amount: €${finalRefundAmount})`);
 
   // Step 1: Send RIMBOK movimento to Partner Solution (if pratica exists)
@@ -343,7 +347,7 @@ async function processRefund(
   }
 
   // Step 2: Create credit note record in our DB
-  const result = await invoiceService.createCreditNote(bookingId, undefined, 'stripe-refund');
+  const result = await invoiceService.createCreditNote(bookingId, undefined, 'stripe-refund', finalRefundAmount);
 
   if (result.success) {
     const message = psResult.movimentoIri
