@@ -479,11 +479,15 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
         let bookingId: number | null = null;
 
         // Get booking reference from metadata
-        // Support both our format and Bokun format
+        // Support multiple formats
         if (metadata.booking_id) {
           bookingId = parseInt(metadata.booking_id);
         } else if (metadata['bokun-booking-id']) {
           bookingId = parseInt(metadata['bokun-booking-id']);
+        } else if (metadata['booking-reference']) {
+          // Format: ENRO-82342320 -> extract 82342320
+          const match = metadata['booking-reference'].match(/(\d+)$/);
+          if (match) bookingId = parseInt(match[1]);
         } else if (metadata.confirmation_code) {
           const booking = await getBooking(undefined, metadata.confirmation_code);
           bookingId = booking?.booking_id || null;
