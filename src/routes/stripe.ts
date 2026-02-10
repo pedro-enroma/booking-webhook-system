@@ -193,16 +193,16 @@ async function sendRefundToPS(
     // Create refund movimento with tipomovimento: 'P' and codcausale: 'RIMBOK'
     const movimentoResponse = await client.post('/mov_finanziarios', {
       externalid: bookingIdPadded,
-      tipomovimento: 'P',  // P = Pagamento/Refund (out)
+      tipomovimento: 'P',
       codicefile: bookingIdPadded,
       codiceagenzia: agencyCode,
       tipocattura: 'PS',
-      importo: refundAmount,  // Positive amount
+      importo: -Math.abs(refundAmount),  // Always negative for refunds
       datacreazione: now,
       datamodifica: now,
       datamovimento: dateOnly,
       stato: 'INS',
-      codcausale: 'RIMBOK',  // Rimborso Booking
+      codcausale: 'RIMBOK',
       descrizione: `Rimborso - Booking ${bookingId}`
     });
 
