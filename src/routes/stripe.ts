@@ -190,10 +190,10 @@ async function sendRefundToPS(
     const now = new Date().toISOString();
     const dateOnly = now.split('T')[0];
 
-    // Create refund movimento with tipomovimento: 'P' and codcausale: 'RIMBOK'
+    // Create refund movimento with tipomovimento: 'I' and codcausale: 'RIMBOK'
     const movimentoResponse = await client.post('/mov_finanziarios', {
       externalid: bookingIdPadded,
-      tipomovimento: 'P',
+      tipomovimento: 'I',
       codicefile: bookingIdPadded,
       codiceagenzia: agencyCode,
       tipocattura: 'PS',
