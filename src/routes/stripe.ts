@@ -450,10 +450,27 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
     switch (event.type) {
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
-        const metadata = charge.metadata || {};
+        let metadata = charge.metadata || {};
 
         console.log(`[Stripe] Processing refund for charge: ${charge.id}`);
-        console.log(`[Stripe] Metadata:`, metadata);
+        console.log(`[Stripe] Charge metadata:`, metadata);
+        console.log(`[Stripe] Payment Intent ID:`, charge.payment_intent);
+
+        // If charge metadata is empty, fetch PaymentIntent to get metadata from there
+        if (Object.keys(metadata).length === 0 && charge.payment_intent && stripe) {
+          try {
+            const paymentIntentId = typeof charge.payment_intent === 'string'
+              ? charge.payment_intent
+              : charge.payment_intent;
+
+            console.log(`[Stripe] Fetching PaymentIntent: ${paymentIntentId}`);
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
+            metadata = paymentIntent.metadata || {};
+            console.log(`[Stripe] PaymentIntent metadata:`, JSON.stringify(metadata, null, 2));
+          } catch (piError) {
+            console.error(`[Stripe] Failed to fetch PaymentIntent:`, piError);
+          }
+        }
 
         let bookingId: number | null = null;
 
@@ -468,10 +485,14 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           bookingId = booking?.booking_id || null;
         }
 
+        // Log all metadata keys for debugging
+        console.log(`[Stripe] All metadata keys:`, Object.keys(metadata));
+
         if (!bookingId) {
-          console.log(`[Stripe] No booking reference found in charge metadata: ${charge.id}`);
-          await logStripeWebhook('charge.refunded', event.id, null, null, 'SKIPPED', 'No booking reference in metadata', event);
-          return res.json({ received: true, message: 'No booking reference found in charge metadata' });
+          console.log(`[Stripe] No booking reference found in metadata: ${charge.id}`);
+          // Use event.id as fallback for booking_id to avoid NOT NULL constraint
+          await logStripeWebhook('charge.refunded', event.id, 0, 'UNKNOWN', 'SKIPPED', `No booking reference in metadata. Keys: ${Object.keys(metadata).join(', ')}`, event);
+          return res.json({ received: true, message: 'No booking reference found in metadata', metadata_keys: Object.keys(metadata) });
         }
 
         // Get refund amount (Stripe amounts are in cents)
