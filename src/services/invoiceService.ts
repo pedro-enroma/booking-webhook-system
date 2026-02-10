@@ -1565,19 +1565,6 @@ export class InvoiceService {
         return { success: true };
       }
 
-      // Check if credit note already exists
-      const { data: existingCreditNote } = await supabase
-        .from('invoices')
-        .select('id')
-        .eq('booking_id', bookingId)
-        .eq('invoice_type', 'CREDIT_NOTE')
-        .single();
-
-      if (existingCreditNote) {
-        console.log(`[InvoiceService] Credit note already exists for booking ${bookingId}`);
-        return { success: true, invoiceId: existingCreditNote.id };
-      }
-
       // Calculate credit amount
       let creditAmount = originalInvoice.total_amount;
       if (activityBookingId && originalInvoice.invoice_line_items) {

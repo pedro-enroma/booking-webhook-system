@@ -294,12 +294,6 @@ async function processRefund(
     return { success: false, message: 'Booking not found' };
   }
 
-  // Check if credit note already exists
-  if (await hasCreditNote(bookingId)) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', 'Credit note already exists', rawPayload);
-    return { success: true, message: 'Credit note already exists' };
-  }
-
   // Check if there's an invoice for this booking
   if (!(await hasInvoice(bookingId))) {
     await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', 'No invoice exists for this booking', rawPayload);
