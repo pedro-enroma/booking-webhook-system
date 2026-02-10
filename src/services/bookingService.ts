@@ -173,7 +173,7 @@ export class BookingService {
           booking_id: parentBooking.bookingId,
           activity_booking_id: bookingData.bookingId,
         };
-        await this.triggerNotificationRules('booking_created', activityData, bookingData);
+        await this.triggerNotificationRules('booking_created', activityData, bookingData, sellerName);
       } catch (rulesError) {
         console.error('⚠️ Errore in notification rules (non-blocking):', rulesError);
       }
@@ -392,7 +392,7 @@ export class BookingService {
       // CANCELLATION DEBUG: Mostra info prima della cancellazione
       const { data: activityBefore, error: beforeError } = await supabase
         .from('activity_bookings')
-        .select('activity_booking_id, booking_id, status, product_title, start_date_time')
+        .select('activity_booking_id, booking_id, status, product_title, start_date_time, activity_seller')
         .eq('activity_booking_id', bookingData.bookingId)
         .single();
 
@@ -447,7 +447,7 @@ export class BookingService {
 
       // Trigger notification rules evaluation
       try {
-        await this.triggerNotificationRules('booking_cancelled', activityBefore, bookingData);
+        await this.triggerNotificationRules('booking_cancelled', activityBefore, bookingData, activityBefore?.activity_seller);
       } catch (rulesError) {
         console.error('⚠️ Errore in notification rules (non-blocking):', rulesError);
         // Non propagare l'errore - le notifiche non devono bloccare il webhook
@@ -460,26 +460,31 @@ export class BookingService {
   }
 
   // Trigger notification rules in tourmageddon-saas
-  private async triggerNotificationRules(trigger: string, activityData: any, bookingData: any): Promise<void> {
+  private async triggerNotificationRules(trigger: string, activityData: any, bookingData: any, sellerName?: string): Promise<void> {
     const tourmageddonUrl = process.env.TOURMAGEDDON_URL || 'https://tourmageddon.it';
     const webhookSecret = process.env.TOURMAGEDDON_WEBHOOK_SECRET || process.env.SUPABASE_WEBHOOK_SECRET;
 
     try {
-      // Get additional data for the notification
+      // Get booking confirmation code
       const { data: bookingInfo } = await supabase
         .from('bookings')
-        .select(`
-          booking_id,
-          confirmation_code,
-          total_price,
-          currency,
-          customers (
-            first_name,
-            last_name,
-            email
-          )
-        `)
+        .select('booking_id, confirmation_code')
         .eq('booking_id', activityData?.booking_id)
+        .single();
+
+      // Get customer from parentBooking (already saved by this point) instead of
+      // querying through junction table which silently returns null
+      const parentCustomer = bookingData.parentBooking?.customer;
+      const customerName = parentCustomer
+        ? `${parentCustomer.firstName || ''} ${parentCustomer.lastName || ''}`.trim()
+        : 'Unknown';
+      const customerEmail = parentCustomer?.email || '';
+
+      // Get total_price from activity_bookings (not bookings table which stores booking-level total)
+      const { data: activityInfo } = await supabase
+        .from('activity_bookings')
+        .select('total_price, net_price, currency')
+        .eq('activity_booking_id', activityData?.activity_booking_id)
         .single();
 
       // Get pax count
@@ -498,9 +503,6 @@ export class BookingService {
 
       const vouchersWithNames = vouchers?.filter((v: any) => !v.is_placeholder) || [];
 
-      const customer = bookingInfo?.customers as any;
-      const customerName = customer ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() : 'Unknown';
-
       const travelDate = activityData?.start_date_time ? new Date(activityData.start_date_time) : null;
       const daysUntilTravel = travelDate ? Math.ceil((travelDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
 
@@ -512,15 +514,17 @@ export class BookingService {
           booking_id: activityData?.booking_id || bookingData.bookingId,
           confirmation_code: bookingInfo?.confirmation_code || bookingData.confirmationCode,
           customer_name: customerName,
-          customer_email: customer?.email || '',
+          customer_email: customerEmail,
           pax_count: paxCount,
           ticket_count: paxCount,
+          participant_count: paxCount,
           travel_date: travelDate ? travelDate.toISOString().split('T')[0] : '',
           days_until_travel: daysUntilTravel,
           has_uploaded_vouchers: vouchersWithNames.length > 0,
           voucher_count: vouchersWithNames.length,
-          total_price: bookingInfo?.total_price || 0,
-          currency: bookingInfo?.currency || 'EUR',
+          total_price: activityInfo?.total_price || 0,
+          currency: activityInfo?.currency || 'EUR',
+          seller_name: sellerName || 'Unknown',
         }
       };
 
