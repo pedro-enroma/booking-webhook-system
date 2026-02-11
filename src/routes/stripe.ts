@@ -554,6 +554,134 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
         return res.json({ received: true, ...result });
       }
 
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const piMetadata = paymentIntent.metadata || {};
+
+        console.log(`[Stripe] Processing payment_intent.succeeded: ${paymentIntent.id}`);
+        console.log(`[Stripe] Amount: ${paymentIntent.amount / 100} ${paymentIntent.currency}`);
+        console.log(`[Stripe] Metadata:`, JSON.stringify(piMetadata, null, 2));
+
+        const paymentAmount = paymentIntent.amount / 100;
+        const piCurrency = paymentIntent.currency?.toUpperCase() || 'EUR';
+
+        // Parse Bokun-specific metadata fields
+        const bokunBookingId = piMetadata['bokun-booking-id'] || null;
+        const bokunPaymentId = piMetadata['bokun-payment-id'] || null;
+        const bokunTravelDate = piMetadata['bokun-travel-date'] || null;
+        const customerName = piMetadata['main-contact-data'] || null;
+        const creationDate = piMetadata['creation-date'] || piMetadata['creation-timestamp'] || null;
+
+        // Collect bokun-product-N fields
+        const bokunProducts: string[] = [];
+        for (let i = 1; i <= 10; i++) {
+          const productId = piMetadata[`bokun-product-${i}`];
+          if (productId) bokunProducts.push(productId);
+          else break;
+        }
+
+        const isBokun = !!bokunBookingId;
+
+        // Resolve booking_id from metadata (same logic as charge.refunded)
+        let piBookingId: number | null = null;
+        if (piMetadata.booking_id) {
+          piBookingId = parseInt(piMetadata.booking_id);
+        } else if (piMetadata['bokun-booking-id']) {
+          piBookingId = parseInt(piMetadata['bokun-booking-id']);
+        } else if (piMetadata['booking-reference']) {
+          const match = piMetadata['booking-reference'].match(/(\d+)$/);
+          if (match) piBookingId = parseInt(match[1]);
+        } else if (piMetadata.confirmation_code) {
+          const booking = await getBooking(undefined, piMetadata.confirmation_code);
+          piBookingId = booking?.booking_id || null;
+        }
+
+        // Check if booking exists in our DB
+        let bookingExists = false;
+        if (piBookingId) {
+          const booking = await getBooking(piBookingId);
+          bookingExists = !!booking;
+          if (!booking) {
+            console.warn(`[Stripe] Booking ${piBookingId} not yet in DB (may arrive later via Bokun webhook)`);
+          } else {
+            console.log(`[Stripe] Booking ${piBookingId} found in DB`);
+          }
+        }
+
+        // Determine initial status
+        let paymentStatus: string;
+        let processingNotes: string | null = null;
+        if (isBokun && bookingExists) {
+          paymentStatus = 'MATCHED';
+          processingNotes = `Bokun payment matched to booking ${piBookingId}`;
+        } else if (isBokun) {
+          paymentStatus = 'RECEIVED';
+          processingNotes = 'Bokun payment - booking not yet in DB';
+        } else {
+          paymentStatus = 'PENDING_REVIEW';
+          processingNotes = 'Non-Bokun payment - requires manual review';
+        }
+
+        // Insert into stripe_payments (dedup via UNIQUE stripe_event_id)
+        const { data: paymentRecord, error: paymentInsertError } = await supabase
+          .from('stripe_payments')
+          .insert({
+            stripe_event_id: event.id,
+            stripe_payment_intent_id: paymentIntent.id,
+            booking_id: piBookingId,
+            confirmation_code: piBookingId ? `ENRO-${piBookingId}` : null,
+            payment_amount: paymentAmount,
+            currency: piCurrency,
+            metadata: piMetadata,
+            bokun_booking_id: bokunBookingId,
+            bokun_payment_id: bokunPaymentId,
+            bokun_travel_date: bokunTravelDate,
+            bokun_products: bokunProducts.length > 0 ? bokunProducts : null,
+            customer_name: customerName,
+            creation_date: creationDate,
+            status: paymentStatus,
+            is_bokun_payment: isBokun,
+            processing_notes: processingNotes,
+            processed_at: paymentStatus === 'MATCHED' ? new Date().toISOString() : null,
+          })
+          .select()
+          .single();
+
+        if (paymentInsertError) {
+          if ((paymentInsertError as any).code === '23505') {
+            console.log(`[Stripe] Duplicate payment_intent.succeeded event: ${event.id}`);
+            return res.json({ received: true, message: 'Duplicate event, already processed' });
+          }
+          console.error(`[Stripe] Failed to store payment:`, paymentInsertError);
+        } else {
+          console.log(`[Stripe] Payment stored with id: ${paymentRecord.id}, status: ${paymentStatus}`);
+        }
+
+        // Log to webhook_logs
+        await logStripeWebhook(
+          'payment_intent.succeeded',
+          event.id,
+          piBookingId,
+          piBookingId ? `ENRO-${piBookingId}` : null,
+          'SUCCESS',
+          isBokun
+            ? `Bokun payment stored (${bookingExists ? 'matched' : 'pending match'}) - €${paymentAmount}`
+            : `Non-Bokun payment stored for review - €${paymentAmount}`,
+          event
+        );
+
+        return res.json({
+          received: true,
+          payment_intent_id: paymentIntent.id,
+          amount: paymentAmount,
+          currency: piCurrency,
+          is_bokun: isBokun,
+          booking_matched: bookingExists,
+          status: paymentStatus,
+          payment_stored: !!paymentRecord,
+        });
+      }
+
       default:
         console.log(`[Stripe] Unhandled event type: ${event.type}`);
         return res.json({ received: true, message: `Ignored event type: ${event.type}` });
@@ -608,7 +736,7 @@ router.get('/webhook/stripe/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     endpoint: '/webhook/stripe',
-    events_handled: ['charge.refunded'],
+    events_handled: ['charge.refunded', 'payment_intent.succeeded'],
     stripe_configured: !!process.env.STRIPE_SECRET_KEY,
     webhook_secret_configured: !!process.env.STRIPE_WEBHOOK_SECRET,
     timestamp: new Date().toISOString(),
@@ -637,6 +765,47 @@ router.get('/webhook/stripe/logs', async (req: Request, res: Response) => {
     return res.json({
       count: data?.length || 0,
       logs: data || [],
+    });
+  } catch (error) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * List stored Stripe payments
+ * GET /webhook/stripe/payments?status=PENDING_REVIEW&is_bokun=false&limit=50
+ */
+router.get('/webhook/stripe/payments', async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 50;
+    const status = req.query.status as string;
+    const isBokun = req.query.is_bokun as string;
+
+    let query = supabase
+      .from('stripe_payments')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+    if (isBokun === 'true') {
+      query = query.eq('is_bokun_payment', true);
+    } else if (isBokun === 'false') {
+      query = query.eq('is_bokun_payment', false);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({
+      count: data?.length || 0,
+      payments: data || [],
     });
   } catch (error) {
     const err = error as Error;
