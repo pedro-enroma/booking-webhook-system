@@ -2599,4 +2599,88 @@ router.post('/api/invoices/send-booking/:bookingId', validateApiKey, async (req:
   }
 });
 
+// ============================================
+// MANUAL PRATICA CREATION
+// ============================================
+
+/**
+ * POST /api/invoices/manual
+ * Create a PS pratica from form data (no booking required)
+ */
+router.post('/api/invoices/manual', validateApiKey, async (req: Request, res: Response) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      phone,
+      isPersonaFisica,
+      codiceFiscale,
+      partitaIva,
+      ragioneSociale,
+      totalAmount,
+      productTitle,
+      travelDate,
+      sellerName,
+      confirmationCode,
+      stripePaymentId,
+    } = req.body;
+
+    // Validation
+    const errors: string[] = [];
+    if (!firstName || typeof firstName !== 'string') errors.push('firstName is required');
+    if (!lastName || typeof lastName !== 'string') errors.push('lastName is required');
+    if (totalAmount === undefined || totalAmount === null || typeof totalAmount !== 'number' || totalAmount <= 0) {
+      errors.push('totalAmount must be a positive number');
+    }
+    if (isPersonaFisica === false) {
+      if (!partitaIva) errors.push('partitaIva is required for persona giuridica');
+      if (!ragioneSociale) errors.push('ragioneSociale is required for persona giuridica');
+    }
+    if (travelDate && !/^\d{4}-\d{2}-\d{2}$/.test(travelDate)) {
+      errors.push('travelDate must be ISO date format (YYYY-MM-DD)');
+    }
+
+    if (errors.length > 0) {
+      res.status(400).json({ success: false, errors });
+      return;
+    }
+
+    const result = await invoiceService.createManualPratica({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      phone,
+      isPersonaFisica: isPersonaFisica !== false, // default to true
+      codiceFiscale,
+      partitaIva,
+      ragioneSociale,
+      totalAmount,
+      productTitle,
+      travelDate,
+      sellerName,
+      confirmationCode,
+      stripePaymentId,
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        referenceId: result.referenceId,
+        praticaIri: result.praticaIri,
+        invoiceId: result.invoiceId,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    console.error('[Invoices] Error creating manual pratica:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 export default router;

@@ -803,9 +803,44 @@ router.get('/webhook/stripe/payments', async (req: Request, res: Response) => {
       return res.status(500).json({ error: error.message });
     }
 
+    // Join with invoices table to show pratica data for linked payments
+    const payments = data || [];
+    const bookingIds = payments
+      .map((p: any) => p.booking_id)
+      .filter((id: any) => id != null);
+
+    let invoiceMap: Record<string, any> = {};
+    if (bookingIds.length > 0) {
+      const { data: invoices } = await supabase
+        .from('invoices')
+        .select('booking_id, id, invoice_type, status, total_amount, currency, ps_pratica_iri, seller_name, created_by, sent_at')
+        .in('booking_id', bookingIds)
+        .eq('invoice_type', 'INVOICE');
+
+      if (invoices) {
+        for (const inv of invoices) {
+          invoiceMap[String(inv.booking_id)] = {
+            invoice_id: inv.id,
+            invoice_status: inv.status,
+            invoice_amount: inv.total_amount,
+            invoice_currency: inv.currency,
+            ps_pratica_iri: inv.ps_pratica_iri,
+            invoice_seller: inv.seller_name,
+            invoice_created_by: inv.created_by,
+            invoice_sent_at: inv.sent_at,
+          };
+        }
+      }
+    }
+
+    const enrichedPayments = payments.map((p: any) => ({
+      ...p,
+      invoice: invoiceMap[String(p.booking_id)] || null,
+    }));
+
     return res.json({
-      count: data?.length || 0,
-      payments: data || [],
+      count: enrichedPayments.length,
+      payments: enrichedPayments,
     });
   } catch (error) {
     const err = error as Error;

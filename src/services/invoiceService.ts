@@ -353,6 +353,227 @@ export class InvoiceService {
   }
 
   /**
+   * Create a manual pratica from form data (no booking required)
+   * Used for non-Bokun payments and manual invoicing needs
+   */
+  async createManualPratica(data: {
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    isPersonaFisica: boolean;
+    codiceFiscale?: string;
+    partitaIva?: string;
+    ragioneSociale?: string;
+    totalAmount: number;
+    productTitle?: string;
+    travelDate?: string;
+    sellerName?: string;
+    confirmationCode?: string;
+    stripePaymentId?: string;
+  }): Promise<{
+    success: boolean;
+    referenceId?: string;
+    praticaIri?: string;
+    invoiceId?: string;
+    error?: string;
+  }> {
+    try {
+      console.log(`[InvoiceService] Creating manual pratica for ${data.firstName} ${data.lastName}...`);
+
+      // Step 1: Generate reference ID from sequence (or use provided confirmationCode)
+      let referenceId: string;
+      if (data.confirmationCode) {
+        referenceId = data.confirmationCode;
+      } else {
+        const { data: seqResult, error: seqError } = await supabase.rpc('nextval_text', { seq_name: 'manual_pratica_ref_seq' });
+        if (seqError || !seqResult) {
+          console.error('[InvoiceService] Failed to get nextval:', seqError);
+          return { success: false, error: 'Failed to generate reference ID' };
+        }
+        referenceId = String(seqResult);
+      }
+      const referenceIdPadded = referenceId.padStart(9, '0');
+
+      const client = await (this.partnerSolution as any).getClient();
+      const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+      const now = new Date().toISOString();
+      const todayDate = now.split('T')[0];
+
+      // Determine dates from travelDate or today
+      const serviceDate = data.travelDate || todayDate;
+      const yearMonth = this.formatYearMonth(data.travelDate || now);
+      const nrCommessa = yearMonth.replace('-', '');
+      const deliveringValue = `commessa: ${nrCommessa}`;
+      const description = data.productTitle || 'Tour UE ed Extra UE';
+      const customerCountry = this.getCountryFromPhone(data.phone || null);
+
+      // Step 2: Create Account
+      const accountPayload: Record<string, any> = {
+        cognome: data.lastName,
+        nome: data.firstName,
+        flagpersonafisica: data.isPersonaFisica ? 1 : 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0,
+        nazione: customerCountry,
+      };
+
+      if (data.isPersonaFisica) {
+        accountPayload.codicefiscale = (data.codiceFiscale || referenceIdPadded).padStart(16, '0');
+      } else {
+        accountPayload.partitaiva = data.partitaIva;
+        accountPayload.ragionesociale = data.ragioneSociale;
+        accountPayload.codicefiscale = data.partitaIva;
+      }
+
+      const accountResponse = await client.post('/accounts', accountPayload);
+      const accountIri = accountResponse.data['@id'];
+      const accountId = accountIri.split('/').pop();
+
+      // Step 3: Create Pratica (WP)
+      const praticaPayload = {
+        codicecliente: accountId,
+        externalid: referenceIdPadded,
+        cognomecliente: data.lastName,
+        nomecliente: data.firstName,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        datacreazione: now,
+        datamodifica: now,
+        stato: 'WP',
+        descrizionepratica: description,
+        noteinterne: data.sellerName ? `Seller: ${data.sellerName}` : null,
+        delivering: deliveringValue,
+      };
+      const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+      const praticaIri = praticaResponse.data['@id'];
+
+      // Step 4: Add Passeggero
+      const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
+        pratica: praticaIri,
+        cognomepax: data.lastName,
+        nomepax: data.firstName,
+        annullata: 0,
+        iscontraente: 1,
+      });
+
+      // Step 5: Add Servizio
+      const servizioResponse = await client.post('/prt_praticaservizios', {
+        pratica: praticaIri,
+        externalid: referenceIdPadded,
+        tiposervizio: 'PKG',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        codicefornitore: 'IT09802381005',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: referenceIdPadded,
+        datacreazione: now,
+        datainizioservizio: serviceDate,
+        datafineservizio: serviceDate,
+        duratant: 0,
+        duratagg: 1,
+        nrpaxadulti: 1,
+        nrpaxchild: 0,
+        nrpaxinfant: 0,
+        descrizione: description,
+        tipodestinazione: 'MISTO',
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+      });
+
+      // Step 6: Add Quota
+      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+        servizio: servizioResponse.data['@id'],
+        descrizionequota: description,
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
+        quantitacosto: 1,
+        costovalutaprimaria: data.totalAmount,
+        quantitaricavo: 1,
+        ricavovalutaprimaria: data.totalAmount,
+        codiceisovalutaricavo: 'EUR',
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+        progressivo: 1,
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+      });
+
+      // Step 7: Add Movimento Finanziario
+      const movimentoResponse = await client.post('/mov_finanziarios', {
+        externalid: referenceIdPadded,
+        tipomovimento: 'I',
+        codicefile: referenceIdPadded,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        importo: data.totalAmount,
+        datacreazione: now,
+        datamodifica: now,
+        datamovimento: now,
+        stato: 'INS',
+        codcausale: 'PAGBOK',
+        descrizione: `${description} - ${referenceId}`,
+      });
+
+      // Step 8: Update Pratica → INS
+      await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+
+      // Record in invoices table
+      const { data: invoiceRecord, error: insertError } = await supabase.from('invoices').insert({
+        booking_id: parseInt(referenceId) || 0,
+        confirmation_code: referenceId,
+        invoice_type: 'INVOICE',
+        status: 'sent',
+        total_amount: data.totalAmount,
+        currency: 'EUR',
+        customer_name: `${data.firstName} ${data.lastName}`,
+        seller_name: data.sellerName || null,
+        booking_creation_date: todayDate,
+        sent_at: now,
+        ps_pratica_iri: praticaIri,
+        ps_account_iri: accountIri,
+        ps_passeggero_iri: passeggeroResponse.data['@id'],
+        ps_movimento_iri: movimentoResponse.data['@id'],
+        ps_commessa_code: yearMonth,
+        created_by: 'manual',
+      }).select('id').single();
+
+      if (insertError) {
+        console.error(`[InvoiceService] Failed to save manual invoice record:`, insertError);
+      }
+
+      // If stripePaymentId provided, update stripe_payments status
+      if (data.stripePaymentId) {
+        const { error: stripeUpdateError } = await supabase
+          .from('stripe_payments')
+          .update({ status: 'INVOICED', processed_at: now })
+          .eq('id', data.stripePaymentId);
+
+        if (stripeUpdateError) {
+          console.error(`[InvoiceService] Failed to update stripe_payments:`, stripeUpdateError);
+        }
+      }
+
+      console.log(`[InvoiceService] Successfully created manual pratica ${referenceId}: ${praticaIri}`);
+
+      return {
+        success: true,
+        referenceId,
+        praticaIri,
+        invoiceId: invoiceRecord?.id,
+      };
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.['hydra:description'] || error.message;
+      console.error(`[InvoiceService] Error creating manual pratica:`, errorMsg);
+      return { success: false, error: errorMsg };
+    }
+  }
+
+  /**
    * Process travel_date invoicing for a given date (called by cron)
    * Finds bookings where the latest activity date = targetDate and sends to Partner Solution
    */
@@ -591,8 +812,8 @@ export class InvoiceService {
       // Step 7: Update Pratica to INS
       await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
 
-      // Record in invoices table
-      await supabase.from('invoices').upsert({
+      // Record in invoices table (dedup check already done above)
+      const { error: insertError } = await supabase.from('invoices').insert({
         booking_id: bookingId,
         confirmation_code: booking.confirmation_code,
         invoice_type: 'INVOICE',
@@ -609,7 +830,11 @@ export class InvoiceService {
         ps_movimento_iri: movimentoResponse.data['@id'],
         ps_commessa_code: yearMonthInfo.yearMonth,
         created_by: 'travel_date_cron',
-      }, { onConflict: 'booking_id,invoice_type' });
+      });
+
+      if (insertError) {
+        console.error(`[InvoiceService] Failed to save travel_date invoice for booking ${bookingId}:`, insertError);
+      }
 
       return { success: true, praticaIri };
     } catch (error: any) {
