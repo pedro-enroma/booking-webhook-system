@@ -2623,6 +2623,7 @@ router.post('/api/invoices/manual', validateApiKey, async (req: Request, res: Re
       sellerName,
       confirmationCode,
       stripePaymentId,
+      isCreditNote,
     } = req.body;
 
     // Validation
@@ -2659,6 +2660,7 @@ router.post('/api/invoices/manual', validateApiKey, async (req: Request, res: Re
       sellerName,
       confirmationCode,
       stripePaymentId,
+      isCreditNote: isCreditNote === true,
     });
 
     if (result.success) {

@@ -370,6 +370,7 @@ export class InvoiceService {
     sellerName?: string;
     confirmationCode?: string;
     stripePaymentId?: string;
+    isCreditNote?: boolean;
   }): Promise<{
     success: boolean;
     referenceId?: string;
@@ -378,7 +379,8 @@ export class InvoiceService {
     error?: string;
   }> {
     try {
-      console.log(`[InvoiceService] Creating manual pratica for ${data.firstName} ${data.lastName}...`);
+      const isCN = data.isCreditNote === true;
+      console.log(`[InvoiceService] Creating manual ${isCN ? 'credit note' : 'invoice'} pratica for ${data.firstName} ${data.lastName}...`);
 
       // Step 1: Generate reference ID from sequence (or use provided confirmationCode)
       let referenceId: string;
@@ -393,6 +395,7 @@ export class InvoiceService {
         referenceId = String(seqResult);
       }
       const referenceIdPadded = referenceId.padStart(9, '0');
+      const externalId = isCN ? `CN-${referenceIdPadded}` : referenceIdPadded;
 
       const client = await (this.partnerSolution as any).getClient();
       const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
@@ -404,7 +407,10 @@ export class InvoiceService {
       const yearMonth = this.formatYearMonth(data.travelDate || now);
       const nrCommessa = yearMonth.replace('-', '');
       const deliveringValue = `commessa: ${nrCommessa}`;
-      const description = data.productTitle || 'Tour UE ed Extra UE';
+      const description = isCN ? 'Nota di credito - Rimborso' : (data.productTitle || 'Tour UE ed Extra UE');
+      const servizioDescription = isCN ? 'Nota di credito - Tour UE ed Extra UE' : (data.productTitle || 'Tour UE ed Extra UE');
+      const effectiveAmount = isCN ? -Math.abs(data.totalAmount) : data.totalAmount;
+      const causale = isCN ? 'RIMBOK' : 'PAGBOK';
       const customerCountry = this.getCountryFromPhone(data.phone || null);
 
       // Step 2: Create Account
@@ -435,7 +441,7 @@ export class InvoiceService {
       // Step 3: Create Pratica (WP)
       const praticaPayload = {
         codicecliente: accountId,
-        externalid: referenceIdPadded,
+        externalid: externalId,
         cognomecliente: data.lastName,
         nomecliente: data.firstName,
         codiceagenzia: agencyCode,
@@ -462,7 +468,7 @@ export class InvoiceService {
       // Step 5: Add Servizio
       const servizioResponse = await client.post('/prt_praticaservizios', {
         pratica: praticaIri,
-        externalid: referenceIdPadded,
+        externalid: externalId,
         tiposervizio: 'PKG',
         tipovendita: 'ORG',
         regimevendita: '74T',
@@ -477,7 +483,7 @@ export class InvoiceService {
         nrpaxadulti: 1,
         nrpaxchild: 0,
         nrpaxinfant: 0,
-        descrizione: description,
+        descrizione: servizioDescription,
         tipodestinazione: 'MISTO',
         annullata: 0,
         codiceagenzia: agencyCode,
@@ -487,13 +493,13 @@ export class InvoiceService {
       // Step 6: Add Quota
       const quotaResponse = await client.post('/prt_praticaservizioquotas', {
         servizio: servizioResponse.data['@id'],
-        descrizionequota: description,
+        descrizionequota: servizioDescription,
         datavendita: now,
         codiceisovalutacosto: 'EUR',
         quantitacosto: 1,
-        costovalutaprimaria: data.totalAmount,
+        costovalutaprimaria: effectiveAmount,
         quantitaricavo: 1,
-        ricavovalutaprimaria: data.totalAmount,
+        ricavovalutaprimaria: effectiveAmount,
         codiceisovalutaricavo: 'EUR',
         commissioniattivevalutaprimaria: 0,
         commissionipassivevalutaprimaria: 0,
@@ -510,13 +516,13 @@ export class InvoiceService {
         codicefile: referenceIdPadded,
         codiceagenzia: agencyCode,
         tipocattura: 'PS',
-        importo: data.totalAmount,
+        importo: effectiveAmount,
         datacreazione: now,
         datamodifica: now,
         datamovimento: now,
         stato: 'INS',
-        codcausale: 'PAGBOK',
-        descrizione: `${description} - ${referenceId}`,
+        codcausale: causale,
+        descrizione: `${servizioDescription} - ${referenceId}`,
       });
 
       // Step 8: Update Pratica → INS
@@ -526,9 +532,10 @@ export class InvoiceService {
       const { data: invoiceRecord, error: insertError } = await supabase.from('invoices').insert({
         booking_id: parseInt(referenceId) || 0,
         confirmation_code: referenceId,
-        invoice_type: 'INVOICE',
+        invoice_type: isCN ? 'CREDIT_NOTE' : 'INVOICE',
         status: 'sent',
-        total_amount: data.totalAmount,
+        total_amount: effectiveAmount,
+        refund_amount: isCN ? effectiveAmount : null,
         currency: 'EUR',
         customer_name: `${data.firstName} ${data.lastName}`,
         seller_name: data.sellerName || null,
@@ -537,9 +544,11 @@ export class InvoiceService {
         ps_pratica_iri: praticaIri,
         ps_account_iri: accountIri,
         ps_passeggero_iri: passeggeroResponse.data['@id'],
+        ps_servizio_iri: servizioResponse.data['@id'],
+        ps_quota_iri: quotaResponse.data['@id'],
         ps_movimento_iri: movimentoResponse.data['@id'],
         ps_commessa_code: yearMonth,
-        created_by: 'manual',
+        created_by: isCN ? 'manual_credit_note' : 'manual',
       }).select('id').single();
 
       if (insertError) {
@@ -558,7 +567,7 @@ export class InvoiceService {
         }
       }
 
-      console.log(`[InvoiceService] Successfully created manual pratica ${referenceId}: ${praticaIri}`);
+      console.log(`[InvoiceService] Successfully created manual ${isCN ? 'credit note' : 'invoice'} pratica ${referenceId}: ${praticaIri}`);
 
       return {
         success: true,
@@ -1866,6 +1875,232 @@ export class InvoiceService {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       };
+    }
+  }
+
+  /**
+   * Create a full credit note pratica in Partner Solution
+   * Creates: Account, Pratica, Passeggero, Servizio, Quota (negative), Movimento (RIMBOK negative)
+   * Used by the automated Stripe refund flow
+   */
+  async createCreditNotePratica(
+    bookingId: number,
+    refundAmount: number,
+    triggeredBy: string = 'stripe-refund'
+  ): Promise<{ success: boolean; praticaIri?: string; movimentoIri?: string; invoiceId?: string; error?: string }> {
+    try {
+      console.log(`[InvoiceService] Creating credit note pratica for booking ${bookingId}, amount: €${refundAmount}...`);
+
+      // Look up original invoice for customer/seller context
+      const { data: originalInvoice } = await supabase
+        .from('invoices')
+        .select('id, customer_name, seller_name, confirmation_code')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'INVOICE')
+        .single();
+
+      if (!originalInvoice) {
+        return { success: false, error: `No invoice found for booking ${bookingId}` };
+      }
+
+      // Dedup check — skip if CREDIT_NOTE already exists
+      const { data: existingCN } = await supabase
+        .from('invoices')
+        .select('id')
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'CREDIT_NOTE')
+        .limit(1);
+
+      if (existingCN && existingCN.length > 0) {
+        console.log(`[InvoiceService] Credit note already exists for booking ${bookingId}`);
+        return { success: true, invoiceId: existingCN[0].id };
+      }
+
+      // Fetch booking for customer details
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .select(`
+          booking_id,
+          confirmation_code,
+          booking_customers(
+            customers(first_name, last_name, phone_number)
+          )
+        `)
+        .eq('booking_id', bookingId)
+        .single();
+
+      if (bookingError || !booking) {
+        return { success: false, error: `Booking ${bookingId} not found` };
+      }
+
+      const customer = (booking as any).booking_customers?.[0]?.customers;
+      const customerName = {
+        firstName: customer?.first_name || 'N/A',
+        lastName: customer?.last_name || 'N/A',
+      };
+      const customerPhone = customer?.phone_number || null;
+      const customerCountry = this.getCountryFromPhone(customerPhone);
+
+      // Compute credit note values — prefix with '5' to avoid PS auto-linking to the original invoice
+      const cnBookingId = '5' + String(bookingId);
+      const cnExternalId = cnBookingId.padStart(9, '0');
+      const cnCodiceFiscale = cnExternalId;
+      const now = new Date().toISOString();
+      const todayDate = now.split('T')[0];
+      const yearMonth = this.formatYearMonth(now);
+      const nrCommessa = yearMonth.replace('-', '');
+      const deliveringValue = `commessa: ${nrCommessa}`;
+      const negativeAmount = -Math.abs(refundAmount);
+
+      const client = await (this.partnerSolution as any).getClient();
+      const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
+
+      // Step 1: Create Account
+      const accountResponse = await client.post('/accounts', {
+        cognome: customerName.lastName,
+        nome: customerName.firstName,
+        flagpersonafisica: 1,
+        codicefiscale: cnCodiceFiscale,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+        tipocattura: 'PS',
+        iscliente: 1,
+        isfornitore: 0,
+        nazione: customerCountry,
+      });
+      const accountIri = accountResponse.data['@id'];
+      const accountId = accountIri.split('/').pop();
+
+      // Step 2: Create Pratica (WP)
+      const praticaPayload = {
+        codicecliente: accountId,
+        externalid: cnExternalId,
+        cognomecliente: customerName.lastName,
+        nomecliente: customerName.firstName,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        datacreazione: now,
+        datamodifica: now,
+        stato: 'WP',
+        descrizionepratica: 'Nota di credito - Rimborso',
+        noteinterne: originalInvoice.seller_name ? `Seller: ${originalInvoice.seller_name}` : null,
+        delivering: deliveringValue,
+      };
+      const praticaResponse = await client.post('/prt_praticas', praticaPayload);
+      const praticaIri = praticaResponse.data['@id'];
+
+      // Step 3: Add Passeggero
+      const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
+        pratica: praticaIri,
+        cognomepax: customerName.lastName,
+        nomepax: customerName.firstName,
+        annullata: 0,
+        iscontraente: 1,
+      });
+
+      // Step 4: Add Servizio
+      const servizioResponse = await client.post('/prt_praticaservizios', {
+        pratica: praticaIri,
+        externalid: cnExternalId,
+        tiposervizio: 'PKG',
+        tipovendita: 'ORG',
+        regimevendita: '74T',
+        codicefornitore: 'IT09802381005',
+        ragsocfornitore: 'EnRoma Tours',
+        codicefilefornitore: cnExternalId,
+        datacreazione: now,
+        datainizioservizio: todayDate,
+        datafineservizio: todayDate,
+        duratant: 0,
+        duratagg: 1,
+        nrpaxadulti: 1,
+        nrpaxchild: 0,
+        nrpaxinfant: 0,
+        descrizione: 'Nota di credito - Tour UE ed Extra UE',
+        tipodestinazione: 'MISTO',
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+      });
+
+      // Step 5: Add Quota (negative amounts)
+      const quotaResponse = await client.post('/prt_praticaservizioquotas', {
+        servizio: servizioResponse.data['@id'],
+        descrizionequota: 'Nota di credito - Tour UE ed Extra UE',
+        datavendita: now,
+        codiceisovalutacosto: 'EUR',
+        quantitacosto: 1,
+        costovalutaprimaria: negativeAmount,
+        quantitaricavo: 1,
+        ricavovalutaprimaria: negativeAmount,
+        codiceisovalutaricavo: 'EUR',
+        commissioniattivevalutaprimaria: 0,
+        commissionipassivevalutaprimaria: 0,
+        progressivo: 1,
+        annullata: 0,
+        codiceagenzia: agencyCode,
+        stato: 'INS',
+      });
+
+      // Step 6: Add Movimento Finanziario (RIMBOK, negative)
+      const movimentoResponse = await client.post('/mov_finanziarios', {
+        externalid: cnExternalId,
+        tipomovimento: 'I',
+        codicefile: cnExternalId,
+        codiceagenzia: agencyCode,
+        tipocattura: 'PS',
+        importo: negativeAmount,
+        datacreazione: now,
+        datamodifica: now,
+        datamovimento: now,
+        stato: 'INS',
+        codcausale: 'RIMBOK',
+        descrizione: `Nota di credito - Rimborso ${booking.confirmation_code}`,
+      });
+
+      // Step 7: Update Pratica → INS
+      await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
+
+      // Store in invoices table as CREDIT_NOTE
+      const { data: creditNoteRecord, error: insertError } = await supabase.from('invoices').insert({
+        booking_id: bookingId,
+        confirmation_code: booking.confirmation_code,
+        invoice_type: 'CREDIT_NOTE',
+        status: 'sent',
+        total_amount: negativeAmount,
+        refund_amount: negativeAmount,
+        currency: 'EUR',
+        customer_name: `${customerName.firstName} ${customerName.lastName}`,
+        seller_name: originalInvoice.seller_name,
+        booking_creation_date: todayDate,
+        sent_at: now,
+        ps_pratica_iri: praticaIri,
+        ps_account_iri: accountIri,
+        ps_passeggero_iri: passeggeroResponse.data['@id'],
+        ps_servizio_iri: servizioResponse.data['@id'],
+        ps_quota_iri: quotaResponse.data['@id'],
+        ps_movimento_iri: movimentoResponse.data['@id'],
+        ps_commessa_code: yearMonth,
+        created_by: triggeredBy,
+      }).select('id').single();
+
+      if (insertError) {
+        console.error(`[InvoiceService] Failed to save credit note record for booking ${bookingId}:`, insertError);
+      }
+
+      const movimentoIri = movimentoResponse.data['@id'];
+      console.log(`[InvoiceService] Successfully created credit note pratica for booking ${bookingId}: ${praticaIri}`);
+
+      return {
+        success: true,
+        praticaIri,
+        movimentoIri,
+        invoiceId: creditNoteRecord?.id,
+      };
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.['hydra:description'] || error.message;
+      console.error(`[InvoiceService] Error creating credit note pratica for ${bookingId}:`, errorMsg);
+      return { success: false, error: errorMsg };
     }
   }
 

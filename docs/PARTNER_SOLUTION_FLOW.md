@@ -487,6 +487,277 @@ curl -H "Authorization: Bearer <token>" \
 
 ---
 
+---
+
+# Credit Note Flow (Nota di Credito)
+
+## Overview
+
+When a Stripe refund is processed for a booking that has an existing invoice pratica, a **standalone credit note pratica** is created in Partner Solution. This is a completely independent pratica — it is NOT linked to the original invoice pratica.
+
+## Triggers
+
+1. **Automated (Stripe refund):** `charge.refunded` webhook → `processRefund()` → `invoiceService.createCreditNotePratica()`
+2. **Manual:** `POST /api/invoices/manual` with `isCreditNote: true`
+
+## Credit Note ID Formatting
+
+To avoid Partner Solution auto-linking the credit note to the original invoice (via matching `codicefiscale`, `codicefile`, etc.), all IDs use a **`5` prefix**:
+
+- `cn_booking_id` = `'5' + booking_id` (e.g., booking `83964306` → `583964306`)
+- This value is used **everywhere**: `codicefiscale`, `externalid`, `codicefilefornitore`, `codicefile`
+- The original invoice uses `083964306` (0-padded), the credit note uses `583964306` (5-prefixed) — PS treats them as unrelated
+
+## Complete 7-Step Flow
+
+### Step 1: Create Account
+
+**Endpoint:** `POST /accounts`
+
+```json
+{
+  "cognome": "Rodriguez",
+  "nome": "Lucas Matias",
+  "flagpersonafisica": 1,
+  "codicefiscale": "583964306",
+  "codiceagenzia": "7206",
+  "stato": "INS",
+  "tipocattura": "PS",
+  "iscliente": 1,
+  "isfornitore": 0,
+  "nazione": "Spagna"
+}
+```
+
+**Notes:**
+- `codicefiscale` = `cn_booking_id` (5-prefixed, NOT 0-padded like invoices)
+- Always creates a new account
+
+---
+
+### Step 2: Create Pratica (Status WP)
+
+**Endpoint:** `POST /prt_praticas`
+
+```json
+{
+  "codicecliente": "/accounts/<account_uuid>",
+  "externalid": "583964306",
+  "cognomecliente": "Rodriguez",
+  "nomecliente": "Lucas Matias",
+  "codiceagenzia": "7206",
+  "tipocattura": "PS",
+  "datacreazione": "2026-02-11T16:26:00.000Z",
+  "datamodifica": "2026-02-11T16:26:00.000Z",
+  "stato": "WP",
+  "descrizionepratica": "Nota di credito - Rimborso",
+  "noteinterne": "Seller: EnRoma.com",
+  "delivering": "commessa: 202602"
+}
+```
+
+**Key differences from invoice:**
+| Field | Invoice | Credit Note |
+|-------|---------|-------------|
+| `externalid` | `083964306` (0-padded) | `583964306` (5-prefixed) |
+| `descrizionepratica` | `Tour UE ed Extra UE` | `Nota di credito - Rimborso` |
+| `delivering` | month from booking creation/travel | month from refund date |
+
+---
+
+### Step 3: Add Passeggero
+
+**Endpoint:** `POST /prt_praticapasseggeros`
+
+```json
+{
+  "pratica": "/prt_praticas/<pratica_uuid>",
+  "cognomepax": "Rodriguez",
+  "nomepax": "Lucas Matias",
+  "annullata": 0,
+  "iscontraente": 1
+}
+```
+
+Same as invoice flow.
+
+---
+
+### Step 4: Add Servizio
+
+**Endpoint:** `POST /prt_praticaservizios`
+
+```json
+{
+  "pratica": "/prt_praticas/<pratica_uuid>",
+  "externalid": "583964306",
+  "tiposervizio": "PKG",
+  "tipovendita": "ORG",
+  "regimevendita": "74T",
+  "codicefornitore": "IT09802381005",
+  "ragsocfornitore": "EnRoma Tours",
+  "codicefilefornitore": "583964306",
+  "datacreazione": "2026-02-11T16:26:00.000Z",
+  "datainizioservizio": "2026-02-11",
+  "datafineservizio": "2026-02-11",
+  "duratant": 0,
+  "duratagg": 1,
+  "nrpaxadulti": 1,
+  "nrpaxchild": 0,
+  "nrpaxinfant": 0,
+  "descrizione": "Nota di credito - Tour UE ed Extra UE",
+  "tipodestinazione": "MISTO",
+  "annullata": 0,
+  "codiceagenzia": "7206",
+  "stato": "INS"
+}
+```
+
+**Key differences from invoice:**
+| Field | Invoice | Credit Note |
+|-------|---------|-------------|
+| `externalid` | `083964306` | `583964306` |
+| `codicefilefornitore` | `083964306` | `583964306` |
+| `descrizione` | `Tour UE ed Extra UE` | `Nota di credito - Tour UE ed Extra UE` |
+
+---
+
+### Step 5: Add Quota (NEGATIVE amounts)
+
+**Endpoint:** `POST /prt_praticaservizioquotas`
+
+```json
+{
+  "servizio": "/prt_praticaservizios/<servizio_uuid>",
+  "descrizionequota": "Nota di credito - Tour UE ed Extra UE",
+  "datavendita": "2026-02-11T16:26:00.000Z",
+  "codiceisovalutacosto": "EUR",
+  "quantitacosto": 1,
+  "costovalutaprimaria": -75,
+  "quantitaricavo": 1,
+  "ricavovalutaprimaria": -75,
+  "codiceisovalutaricavo": "EUR",
+  "commissioniattivevalutaprimaria": 0,
+  "commissionipassivevalutaprimaria": 0,
+  "progressivo": 1,
+  "annullata": 0,
+  "codiceagenzia": "7206",
+  "stato": "INS"
+}
+```
+
+**Key difference:** `costovalutaprimaria` and `ricavovalutaprimaria` are **NEGATIVE** (`-Math.abs(refundAmount)`)
+
+---
+
+### Step 6: Add Movimento Finanziario (RIMBOK)
+
+**Endpoint:** `POST /mov_finanziarios`
+
+```json
+{
+  "externalid": "583964306",
+  "tipomovimento": "I",
+  "codicefile": "583964306",
+  "codiceagenzia": "7206",
+  "tipocattura": "PS",
+  "importo": -75,
+  "datacreazione": "2026-02-11T16:26:00.000Z",
+  "datamodifica": "2026-02-11T16:26:00.000Z",
+  "datamovimento": "2026-02-11T16:26:00.000Z",
+  "stato": "INS",
+  "codcausale": "RIMBOK",
+  "descrizione": "Nota di credito - Rimborso ENRO-83964306"
+}
+```
+
+**Key differences from invoice:**
+| Field | Invoice | Credit Note |
+|-------|---------|-------------|
+| `externalid` | `083964306` | `583964306` |
+| `codicefile` | `083964306` | `583964306` |
+| `codcausale` | `PAGBOK` | `RIMBOK` |
+| `importo` | positive | **NEGATIVE** (`-Math.abs(refundAmount)`) |
+
+---
+
+### Step 7: Update Pratica to INS
+
+**Endpoint:** `PUT /prt_praticas/<pratica_uuid>`
+
+Same payload as Step 2 but with `stato: "INS"`.
+
+---
+
+## Database Record
+
+The credit note is stored in the `invoices` table:
+
+| Field | Value |
+|-------|-------|
+| `invoice_type` | `CREDIT_NOTE` |
+| `total_amount` | negative (e.g., `-75.00`) |
+| `refund_amount` | negative (e.g., `-75.00`) |
+| `created_by` | `stripe-refund` (auto) or `manual_credit_note` (manual) |
+| `ps_pratica_iri` | Full pratica IRI |
+| `ps_account_iri` | Account IRI |
+| `ps_passeggero_iri` | Passeggero IRI |
+| `ps_servizio_iri` | Servizio IRI |
+| `ps_quota_iri` | Quota IRI |
+| `ps_movimento_iri` | Movimento IRI |
+| `ps_commessa_code` | `YYYY-MM` of refund date |
+
+---
+
+## Manual Credit Note Endpoint
+
+**Endpoint:** `POST /api/invoices/manual`
+
+```json
+{
+  "firstName": "Lucas Matias",
+  "lastName": "Rodriguez",
+  "phone": "+34612345678",
+  "isPersonaFisica": true,
+  "totalAmount": 75,
+  "productTitle": "Tour Vaticano",
+  "sellerName": "EnRoma.com",
+  "isCreditNote": true
+}
+```
+
+When `isCreditNote: true`:
+- User provides a **positive** `totalAmount` — the service negates it automatically
+- `externalid` gets `CN-` prefix (for manual) or `5`-prefix (for automated)
+- Causale = `RIMBOK`, amounts = negative
+- Stored as `CREDIT_NOTE` with `created_by: 'manual_credit_note'`
+
+---
+
+## Summary: Invoice vs Credit Note
+
+| Aspect | Invoice | Credit Note |
+|--------|---------|-------------|
+| ID prefix | `0` (left-padded) | `5` (prefixed) |
+| `descrizionepratica` | `Tour UE ed Extra UE` | `Nota di credito - Rimborso` |
+| `descrizione` (servizio) | `Tour UE ed Extra UE` | `Nota di credito - Tour UE ed Extra UE` |
+| Amounts (quota, movimento) | Positive | **Negative** |
+| `codcausale` | `PAGBOK` | `RIMBOK` |
+| `invoice_type` (DB) | `INVOICE` | `CREDIT_NOTE` |
+| Linked to original? | N/A | **No** — standalone pratica |
+
+---
+
+## Files Reference
+
+| File | Purpose |
+|------|---------|
+| `src/services/invoiceService.ts` | `createCreditNotePratica()` (auto), `createManualPratica()` with `isCreditNote` (manual) |
+| `src/routes/stripe.ts` | `processRefund()` calls `createCreditNotePratica()` on Stripe refund |
+| `src/routes/invoices.ts` | `POST /api/invoices/manual` with `isCreditNote` param |
+
+---
+
 ## Version History
 
 | Date | Change |
@@ -502,3 +773,5 @@ curl -H "Authorization: Bearer <token>" \
 | 2026-01-28 | Fixed `delivering` format to `commessa: {codice}` (with space after colon) |
 | 2026-01-28 | Fixed `codicecliente` to use Account IRI instead of booking_id_padded |
 | 2026-01-28 | Italy (+39) now maps to Spain to avoid Italian invoicing rules |
+| 2026-02-11 | Added full credit note pratica flow (7-step with negative amounts, RIMBOK, 5-prefixed IDs) |
+| 2026-02-11 | Credit notes are standalone praticas — no link to original invoice in PS |

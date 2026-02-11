@@ -5,7 +5,6 @@
 
 import express, { Request, Response } from 'express';
 import Stripe from 'stripe';
-import axios from 'axios';
 import { supabase } from '../config/supabase';
 import { invoiceService } from '../services/invoiceService';
 import {
@@ -136,98 +135,6 @@ async function getInvoiceWithPratica(bookingId: number) {
 }
 
 /**
- * Authenticate to Partner Solution and get client
- */
-async function getPSClient() {
-  const apiUrl = process.env.PARTNER_SOLUTION_API_URL || 'https://catture.partnersolution.it';
-  const username = process.env.PARTNER_SOLUTION_USERNAME;
-  const password = process.env.PARTNER_SOLUTION_PASSWORD;
-
-  if (!username || !password) {
-    throw new Error('Partner Solution credentials not configured');
-  }
-
-  const params = new URLSearchParams();
-  params.append('_username', username);
-  params.append('_password', password);
-
-  const loginResponse = await axios.post(`${apiUrl}/login_check`, params.toString(), {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' }
-  });
-
-  const token = loginResponse.data.token;
-
-  return axios.create({
-    baseURL: apiUrl,
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/ld+json',
-      'Accept': 'application/ld+json'
-    }
-  });
-}
-
-/**
- * Send RIMBOK movimento to Partner Solution for refund
- */
-async function sendRefundToPS(
-  bookingId: number,
-  refundAmount: number
-): Promise<{ success: boolean; movimentoIri?: string; error?: string }> {
-  try {
-    const invoice = await getInvoiceWithPratica(bookingId);
-
-    if (!invoice?.ps_pratica_iri) {
-      console.log(`[Stripe] No pratica found for booking ${bookingId}, skipping PS refund`);
-      return { success: true }; // Not an error, just no pratica to refund
-    }
-
-    console.log(`[Stripe] Sending RIMBOK movimento to PS for booking ${bookingId}, amount: €${refundAmount}`);
-
-    const client = await getPSClient();
-    const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
-    const bookingIdPadded = bookingId.toString().padStart(9, '0');
-    const now = new Date().toISOString();
-    const dateOnly = now.split('T')[0];
-
-    // Create refund movimento with tipomovimento: 'I' and codcausale: 'RIMBOK'
-    const movimentoResponse = await client.post('/mov_finanziarios', {
-      externalid: bookingIdPadded,
-      tipomovimento: 'I',
-      codicefile: bookingIdPadded,
-      codiceagenzia: agencyCode,
-      tipocattura: 'PS',
-      importo: -Math.abs(refundAmount),  // Always negative for refunds
-      datacreazione: now,
-      datamodifica: now,
-      datamovimento: dateOnly,
-      stato: 'INS',
-      codcausale: 'RIMBOK',
-      descrizione: `Rimborso - Booking ${bookingId}`
-    });
-
-    const movimentoIri = movimentoResponse.data['@id'];
-    console.log(`[Stripe] RIMBOK movimento created: ${movimentoIri}`);
-
-    // Update invoice record with refund movimento IRI
-    await supabase
-      .from('invoices')
-      .update({
-        ps_refund_movimento_iri: movimentoIri,
-        updated_at: now
-      })
-      .eq('id', invoice.id);
-
-    return { success: true, movimentoIri };
-  } catch (error) {
-    const err = error as any;
-    const errorMsg = err.response?.data?.['hydra:description'] || err.message;
-    console.error(`[Stripe] Failed to send RIMBOK to PS:`, errorMsg);
-    return { success: false, error: errorMsg };
-  }
-}
-
-/**
  * Log webhook to database
  */
 async function logStripeWebhook(
@@ -332,21 +239,13 @@ async function processRefund(
   const finalRefundAmount = refundAmount;
   console.log(`[Stripe] Processing refund for booking ${bookingId} (amount: €${finalRefundAmount})`);
 
-  // Step 1: Send RIMBOK movimento to Partner Solution (if pratica exists)
-  const psResult = await sendRefundToPS(bookingId, finalRefundAmount);
-
-  if (!psResult.success) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', psResult.error || 'Failed to send RIMBOK to PS', rawPayload);
-    return { success: false, message: psResult.error || 'Failed to send refund to Partner Solution' };
-  }
-
-  // Step 2: Create credit note record in our DB
-  const result = await invoiceService.createCreditNote(bookingId, undefined, 'stripe-refund', finalRefundAmount);
+  // Create full credit note pratica in Partner Solution + DB record
+  const result = await invoiceService.createCreditNotePratica(bookingId, finalRefundAmount, 'stripe-refund');
 
   if (result.success) {
-    const message = psResult.movimentoIri
-      ? `Refund sent to PS (${psResult.movimentoIri}) and credit note created`
-      : 'Credit note created (no pratica in PS)';
+    const message = result.praticaIri
+      ? `Credit note pratica created in PS (${result.praticaIri}) with RIMBOK movimento (${result.movimentoIri})`
+      : 'Credit note already exists';
     await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SUCCESS', message, rawPayload);
     console.log(`[Stripe] ${message} for booking ${bookingId}`);
 
@@ -355,7 +254,7 @@ async function processRefund(
       .from('stripe_refunds')
       .update({
         status: 'PROCESSED',
-        ps_movimento_iri: psResult.movimentoIri || null,
+        ps_movimento_iri: result.movimentoIri || null,
         processed_at: new Date().toISOString()
       })
       .eq('stripe_event_id', eventId);
@@ -364,10 +263,10 @@ async function processRefund(
       console.error(`[Stripe] Failed to update stripe_refunds status:`, updateError);
     }
 
-    return { success: true, message, movimentoIri: psResult.movimentoIri };
+    return { success: true, message, movimentoIri: result.movimentoIri };
   } else {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', result.error || 'Failed to create credit note', rawPayload);
-    return { success: false, message: result.error || 'Failed to create credit note' };
+    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', result.error || 'Failed to create credit note pratica', rawPayload);
+    return { success: false, message: result.error || 'Failed to create credit note pratica' };
   }
 }
 
