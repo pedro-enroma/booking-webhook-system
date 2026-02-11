@@ -317,8 +317,8 @@ export class InvoiceService {
       // Step 7: Update Pratica to INS
       await client.put(praticaIri, { ...praticaPayload, stato: 'INS' });
 
-      // Record in invoices table
-      await supabase.from('invoices').upsert({
+      // Record in invoices table (use insert, not upsert — duplicate check is done above)
+      const { error: insertError } = await supabase.from('invoices').insert({
         booking_id: booking.booking_id,
         confirmation_code: booking.confirmation_code,
         invoice_type: 'INVOICE',
@@ -335,7 +335,12 @@ export class InvoiceService {
         ps_movimento_iri: movimentoResponse.data['@id'],
         ps_commessa_code: yearMonth,
         created_by: 'creation_date_auto',
-      }, { onConflict: 'booking_id,invoice_type' });
+      });
+
+      if (insertError) {
+        console.error(`[InvoiceService] Failed to save invoice record for booking ${bookingId}:`, insertError);
+        // PS pratica was already created, so return success but log the DB error
+      }
 
       console.log(`[InvoiceService] Successfully created individual pratica for booking ${bookingId}: ${praticaIri}`);
 
