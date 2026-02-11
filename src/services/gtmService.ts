@@ -219,7 +219,7 @@ export class GTMService {
 
       const { data: activities, error: searchError } = await supabase
         .from('activity_bookings')
-        .select('activity_booking_id, booking_id, product_title, status')
+        .select('activity_booking_id, booking_id, product_title, status, affiliate_source, affiliate_id')
         .eq('booking_id', bookingId);
 
       if (searchError) {
@@ -252,9 +252,18 @@ export class GTMService {
         });
 
         const updateData: any = {};
-        if (affiliateId) updateData.affiliate_id = affiliateId;
+
+        // Coupon-based affiliate takes priority — don't overwrite it from GTM
+        if (activity.affiliate_source === 'coupon') {
+          console.log(`   ⚡ Skipping affiliate_id update — already set by coupon rule (affiliate: "${activity.affiliate_id}")`);
+        } else if (affiliateId) {
+          updateData.affiliate_id = affiliateId;
+          updateData.affiliate_source = 'gtm';
+        }
+
+        // first_campaign is independent tracking data — always set it
         if (firstCampaign) updateData.first_campaign = firstCampaign;
-        
+
         // Only update if we have data to update
         if (Object.keys(updateData).length > 0) {
           const { error: updateError } = await supabase
@@ -266,7 +275,7 @@ export class GTMService {
             console.error(`❌ Error updating activity_booking ${activity.activity_booking_id}:`, updateError);
             throw updateError;
           }
-          
+
           console.log(`✅ Updated activity_booking ${activity.activity_booking_id} with:`, updateData);
         }
       }

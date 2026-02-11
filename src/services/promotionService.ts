@@ -268,6 +268,34 @@ export class PromotionService {
         console.log(`   Description: ${promoCode.description}`);
       }
 
+      // Look up coupon-to-affiliate rule
+      const { data: affiliateRule } = await supabase
+        .from('coupon_affiliate_rules')
+        .select('affiliate_id, coupon_code')
+        .eq('coupon_code', promoCode.code.toUpperCase())
+        .eq('is_active', true)
+        .single();
+
+      if (affiliateRule) {
+        console.log(`\n   🔗 COUPON-AFFILIATE RULE MATCH`);
+        console.log(`      Coupon "${promoCode.code}" → affiliate "${affiliateRule.affiliate_id}"`);
+
+        // Update ALL activity_bookings for this parent booking with coupon-based affiliate
+        const { error: affiliateUpdateError, count } = await supabase
+          .from('activity_bookings')
+          .update({
+            affiliate_id: affiliateRule.affiliate_id,
+            affiliate_source: 'coupon'
+          })
+          .eq('booking_id', parentBookingId);
+
+        if (affiliateUpdateError) {
+          console.error('❌ Error setting coupon-based affiliate:', affiliateUpdateError);
+        } else {
+          console.log(`      ✅ Updated ${count ?? '?'} activity booking(s) with affiliate "${affiliateRule.affiliate_id}"`);
+        }
+      }
+
       // Get first_campaign and affiliate_id from activity_bookings
       const { data: activityBooking } = await supabase
         .from('activity_bookings')
