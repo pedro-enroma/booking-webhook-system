@@ -1966,8 +1966,15 @@ export class InvoiceService {
       const customerPhone = customer?.phone_number || null;
       const customerCountry = this.getCountryFromPhone(customerPhone);
 
-      // Compute credit note values — prefix with '5' to avoid PS auto-linking to the original invoice
-      const cnBookingId = '5' + String(bookingId);
+      // Compute credit note values — prefix with '5','6','7','8' to avoid PS auto-linking
+      // Each credit note for the same booking gets an incremented prefix (5=first, 6=second, etc.)
+      const { count: existingCreditNotes } = await supabase
+        .from('invoices')
+        .select('id', { count: 'exact', head: true })
+        .eq('booking_id', bookingId)
+        .eq('invoice_type', 'CREDIT_NOTE');
+      const cnPrefix = String(5 + (existingCreditNotes || 0));
+      const cnBookingId = cnPrefix + String(bookingId);
       const cnExternalId = cnBookingId.padStart(9, '0');
       const cnCodiceFiscale = cnExternalId;
       const now = new Date().toISOString();

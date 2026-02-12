@@ -502,11 +502,16 @@ When a Stripe refund is processed for a booking that has an existing invoice pra
 
 ## Credit Note ID Formatting
 
-To avoid Partner Solution auto-linking the credit note to the original invoice (via matching `codicefiscale`, `codicefile`, etc.), all IDs use a **`5` prefix**:
+To avoid Partner Solution auto-linking the credit note to the original invoice (via matching `codicefiscale`, `codicefile`, etc.), IDs use an **incrementing prefix** starting at `5`:
 
-- `cn_booking_id` = `'5' + booking_id` (e.g., booking `83964306` → `583964306`)
-- This value is used **everywhere**: `codicefiscale`, `externalid`, `codicefilefornitore`, `codicefile`
-- The original invoice uses `083964306` (0-padded), the credit note uses `583964306` (5-prefixed) — PS treats them as unrelated
+- 1st credit note: `'5' + booking_id` → `583964306`
+- 2nd credit note: `'6' + booking_id` → `683964306`
+- 3rd credit note: `'7' + booking_id` → `783964306`
+- 4th credit note: `'8' + booking_id` → `883964306`
+
+The prefix is computed as `5 + count(existing CREDIT_NOTE records for this booking)`. This value is used **everywhere**: `codicefiscale`, `externalid`, `codicefilefornitore`, `codicefile`.
+
+- The original invoice uses `083964306` (0-padded), credit notes use `5/6/7/8`-prefixed — PS treats them as unrelated
 
 ## Complete 7-Step Flow
 
@@ -738,7 +743,7 @@ When `isCreditNote: true`:
 
 | Aspect | Invoice | Credit Note |
 |--------|---------|-------------|
-| ID prefix | `0` (left-padded) | `5` (prefixed) |
+| ID prefix | `0` (left-padded) | `5`, `6`, `7`, `8` (incrementing per credit note) |
 | `descrizionepratica` | `Tour UE ed Extra UE` | `Nota di credito - Rimborso` |
 | `descrizione` (servizio) | `Tour UE ed Extra UE` | `Nota di credito - Tour UE ed Extra UE` |
 | Amounts (quota, movimento) | Positive | **Negative** |

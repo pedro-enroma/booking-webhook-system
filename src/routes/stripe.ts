@@ -477,11 +477,27 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           }
         }
 
-        // Get refund amount (Stripe amounts are in cents)
-        const refundAmount = charge.amount_refunded ? charge.amount_refunded / 100 : null;
+        // Extract individual refund amount from charge.refunds.data[]
+        // charge.amount_refunded is the CUMULATIVE total — we need the individual refund that triggered this event
         const totalRefunded = charge.amount_refunded ? charge.amount_refunded / 100 : null;
         const currency = charge.currency?.toUpperCase() || 'EUR';
         const paymentIntentId = typeof charge.payment_intent === 'string' ? charge.payment_intent : null;
+
+        let refundAmount: number | null = null;
+        let stripeRefundId: string | null = null;
+
+        const refundsData = (charge as any).refunds?.data as Array<{ id: string; amount: number; created: number }> | undefined;
+        if (refundsData && refundsData.length > 0) {
+          // Find the most recent refund (highest 'created' timestamp) — that's the one that triggered this event
+          const latestRefund = refundsData.reduce((latest, r) => r.created > latest.created ? r : latest, refundsData[0]);
+          refundAmount = latestRefund.amount / 100;
+          stripeRefundId = latestRefund.id;
+          console.log(`[Stripe] Individual refund: ${stripeRefundId} for €${refundAmount} (total refunded: €${totalRefunded})`);
+        } else {
+          // Fallback: if refunds.data not available, use amount_refunded
+          refundAmount = totalRefunded;
+          console.warn(`[Stripe] No refunds.data available, falling back to amount_refunded: €${refundAmount}`);
+        }
 
         let bookingId: number | null = null;
 
@@ -509,13 +525,14 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           }
         }
 
-        // Always store refund in stripe_refunds table
+        // Always store refund in stripe_refunds table (one row per individual refund)
         const { data: refundRecord, error: refundError } = await supabase
           .from('stripe_refunds')
           .insert({
             stripe_event_id: event.id,
             stripe_charge_id: charge.id,
             stripe_payment_intent_id: paymentIntentId,
+            stripe_refund_id: stripeRefundId,
             booking_id: bookingId,
             confirmation_code: metadata.confirmation_code || metadata['bokun-booking-id'] ? `ENRO-${bookingId}` : null,
             refund_amount: refundAmount,
@@ -528,6 +545,11 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           .single();
 
         if (refundError) {
+          // Duplicate stripe_refund_id or stripe_event_id — skip processing
+          if (refundError.code === '23505') {
+            console.log(`[Stripe] Duplicate refund detected (${stripeRefundId || event.id}), skipping`);
+            return res.json({ received: true, message: 'Duplicate refund, already processed' });
+          }
           console.error(`[Stripe] Failed to store refund:`, refundError);
         } else {
           console.log(`[Stripe] Refund stored with id: ${refundRecord.id}`);

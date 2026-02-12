@@ -316,3 +316,5 @@ This checked the seller name against `invoice_rules.sellers[]`. It no longer exi
 | Reseller booking (e.g. "Mailen - Dia Libre") | Invoiced normally — `skipRuleCheck=true` bypasses seller validation |
 | Booking cancelled after invoice | Handled by existing credit note flow (separate `charge.refunded` path) |
 | Multiple Stripe payments for same booking | Each creates its own `stripe_payments` row; only first invoice succeeds, rest get "Already invoiced" |
+| Multiple partial refunds for same booking | Each refund gets its own credit note with incrementing prefix (5, 6, 7, 8). Individual refund amount extracted from `charge.refunds.data[]`, not cumulative `amount_refunded`. |
+| Duplicate `charge.refunded` (same refund ID) | Rejected by unique index on `stripe_refund_id` (23505 catch) |
