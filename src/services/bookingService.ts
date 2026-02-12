@@ -148,7 +148,8 @@ export class BookingService {
           : '';
         const pendingPayment = await this.findPendingStripePayment(
           parentBooking.bookingId,
-          customerName
+          customerName,
+          parentBooking.totalPrice
         );
         if (pendingPayment) {
           console.log(`[Bokun] Found pending Stripe payment ${pendingPayment.id} for booking ${parentBooking.bookingId} (matched by ${pendingPayment.matchMethod})`);
@@ -759,9 +760,10 @@ export class BookingService {
    */
   private async findPendingStripePayment(
     bookingId: number,
-    customerName: string
-  ): Promise<{ id: string; paymentAmount: number; matchMethod: 'booking_id' | 'name' } | null> {
-    // Strategy 1: Match by booking_id
+    customerName: string,
+    totalPrice?: number
+  ): Promise<{ id: string; paymentAmount: number; matchMethod: 'booking_id' | 'name' | 'amount' } | null> {
+    // Strategy 1: Match by booking_id (RECEIVED payments waiting for Bokun)
     const { data: byId } = await supabase
       .from('stripe_payments')
       .select('id, payment_amount')
@@ -774,22 +776,42 @@ export class BookingService {
       return { id: byId[0].id, paymentAmount: byId[0].payment_amount, matchMethod: 'booking_id' };
     }
 
-    // Strategy 2: Match by customer name
-    if (!customerName) return null;
+    // Strategy 2: Match by customer name (RECEIVED payments)
+    if (customerName) {
+      const { data: received } = await supabase
+        .from('stripe_payments')
+        .select('id, payment_amount, customer_name')
+        .eq('status', 'RECEIVED')
+        .not('customer_name', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-    const { data: received } = await supabase
-      .from('stripe_payments')
-      .select('id, payment_amount, customer_name')
-      .eq('status', 'RECEIVED')
-      .not('customer_name', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    if (received) {
-      for (const payment of received) {
-        if (payment.customer_name && namesMatch(customerName, payment.customer_name)) {
-          return { id: payment.id, paymentAmount: payment.payment_amount, matchMethod: 'name' };
+      if (received) {
+        for (const payment of received) {
+          if (payment.customer_name && namesMatch(customerName, payment.customer_name)) {
+            return { id: payment.id, paymentAmount: payment.payment_amount, matchMethod: 'name' };
+          }
         }
+      }
+    }
+
+    // Strategy 3: Match PENDING_REVIEW payments by amount within time window
+    // These are payments with empty metadata (no booking reference) that arrived before Bokun
+    if (totalPrice && totalPrice > 0) {
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const { data: pendingByAmount } = await supabase
+        .from('stripe_payments')
+        .select('id, payment_amount')
+        .eq('status', 'PENDING_REVIEW')
+        .eq('payment_amount', totalPrice)
+        .gte('created_at', tenMinutesAgo)
+        .order('created_at', { ascending: false });
+
+      if (pendingByAmount && pendingByAmount.length === 1) {
+        console.log(`[Bokun] Amount match: PENDING_REVIEW payment €${totalPrice} → booking ${bookingId}`);
+        return { id: pendingByAmount[0].id, paymentAmount: pendingByAmount[0].payment_amount, matchMethod: 'amount' };
+      } else if (pendingByAmount && pendingByAmount.length > 1) {
+        console.warn(`[Bokun] Ambiguous amount match: ${pendingByAmount.length} PENDING_REVIEW payments for €${totalPrice}, skipping`);
       }
     }
 
