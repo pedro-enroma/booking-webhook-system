@@ -91,18 +91,41 @@ If name match also fails, tries exact amount match (only if unambiguous — exac
 1. Stripe receives payment_intent.succeeded
 2. No bokun-booking-id in metadata → isBokun = false
 3. Extracts billing_details from charge (name, email, country)
-4. Status = PENDING_REVIEW
-5. Stored with customer_name, customer_email, customer_country from billing
-6. No auto-invoice — requires manual action from dashboard
+4. Tries amount match against recent bookings (last 5 min)
+5. If unique match → MATCHED → auto-invoice (same as Path A)
+6. If no match → PENDING_REVIEW
+7. Stored with customer_name, customer_email, customer_country from billing
 
 ...operator clicks "Send to PS" in dashboard...
 
-7. Frontend pre-fills form with payment_amount, customer_name, customer_country
-8. Operator reviews, fills any gaps (firstName, lastName required)
-9. POST /api/invoices/manual with stripePaymentId
-10. Backend generates 900M+ reference ID, creates pratica in PS
-11. stripe_payment status → INVOICED
+8. Frontend pre-fills form with payment_amount, customer_name, customer_country
+9. Operator reviews, fills any gaps (firstName, lastName required)
+10. POST /api/invoices/manual with stripePaymentId
+11. Backend generates 900M+ reference ID, creates pratica in PS
+12. stripe_payment status → INVOICED
 ```
+
+### Path D2: Bokun Sends Empty Metadata (Known Bug)
+
+Bokun sometimes sends payments through Stripe with completely empty metadata — no `bokun-booking-id`, no `booking-reference`, nothing. The payment arrives before the booking is in the DB, so forward amount matching fails.
+
+```
+1. Stripe receives payment_intent.succeeded
+2. Metadata is empty → no booking_id, no customer name
+3. Amount match fails (booking not in DB yet)
+4. Status = PENDING_REVIEW
+5. Stored with customer_country from billing_details
+
+...2-3 seconds later...
+
+6. Bokun BOOKING_CONFIRMED arrives
+7. Saves booking (steps 1-9)
+8. Step 10: findPendingStripePayment(bookingId, customerName, totalPrice)
+9. Strategy 3: finds PENDING_REVIEW payment with matching amount within 10 min
+10. Updates stripe_payment to MATCHED → auto-invoice → INVOICED
+```
+
+**File**: `src/services/bookingService.ts` — `findPendingStripePayment()` Strategy 3
 
 ### Path E: Bokun Arrives, No Stripe Payment Exists
 
@@ -145,15 +168,19 @@ If name match also fails, tries exact amount match (only if unambiguous — exac
            │                                      │
            │                                      └──→ MATCHED ──→ INVOICED
            │
-           └── No Bokun metadata ──→ PENDING_REVIEW (manual)
+           └── No booking reference ──→ PENDING_REVIEW
+                                            │
+                              Bokun arrives later (amount match)
+                                            │
+                                            └──→ MATCHED ──→ INVOICED
 ```
 
 | Status | Meaning | Auto-invoice? |
 |--------|---------|---------------|
-| `RECEIVED` | Stripe payment stored, booking not yet in DB | No — waiting |
+| `RECEIVED` | Stripe payment stored, booking not yet in DB | No — waiting for Bokun |
 | `MATCHED` | Payment linked to a booking (invoice failed or zero amount) | Attempted |
 | `INVOICED` | Payment linked AND invoice sent to Partner Solution | Done |
-| `PENDING_REVIEW` | Non-Bokun payment, no metadata to match | No — manual via dashboard |
+| `PENDING_REVIEW` | No booking reference — waiting for Bokun amount match or manual review | Auto if Bokun arrives with matching amount, otherwise manual via dashboard |
 
 ---
 
@@ -173,6 +200,7 @@ When Bokun arrives and checks for pending Stripe payments:
 |----------|----------|-------|-----------|
 | 1 | `booking_id` match | bookingService.ts | `stripe_payments.booking_id = parentBooking.bookingId` where status=RECEIVED |
 | 2 | Customer name match | bookingService.ts | Compares webhook customer name against `stripe_payments.customer_name` where status=RECEIVED |
+| 3 | Amount match | bookingService.ts | Matches PENDING_REVIEW payments by exact `payment_amount = totalPrice` within 10 min. Only if exactly 1 match (avoids ambiguity). Handles Bokun empty-metadata bug (Path D2). |
 
 Name matching uses `namesMatch()` from `src/utils/nameMatching.ts`: tokenizes both names (lowercase, strip accents), and checks that all tokens from the shorter name appear in the longer name. Handles reordering, middle names, and accented characters.
 
@@ -273,6 +301,49 @@ The ISO code is converted server-side to PS country names (e.g. "ES" → "Spagna
 | `sellerName` | string | No | Stored in PS pratica notes |
 | `confirmationCode` | string | No | If provided, used as reference instead of 900M+ |
 | `stripePaymentId` | string | No | UUID of stripe_payments row — marks it INVOICED on success |
+
+---
+
+## Refund / Credit Note Flow
+
+When `charge.refunded` arrives from Stripe:
+
+1. Extracts the **individual refund** from `charge.refunds.data[]` (latest by `created` timestamp) — NOT the cumulative `charge.amount_refunded`
+2. Stores in `stripe_refunds` with `stripe_refund_id` (the `re_...` ID) for dedup
+3. Matches to a booking via `booking_id` from charge metadata
+4. Calls `processRefund()` → creates credit note pratica in PS
+5. Credit note booking ID uses incrementing prefix: `5` for first, `6` for second, `7` for third, `8` for fourth
+6. Stores `ps_pratica_iri` and `ps_movimento_iri` on the `stripe_refunds` row
+
+### Key `stripe_refunds` Columns
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `stripe_refund_id` | text (unique) | The Stripe `re_...` refund ID. Prevents duplicate processing (23505 catch). |
+| `stripe_event_id` | text (unique) | The Stripe event ID. Secondary dedup. |
+| `refund_amount` | numeric | Individual refund amount (NOT cumulative). |
+| `ps_pratica_iri` | text | Partner Solution pratica IRI, set when credit note is created. |
+| `ps_movimento_iri` | text | Partner Solution movimento IRI, set when credit note is created. |
+| `status` | text | `RECEIVED` → `PROCESSED` (or `FAILED`). |
+
+---
+
+## Test Endpoint
+
+```
+GET /webhook/stripe/test?booking_id=<ID>&refund_amount=<AMOUNT>&type=<TYPE>
+```
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `booking_id` | Yes | Bokun booking ID |
+| `refund_amount` | No | Amount for refund/invoice |
+| `type` | No | `refund` (default) or `invoice` |
+
+- **`type=refund`** (default): Calls `processRefund(bookingId, amount)` to create a credit note in PS.
+- **`type=invoice`**: Calls `createIndividualPratica(bookingId, amount, true)` to create an invoice in PS with `skipRuleCheck=true`.
+
+No authentication required. Used for manual re-triggers when automated flow fails.
 
 ---
 
