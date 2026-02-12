@@ -662,9 +662,9 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           processingNotes = matchMethod === 'name'
             ? `Matched by customer name "${customerName}" to booking ${piBookingId}`
             : `Matched by amount €${paymentAmount} to booking ${piBookingId}`;
-        } else if (isBokun && bookingExists) {
+        } else if (bookingExists && piBookingId) {
           paymentStatus = 'MATCHED';
-          processingNotes = `Bokun payment matched to booking ${piBookingId}`;
+          processingNotes = `Payment matched to booking ${piBookingId} via metadata`;
         } else if (isBokun) {
           paymentStatus = 'RECEIVED';
           processingNotes = 'Bokun payment - booking not yet in DB';

@@ -559,11 +559,20 @@ export class InvoiceService {
         console.error(`[InvoiceService] Failed to save manual invoice record:`, insertError);
       }
 
-      // If stripePaymentId provided, update stripe_payments status
+      // If stripePaymentId provided, update stripe_payments with full details
       if (data.stripePaymentId) {
         const { error: stripeUpdateError } = await supabase
           .from('stripe_payments')
-          .update({ status: 'INVOICED', processed_at: now })
+          .update({
+            status: 'INVOICED',
+            processed_at: now,
+            booking_id: parseInt(referenceId) || null,
+            confirmation_code: referenceId,
+            customer_name: `${data.firstName} ${data.lastName}`,
+            customer_email: null,
+            customer_country: data.country || null,
+            processing_notes: `Manual ${isCN ? 'credit note' : 'invoice'} | Pratica: ${praticaIri}`,
+          })
           .eq('id', data.stripePaymentId);
 
         if (stripeUpdateError) {
