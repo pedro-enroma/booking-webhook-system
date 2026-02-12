@@ -1941,19 +1941,6 @@ export class InvoiceService {
         return { success: false, error: `No invoice found for booking ${bookingId}` };
       }
 
-      // Dedup check — skip if CREDIT_NOTE already exists
-      const { data: existingCN } = await supabase
-        .from('invoices')
-        .select('id')
-        .eq('booking_id', bookingId)
-        .eq('invoice_type', 'CREDIT_NOTE')
-        .limit(1);
-
-      if (existingCN && existingCN.length > 0) {
-        console.log(`[InvoiceService] Credit note already exists for booking ${bookingId}`);
-        return { success: true, invoiceId: existingCN[0].id };
-      }
-
       // Fetch booking for customer details
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
