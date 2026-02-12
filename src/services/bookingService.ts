@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase';
 import { OctoService } from './octoService';
 import { PromotionService } from './promotionService';
 import { InvoiceService } from './invoiceService';
+import { namesMatch } from '../utils/nameMatching';
 import axios from 'axios';
 
 export class BookingService {
@@ -140,29 +141,49 @@ export class BookingService {
       // 9. NUOVO: Valida età partecipanti e auto-fix swap OTA
       await this.validateBookingAges(bookingData.bookingId);
 
-      // 10. NUOVO: Auto-fatturazione se abilitata (individual pratica flow)
+      // 10. Check for pending Stripe payments waiting for this booking
       try {
-        const shouldInvoice = await this.invoiceService.shouldAutoInvoice(sellerName);
-        if (shouldInvoice) {
-          console.log('💰 Triggering auto-invoice (individual pratica) for seller:', sellerName);
-          console.log('💰 Using webhook totalPrice:', parentBooking.totalPrice);
-          // Call the service method directly with webhook's total price to avoid multi-activity race condition
-          const result = await this.invoiceService.createIndividualPratica(parentBooking.bookingId, parentBooking.totalPrice);
-          if (result.success) {
-            if (result.alreadyInvoiced) {
-              console.log('✅ Auto-invoice: Booking already invoiced');
-            } else if (result.skipped) {
-              console.log('✅ Auto-invoice: Skipped (zero amount)');
-            } else {
-              console.log('✅ Auto-invoice: Individual pratica created:', result.praticaIri);
-            }
-          } else {
-            console.error('⚠️ Auto-invoice failed:', result.error);
+        const customerName = parentBooking.customer
+          ? `${parentBooking.customer.firstName || ''} ${parentBooking.customer.lastName || ''}`.trim()
+          : '';
+        const pendingPayment = await this.findPendingStripePayment(
+          parentBooking.bookingId,
+          customerName
+        );
+        if (pendingPayment) {
+          console.log(`[Bokun] Found pending Stripe payment ${pendingPayment.id} for booking ${parentBooking.bookingId} (matched by ${pendingPayment.matchMethod})`);
+
+          // Update stripe_payment with correct booking_id and MATCHED status
+          await supabase.from('stripe_payments').update({
+            booking_id: parentBooking.bookingId,
+            confirmation_code: `ENRO-${parentBooking.bookingId}`,
+            status: 'MATCHED',
+            processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod}`,
+            processed_at: new Date().toISOString(),
+          }).eq('id', pendingPayment.id);
+
+          // Create invoice
+          const result = await this.invoiceService.createIndividualPratica(
+            parentBooking.bookingId,
+            pendingPayment.paymentAmount,
+            true // skipRuleCheck — Stripe payment IS the authorization
+          );
+          if (result.success && !result.alreadyInvoiced && !result.skipped) {
+            await supabase.from('stripe_payments').update({
+              status: 'INVOICED',
+              processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod} | Invoice: ${result.praticaIri}`,
+            }).eq('id', pendingPayment.id);
+            console.log('✅ Stripe payment matched + invoiced on Bokun arrival:', result.praticaIri);
+          } else if (result.alreadyInvoiced) {
+            await supabase.from('stripe_payments').update({
+              status: 'INVOICED',
+              processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod} | Already invoiced`,
+            }).eq('id', pendingPayment.id);
+            console.log('✅ Stripe payment matched on Bokun arrival (already invoiced)');
           }
         }
-      } catch (invoiceError: any) {
-        console.error('⚠️ Errore in auto-invoicing (non-blocking):', invoiceError);
-        // Non propagare l'errore - la fatturazione non deve bloccare il webhook
+      } catch (stripeMatchError: any) {
+        console.error('⚠️ Stripe payment matching failed (non-blocking):', stripeMatchError.message);
       }
 
       // 11. Trigger notification rules evaluation
@@ -730,6 +751,49 @@ export class BookingService {
         throw error;
       }
     }
+  }
+
+  /**
+   * Find a pending Stripe payment (status=RECEIVED) that matches this booking.
+   * Matches by booking_id first, then by customer name as fallback.
+   */
+  private async findPendingStripePayment(
+    bookingId: number,
+    customerName: string
+  ): Promise<{ id: string; paymentAmount: number; matchMethod: 'booking_id' | 'name' } | null> {
+    // Strategy 1: Match by booking_id
+    const { data: byId } = await supabase
+      .from('stripe_payments')
+      .select('id, payment_amount')
+      .eq('status', 'RECEIVED')
+      .eq('booking_id', bookingId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (byId && byId.length > 0) {
+      return { id: byId[0].id, paymentAmount: byId[0].payment_amount, matchMethod: 'booking_id' };
+    }
+
+    // Strategy 2: Match by customer name
+    if (!customerName) return null;
+
+    const { data: received } = await supabase
+      .from('stripe_payments')
+      .select('id, payment_amount, customer_name')
+      .eq('status', 'RECEIVED')
+      .not('customer_name', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (received) {
+      for (const payment of received) {
+        if (payment.customer_name && namesMatch(customerName, payment.customer_name)) {
+          return { id: payment.id, paymentAmount: payment.payment_amount, matchMethod: 'name' };
+        }
+      }
+    }
+
+    return null;
   }
 
   // Funzione per salvare o aggiornare un cliente

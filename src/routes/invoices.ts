@@ -2613,6 +2613,7 @@ router.post('/api/invoices/manual', validateApiKey, async (req: Request, res: Re
       firstName,
       lastName,
       phone,
+      country,
       isPersonaFisica,
       codiceFiscale,
       partitaIva,
@@ -2650,6 +2651,7 @@ router.post('/api/invoices/manual', validateApiKey, async (req: Request, res: Re
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       phone,
+      country,
       isPersonaFisica: isPersonaFisica !== false, // default to true
       codiceFiscale,
       partitaIva,

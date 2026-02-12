@@ -13,6 +13,7 @@ import {
   buildPayloadSummary,
   incrementMetric,
 } from '../services/payloadStorage';
+import { normalizeNameTokens, namesMatch } from '../utils/nameMatching';
 
 const router = express.Router();
 
@@ -79,36 +80,6 @@ async function getBooking(bookingId?: number, confirmationCode?: string) {
   return null;
 }
 
-/**
- * Normalize a name into comparable tokens: lowercase, strip accents, split by whitespace
- */
-function normalizeNameTokens(name: string): string[] {
-  return name
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .split(/\s+/)
-    .filter(t => t.length > 0);
-}
-
-/**
- * Check if two names match: all tokens from the shorter name must appear in the longer name.
- * Handles accent differences, different orderings, and middle names.
- */
-function namesMatch(name1: string, name2: string): boolean {
-  const tokens1 = normalizeNameTokens(name1);
-  const tokens2 = normalizeNameTokens(name2);
-
-  if (tokens1.length === 0 || tokens2.length === 0) return false;
-
-  const [shorter, longer] = tokens1.length <= tokens2.length
-    ? [tokens1, tokens2]
-    : [tokens2, tokens1];
-
-  const matchCount = shorter.filter(t => longer.includes(t)).length;
-  return matchCount === shorter.length;
-}
 
 /**
  * Match a Stripe payment to a recent booking by customer name.
@@ -603,6 +574,32 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
 
         const isBokun = !!bokunBookingId;
 
+        // Extract billing details from the charge (available for all payments)
+        let customerEmail: string | null = null;
+        let customerCountry: string | null = null;
+        const latestCharge = (paymentIntent as any).latest_charge;
+        if (latestCharge && typeof latestCharge === 'object') {
+          const billing = latestCharge.billing_details;
+          if (billing) {
+            if (!customerName && billing.name) customerName = billing.name;
+            customerEmail = billing.email || null;
+            customerCountry = billing.address?.country || null;
+          }
+        } else if (stripe && paymentIntent.latest_charge && typeof paymentIntent.latest_charge === 'string') {
+          // Charge not expanded in event — fetch it
+          try {
+            const charge = await stripe.charges.retrieve(paymentIntent.latest_charge);
+            const billing = charge.billing_details;
+            if (billing) {
+              if (!customerName && billing.name) customerName = billing.name;
+              customerEmail = billing.email || null;
+              customerCountry = billing.address?.country || null;
+            }
+          } catch (chargeErr) {
+            console.warn('[Stripe] Failed to fetch charge for billing details:', chargeErr);
+          }
+        }
+
         // Resolve booking_id from metadata (same logic as charge.refunded)
         let piBookingId: number | null = null;
         if (piMetadata.booking_id) {
@@ -676,6 +673,29 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           processingNotes = 'Non-Bokun payment - requires manual review';
         }
 
+        // Auto-create invoice when payment is matched to a booking
+        if (paymentStatus === 'MATCHED' && piBookingId) {
+          try {
+            const invoiceResult = await invoiceService.createIndividualPratica(
+              piBookingId,
+              paymentAmount,    // use Stripe amount as override
+              true              // skipRuleCheck — Stripe payment IS the authorization
+            );
+            if (invoiceResult.success && !invoiceResult.alreadyInvoiced && !invoiceResult.skipped) {
+              paymentStatus = 'INVOICED';
+              processingNotes += ` | Invoice: ${invoiceResult.praticaIri}`;
+            } else if (invoiceResult.alreadyInvoiced) {
+              paymentStatus = 'INVOICED';
+              processingNotes += ' | Already invoiced';
+            } else if (invoiceResult.skipped) {
+              processingNotes += ' | Invoice skipped (zero amount)';
+            }
+          } catch (invoiceError: any) {
+            console.error('[Stripe] Auto-invoice failed (non-blocking):', invoiceError.message);
+            processingNotes += ` | Invoice failed: ${invoiceError.message}`;
+          }
+        }
+
         // Insert into stripe_payments (dedup via UNIQUE stripe_event_id)
         const { data: paymentRecord, error: paymentInsertError } = await supabase
           .from('stripe_payments')
@@ -692,6 +712,8 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
             bokun_travel_date: bokunTravelDate,
             bokun_products: bokunProducts.length > 0 ? bokunProducts : null,
             customer_name: customerName,
+            customer_email: customerEmail,
+            customer_country: customerCountry,
             creation_date: creationDate,
             status: paymentStatus,
             is_bokun_payment: isBokun,

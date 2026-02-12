@@ -115,7 +115,7 @@ export class InvoiceService {
    * Create an individual pratica for a booking (instant invoicing)
    * Used by creation_date rules - one pratica per booking
    */
-  async createIndividualPratica(bookingId: number, overrideTotalPrice?: number): Promise<{
+  async createIndividualPratica(bookingId: number, overrideTotalPrice?: number, skipRuleCheck?: boolean): Promise<{
     success: boolean;
     praticaIri?: string;
     error?: string;
@@ -182,11 +182,13 @@ export class InvoiceService {
       const activities = ((booking as any).activity_bookings || []).filter((a: any) => a.status === 'CONFIRMED');
       const sellerName = activities.find((a: any) => a.activity_seller)?.activity_seller || null;
 
-      // Check if seller matches a creation_date rule
-      const rule = await this.getInvoiceRuleForSeller(sellerName);
-      if (!rule || (rule.invoice_date_type !== 'creation_date' && rule.invoice_date_type !== 'creation')) {
-        console.log(`[InvoiceService] No creation_date rule for seller ${sellerName}`);
-        return { success: false, error: 'No creation_date rule for this seller' };
+      // Check if seller matches a creation_date rule (skip when triggered by Stripe payment)
+      if (!skipRuleCheck) {
+        const rule = await this.getInvoiceRuleForSeller(sellerName);
+        if (!rule || (rule.invoice_date_type !== 'creation_date' && rule.invoice_date_type !== 'creation')) {
+          console.log(`[InvoiceService] No creation_date rule for seller ${sellerName}`);
+          return { success: false, error: 'No creation_date rule for this seller' };
+        }
       }
 
       // Get PS client
@@ -360,6 +362,7 @@ export class InvoiceService {
     firstName: string;
     lastName: string;
     phone?: string;
+    country?: string;
     isPersonaFisica: boolean;
     codiceFiscale?: string;
     partitaIva?: string;
@@ -395,7 +398,6 @@ export class InvoiceService {
         referenceId = String(seqResult);
       }
       const referenceIdPadded = referenceId.padStart(9, '0');
-      const externalId = isCN ? `CN-${referenceIdPadded}` : referenceIdPadded;
 
       const client = await (this.partnerSolution as any).getClient();
       const agencyCode = process.env.PARTNER_SOLUTION_AGENCY_CODE || '7206';
@@ -411,7 +413,9 @@ export class InvoiceService {
       const servizioDescription = isCN ? 'Nota di credito - Tour UE ed Extra UE' : (data.productTitle || 'Tour UE ed Extra UE');
       const effectiveAmount = isCN ? -Math.abs(data.totalAmount) : data.totalAmount;
       const causale = isCN ? 'RIMBOK' : 'PAGBOK';
-      const customerCountry = this.getCountryFromPhone(data.phone || null);
+      const customerCountry = data.country
+        ? this.isoCountryToPSCountry(data.country)
+        : this.getCountryFromPhone(data.phone || null);
 
       // Step 2: Create Account
       const accountPayload: Record<string, any> = {
@@ -427,7 +431,7 @@ export class InvoiceService {
       };
 
       if (data.isPersonaFisica) {
-        accountPayload.codicefiscale = (data.codiceFiscale || referenceIdPadded).padStart(16, '0');
+        accountPayload.codicefiscale = data.codiceFiscale || referenceIdPadded;
       } else {
         accountPayload.partitaiva = data.partitaIva;
         accountPayload.ragionesociale = data.ragioneSociale;
@@ -441,7 +445,7 @@ export class InvoiceService {
       // Step 3: Create Pratica (WP)
       const praticaPayload = {
         codicecliente: accountId,
-        externalid: externalId,
+        externalid: referenceIdPadded,
         cognomecliente: data.lastName,
         nomecliente: data.firstName,
         codiceagenzia: agencyCode,
@@ -468,7 +472,7 @@ export class InvoiceService {
       // Step 5: Add Servizio
       const servizioResponse = await client.post('/prt_praticaservizios', {
         pratica: praticaIri,
-        externalid: externalId,
+        externalid: referenceIdPadded,
         tiposervizio: 'PKG',
         tipovendita: 'ORG',
         regimevendita: '74T',
@@ -879,6 +883,31 @@ export class InvoiceService {
       }
     }
     return 'Spagna';
+  }
+
+  /**
+   * Convert ISO 3166-1 alpha-2 country code to Partner Solution country name
+   */
+  private isoCountryToPSCountry(isoCode: string): string {
+    const map: Record<string, string> = {
+      'ES': 'Spagna',
+      'IT': 'Spagna',  // Italy maps to Spain (avoid Italian invoicing rules)
+      'FR': 'Francia',
+      'GB': 'Regno Unito',
+      'DE': 'Germania',
+      'US': 'Stati Uniti',
+      'PT': 'Portogallo',
+      'NL': 'Paesi Bassi',
+      'BE': 'Belgio',
+      'CH': 'Svizzera',
+      'AT': 'Austria',
+      'AR': 'Argentina',
+      'MX': 'Messico',
+      'BR': 'Brasile',
+      'CO': 'Colombia',
+      'CL': 'Cile',
+    };
+    return map[isoCode.toUpperCase()] || 'Spagna';
   }
 
   // ============================================
