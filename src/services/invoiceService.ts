@@ -567,7 +567,7 @@ export class InvoiceService {
             status: 'INVOICED',
             processed_at: now,
             booking_id: parseInt(referenceId) || null,
-            confirmation_code: referenceId,
+            confirmation_code: `ENRO-${referenceId}`,
             customer_name: `${data.firstName} ${data.lastName}`,
             customer_email: null,
             customer_country: data.country || null,
