@@ -80,6 +80,128 @@ async function getBooking(bookingId?: number, confirmationCode?: string) {
 }
 
 /**
+ * Normalize a name into comparable tokens: lowercase, strip accents, split by whitespace
+ */
+function normalizeNameTokens(name: string): string[] {
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter(t => t.length > 0);
+}
+
+/**
+ * Check if two names match: all tokens from the shorter name must appear in the longer name.
+ * Handles accent differences, different orderings, and middle names.
+ */
+function namesMatch(name1: string, name2: string): boolean {
+  const tokens1 = normalizeNameTokens(name1);
+  const tokens2 = normalizeNameTokens(name2);
+
+  if (tokens1.length === 0 || tokens2.length === 0) return false;
+
+  const [shorter, longer] = tokens1.length <= tokens2.length
+    ? [tokens1, tokens2]
+    : [tokens2, tokens1];
+
+  const matchCount = shorter.filter(t => longer.includes(t)).length;
+  return matchCount === shorter.length;
+}
+
+/**
+ * Match a Stripe payment to a recent booking by customer name.
+ * Searches bookings created within the last windowMinutes that have a matching customer name.
+ */
+async function matchByCustomerName(
+  customerName: string,
+  windowMinutes: number = 5
+): Promise<{ booking_id: number; matched_name: string } | null> {
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString();
+
+  const { data: recentBookings, error } = await supabase
+    .from('bookings')
+    .select(`
+      booking_id,
+      booking_customers(
+        customers(first_name, last_name)
+      )
+    `)
+    .gte('creation_date', since)
+    .eq('status', 'CONFIRMED');
+
+  if (error || !recentBookings) {
+    console.warn('[Stripe] Error querying recent bookings for name match:', error);
+    return null;
+  }
+
+  for (const booking of recentBookings) {
+    const bc = (booking as any).booking_customers;
+    if (!bc || bc.length === 0) continue;
+
+    const customer = bc[0].customers;
+    if (!customer) continue;
+
+    const dbName = `${customer.first_name || ''} ${customer.last_name || ''}`.trim();
+    if (!dbName) continue;
+
+    if (namesMatch(customerName, dbName)) {
+      console.log(`[Stripe] Name match found: "${customerName}" ≈ "${dbName}" → booking ${booking.booking_id}`);
+      return { booking_id: booking.booking_id, matched_name: dbName };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Match a Stripe payment to a recent booking by amount.
+ * Used as last resort when metadata is empty. Only matches if exactly one booking
+ * with the same amount was created within the time window (to avoid ambiguity).
+ */
+async function matchByAmount(
+  amount: number,
+  windowMinutes: number = 5
+): Promise<{ booking_id: number; matched_name: string } | null> {
+  const since = new Date(Date.now() - windowMinutes * 60 * 1000).toISOString();
+
+  const { data: recentBookings, error } = await supabase
+    .from('bookings')
+    .select(`
+      booking_id,
+      total_price,
+      booking_customers(
+        customers(first_name, last_name)
+      )
+    `)
+    .gte('creation_date', since)
+    .eq('status', 'CONFIRMED')
+    .eq('total_price', amount);
+
+  if (error || !recentBookings) {
+    console.warn('[Stripe] Error querying recent bookings for amount match:', error);
+    return null;
+  }
+
+  // Only match if exactly one booking has this amount (avoid ambiguity)
+  if (recentBookings.length === 1) {
+    const booking = recentBookings[0];
+    const bc = (booking as any).booking_customers;
+    const customer = bc?.[0]?.customers;
+    const name = customer ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() : 'Unknown';
+    console.log(`[Stripe] Amount match found: €${amount} → booking ${booking.booking_id} (${name})`);
+    return { booking_id: booking.booking_id, matched_name: name };
+  }
+
+  if (recentBookings.length > 1) {
+    console.warn(`[Stripe] Amount match ambiguous: ${recentBookings.length} bookings with €${amount} in last ${windowMinutes}min`);
+  }
+
+  return null;
+}
+
+/**
  * Get seller for a booking
  */
 async function getSellerForBooking(bookingId: number): Promise<string | null> {
@@ -468,7 +590,7 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
         const bokunBookingId = piMetadata['bokun-booking-id'] || null;
         const bokunPaymentId = piMetadata['bokun-payment-id'] || null;
         const bokunTravelDate = piMetadata['bokun-travel-date'] || null;
-        const customerName = piMetadata['main-contact-data'] || null;
+        let customerName = piMetadata['main-contact-data'] || null;
         const creationDate = piMetadata['creation-date'] || piMetadata['creation-timestamp'] || null;
 
         // Collect bokun-product-N fields
@@ -507,10 +629,43 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           }
         }
 
+        // If booking not found by ID, try fallback matching strategies
+        let matchMethod: string | null = null;
+        if (isBokun && !bookingExists && customerName) {
+          // Strategy 1: match by customer name (Bokun payment with wrong booking_id)
+          console.log(`[Stripe] Booking ${piBookingId} not in DB, trying name match for "${customerName}"...`);
+          const nameMatch = await matchByCustomerName(customerName);
+          if (nameMatch) {
+            console.log(`[Stripe] Name match: updating booking_id from ${piBookingId} to ${nameMatch.booking_id}`);
+            piBookingId = nameMatch.booking_id;
+            bookingExists = true;
+            matchMethod = 'name';
+          }
+        }
+        if (!bookingExists && paymentAmount > 0) {
+          // Strategy 2: match by exact amount within time window (empty metadata or name match failed)
+          console.log(`[Stripe] Trying amount match for €${paymentAmount}...`);
+          const amountMatch = await matchByAmount(paymentAmount);
+          if (amountMatch) {
+            console.log(`[Stripe] Amount match: matched to booking ${amountMatch.booking_id} (${amountMatch.matched_name})`);
+            piBookingId = amountMatch.booking_id;
+            bookingExists = true;
+            matchMethod = 'amount';
+            if (!customerName) {
+              customerName = amountMatch.matched_name;
+            }
+          }
+        }
+
         // Determine initial status
         let paymentStatus: string;
         let processingNotes: string | null = null;
-        if (isBokun && bookingExists) {
+        if (bookingExists && matchMethod) {
+          paymentStatus = 'MATCHED';
+          processingNotes = matchMethod === 'name'
+            ? `Matched by customer name "${customerName}" to booking ${piBookingId}`
+            : `Matched by amount €${paymentAmount} to booking ${piBookingId}`;
+        } else if (isBokun && bookingExists) {
           paymentStatus = 'MATCHED';
           processingNotes = `Bokun payment matched to booking ${piBookingId}`;
         } else if (isBokun) {
