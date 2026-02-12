@@ -347,6 +347,7 @@ async function processRefund(
       .from('stripe_refunds')
       .update({
         status: 'PROCESSED',
+        ps_pratica_iri: result.praticaIri || null,
         ps_movimento_iri: result.movimentoIri || null,
         processed_at: new Date().toISOString()
       })
