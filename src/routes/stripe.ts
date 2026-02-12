@@ -665,12 +665,13 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
         } else if (bookingExists && piBookingId) {
           paymentStatus = 'MATCHED';
           processingNotes = `Payment matched to booking ${piBookingId} via metadata`;
-        } else if (isBokun) {
+        } else if (piBookingId) {
+          // Have a booking reference from metadata but booking not in DB yet — wait for Bokun
           paymentStatus = 'RECEIVED';
-          processingNotes = 'Bokun payment - booking not yet in DB';
+          processingNotes = `Booking ${piBookingId} not yet in DB - waiting for Bokun webhook`;
         } else {
           paymentStatus = 'PENDING_REVIEW';
-          processingNotes = 'Non-Bokun payment - requires manual review';
+          processingNotes = 'No booking reference found - requires manual review';
         }
 
         // Auto-create invoice when payment is matched to a booking
