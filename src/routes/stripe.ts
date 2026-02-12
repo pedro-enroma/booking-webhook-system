@@ -816,6 +816,15 @@ router.get('/webhook/stripe/test', async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Booking not found' });
   }
 
+  const type = req.query.type as string;
+
+  if (type === 'invoice') {
+    // Trigger invoice creation (same as Stripe auto-invoice on MATCHED)
+    const amount = refundAmount ? parseFloat(refundAmount) : undefined;
+    const result = await invoiceService.createIndividualPratica(finalBookingId, amount, true);
+    return res.json(result);
+  }
+
   const result = await processRefund(
     finalBookingId,
     refundAmount ? parseFloat(refundAmount) : null,
