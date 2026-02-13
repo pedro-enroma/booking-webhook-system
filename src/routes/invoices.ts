@@ -1641,18 +1641,27 @@ router.post('/api/invoices/rules', validateApiKey, async (req: Request, res: Res
   try {
     const { name, invoice_date_type, sellers, invoice_start_date, execution_time } = req.body;
 
-    if (!name || !invoice_date_type || !sellers || !invoice_start_date) {
+    // sellers not required for stripe_payment (applies to all sellers)
+    if (!name || !invoice_date_type || !invoice_start_date) {
       res.status(400).json({
         success: false,
-        error: 'Missing required fields: name, invoice_date_type, sellers, invoice_start_date',
+        error: 'Missing required fields: name, invoice_date_type, invoice_start_date',
       });
       return;
     }
 
-    if (!['travel_date', 'creation_date'].includes(invoice_date_type)) {
+    if (!['travel_date', 'creation_date', 'stripe_payment'].includes(invoice_date_type)) {
       res.status(400).json({
         success: false,
-        error: 'invoice_date_type must be "travel_date" or "creation_date"',
+        error: 'invoice_date_type must be "travel_date", "creation_date", or "stripe_payment"',
+      });
+      return;
+    }
+
+    if (invoice_date_type !== 'stripe_payment' && (!sellers || sellers.length === 0)) {
+      res.status(400).json({
+        success: false,
+        error: 'sellers is required for travel_date and creation_date rules',
       });
       return;
     }
@@ -1660,7 +1669,7 @@ router.post('/api/invoices/rules', validateApiKey, async (req: Request, res: Res
     const rule = await invoiceRulesService.createRule({
       name,
       invoice_date_type,
-      sellers,
+      sellers: sellers || [],
       invoice_start_date,
       execution_time,
     });

@@ -154,10 +154,12 @@ export class BookingService {
         if (pendingPayment) {
           console.log(`[Bokun] Found pending Stripe payment ${pendingPayment.id} for booking ${parentBooking.bookingId} (matched by ${pendingPayment.matchMethod})`);
 
-          // Update stripe_payment with correct booking_id and MATCHED status
+          // Update stripe_payment with correct booking_id, customer info, and MATCHED status
           await supabase.from('stripe_payments').update({
             booking_id: parentBooking.bookingId,
             confirmation_code: `ENRO-${parentBooking.bookingId}`,
+            customer_name: customerName || undefined,
+            is_bokun_payment: true,
             status: 'MATCHED',
             processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod}`,
             processed_at: new Date().toISOString(),
@@ -181,6 +183,16 @@ export class BookingService {
               processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod} | Already invoiced`,
             }).eq('id', pendingPayment.id);
             console.log('✅ Stripe payment matched on Bokun arrival (already invoiced)');
+          } else if (result.skipped) {
+            console.log(`[Bokun] Invoice skipped for booking ${parentBooking.bookingId} (zero amount)`);
+          } else {
+            // Invoice creation failed — record the error so it's visible in the UI
+            const errorMsg = result.error || 'Unknown error';
+            await supabase.from('stripe_payments').update({
+              processing_notes: `Matched on Bokun arrival by ${pendingPayment.matchMethod} | Invoice failed: ${errorMsg}`,
+              error_message: errorMsg,
+            }).eq('id', pendingPayment.id);
+            console.error(`⚠️ Invoice creation failed for booking ${parentBooking.bookingId}: ${errorMsg}`);
           }
         }
       } catch (stripeMatchError: any) {

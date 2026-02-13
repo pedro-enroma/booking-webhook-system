@@ -28,6 +28,7 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 interface InvoiceRule {
   id: string;
   name: string;
+  invoice_date_type: string;
   sellers: string[];
   auto_credit_note_enabled: boolean;
   credit_note_trigger: 'cancellation' | 'refund';
@@ -47,6 +48,10 @@ async function findRuleForSeller(seller: string): Promise<InvoiceRule | null> {
   }
 
   for (const rule of rules) {
+    // stripe_payment rules with empty sellers match ANY seller
+    if (rule.invoice_date_type === 'stripe_payment' && (!rule.sellers || rule.sellers.length === 0)) {
+      return rule as InvoiceRule;
+    }
     if (rule.sellers && rule.sellers.includes(seller)) {
       return rule as InvoiceRule;
     }
@@ -278,68 +283,54 @@ async function logStripeWebhook(
 }
 
 /**
- * Process refund and create credit note
+ * Process refund and create credit note.
+ * Credit notes are ALWAYS created for every refund — no invoice/rule checks.
+ * If booking exists in DB, uses booking data. Otherwise uses Stripe metadata.
  */
 async function processRefund(
   bookingId: number,
   refundAmount: number | null,
   currency: string,
   eventId: string,
-  rawPayload: any
+  rawPayload: any,
+  stripeCustomerName?: string | null
 ): Promise<{ success: boolean; message: string; movimentoIri?: string }> {
-  const booking = await getBooking(bookingId);
-
-  if (!booking) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, null, 'ERROR', 'Booking not found', rawPayload);
-    return { success: false, message: 'Booking not found' };
+  // Idempotency: skip if credit note already exists
+  if (await hasCreditNote(bookingId)) {
+    await logStripeWebhook('charge.refunded', eventId, bookingId, null, 'SUCCESS', 'Credit note already exists', rawPayload);
+    return { success: true, message: 'Credit note already exists' };
   }
 
-  // Check if there's an invoice for this booking
-  if (!(await hasInvoice(bookingId))) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', 'No invoice exists for this booking', rawPayload);
-    return { success: true, message: 'No invoice exists - credit note not needed' };
-  }
-
-  // Get seller and find rule
-  const seller = await getSellerForBooking(bookingId);
-  if (!seller) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', 'No seller found', rawPayload);
-    return { success: true, message: 'No seller found for booking' };
-  }
-
-  const rule = await findRuleForSeller(seller);
-  if (!rule) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', `No rule for seller: ${seller}`, rawPayload);
-    return { success: true, message: `No rule configured for seller: ${seller}` };
-  }
-
-  // Check if auto credit note is enabled and trigger is 'refund'
-  if (!rule.auto_credit_note_enabled) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', 'Auto credit note disabled', rawPayload);
-    return { success: true, message: 'Auto credit note is disabled for this rule' };
-  }
-
-  if (rule.credit_note_trigger !== 'refund') {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SKIPPED', `Rule trigger is ${rule.credit_note_trigger}, not refund`, rawPayload);
-    return { success: true, message: `Rule is configured for ${rule.credit_note_trigger} trigger, not refund` };
-  }
-
-  // Determine refund amount - must come from Stripe, no fallback
+  // Refund amount is required
   if (!refundAmount) {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', 'No refund amount in Stripe event', rawPayload);
+    await logStripeWebhook('charge.refunded', eventId, bookingId, null, 'ERROR', 'No refund amount in Stripe event', rawPayload);
     return { success: false, message: 'No refund amount in Stripe event' };
   }
-  const finalRefundAmount = refundAmount;
-  console.log(`[Stripe] Processing refund for booking ${bookingId} (amount: €${finalRefundAmount})`);
 
-  // Create full credit note pratica in Partner Solution + DB record
-  const result = await invoiceService.createCreditNotePratica(bookingId, finalRefundAmount, 'stripe-refund');
+  // Get booking data if available (optional — we proceed regardless)
+  const booking = await getBooking(bookingId);
+  const confirmationCode = booking?.confirmation_code || `ENRO-${bookingId}`;
+
+  // Get seller if booking exists (for context in the pratica)
+  let sellerName: string | null = null;
+  if (booking) {
+    sellerName = await getSellerForBooking(bookingId);
+  }
+
+  console.log(`[Stripe] Processing refund for booking ${bookingId} (amount: €${refundAmount}, booking in DB: ${!!booking})`);
+
+  // Always create credit note pratica — pass fallback data for cases without booking/invoice
+  const result = await invoiceService.createCreditNotePratica(bookingId, refundAmount, 'stripe-refund', {
+    customerName: stripeCustomerName || null,
+    sellerName: sellerName,
+    confirmationCode: confirmationCode,
+  });
 
   if (result.success) {
     const message = result.praticaIri
       ? `Credit note pratica created in PS (${result.praticaIri}) with RIMBOK movimento (${result.movimentoIri})`
       : 'Credit note already exists';
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'SUCCESS', message, rawPayload);
+    await logStripeWebhook('charge.refunded', eventId, bookingId, confirmationCode, 'SUCCESS', message, rawPayload);
     console.log(`[Stripe] ${message} for booking ${bookingId}`);
 
     // Update stripe_refunds to PROCESSED
@@ -359,7 +350,7 @@ async function processRefund(
 
     return { success: true, message, movimentoIri: result.movimentoIri };
   } else {
-    await logStripeWebhook('charge.refunded', eventId, bookingId, booking.confirmation_code, 'ERROR', result.error || 'Failed to create credit note pratica', rawPayload);
+    await logStripeWebhook('charge.refunded', eventId, bookingId, confirmationCode, 'ERROR', result.error || 'Failed to create credit note pratica', rawPayload);
     return { success: false, message: result.error || 'Failed to create credit note pratica' };
   }
 }
@@ -565,7 +556,12 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
           return res.json({ received: true, message: 'No booking reference found in metadata', metadata_keys: Object.keys(metadata), refund_stored: !!refundRecord });
         }
 
-        const result = await processRefund(bookingId, refundAmount, currency, event.id, event);
+        // Extract customer name for fallback (in case booking not in DB)
+        const stripeCustomerName = metadata['main-contact-data']
+          || (charge.billing_details as any)?.name
+          || null;
+
+        const result = await processRefund(bookingId, refundAmount, currency, event.id, event, stripeCustomerName);
         return res.json({ received: true, ...result });
       }
 
@@ -713,6 +709,9 @@ router.post('/webhook/stripe', async (req: Request, res: Response) => {
               processingNotes += ' | Already invoiced';
             } else if (invoiceResult.skipped) {
               processingNotes += ' | Invoice skipped (zero amount)';
+            } else if (!invoiceResult.success) {
+              processingNotes += ` | Invoice failed: ${invoiceResult.error || 'Unknown error'}`;
+              console.error(`[Stripe] Auto-invoice returned failure for booking ${piBookingId}: ${invoiceResult.error}`);
             }
           } catch (invoiceError: any) {
             console.error('[Stripe] Auto-invoice failed (non-blocking):', invoiceError.message);
@@ -835,6 +834,72 @@ router.get('/webhook/stripe/test', async (req: Request, res: Response) => {
   );
 
   return res.json(result);
+});
+
+/**
+ * Retry invoice for a MATCHED payment that failed auto-invoicing
+ * POST /webhook/stripe/payments/:paymentId/retry-invoice
+ */
+router.post('/webhook/stripe/payments/:paymentId/retry-invoice', async (req: Request, res: Response) => {
+  try {
+    const { paymentId } = req.params;
+
+    // Fetch the payment record
+    const { data: payment, error: fetchError } = await supabase
+      .from('stripe_payments')
+      .select('id, booking_id, payment_amount, status, processing_notes')
+      .eq('id', paymentId)
+      .single();
+
+    if (fetchError || !payment) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+
+    if (!payment.booking_id) {
+      return res.status(400).json({ error: 'Payment has no booking_id' });
+    }
+
+    if (payment.status === 'INVOICED') {
+      return res.json({ success: true, message: 'Already invoiced' });
+    }
+
+    // Attempt to create the invoice
+    const result = await invoiceService.createIndividualPratica(
+      payment.booking_id,
+      payment.payment_amount,
+      true // skipRuleCheck
+    );
+
+    if (result.success && !result.alreadyInvoiced && !result.skipped) {
+      await supabase.from('stripe_payments').update({
+        status: 'INVOICED',
+        processing_notes: `${payment.processing_notes || ''} | Retry invoice: ${result.praticaIri}`,
+        error_message: null,
+      }).eq('id', paymentId);
+
+      return res.json({ success: true, praticaIri: result.praticaIri });
+    } else if (result.alreadyInvoiced) {
+      await supabase.from('stripe_payments').update({
+        status: 'INVOICED',
+        processing_notes: `${payment.processing_notes || ''} | Already invoiced`,
+        error_message: null,
+      }).eq('id', paymentId);
+
+      return res.json({ success: true, message: 'Already invoiced' });
+    } else {
+      const errorMsg = result.error || 'Unknown error';
+      await supabase.from('stripe_payments').update({
+        error_message: errorMsg,
+        processing_notes: `${payment.processing_notes || ''} | Retry failed: ${errorMsg}`,
+      }).eq('id', paymentId);
+
+      return res.status(500).json({ error: errorMsg });
+    }
+  } catch (error) {
+    const err = error as Error;
+    console.error('[Stripe] Retry invoice error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
 });
 
 /**

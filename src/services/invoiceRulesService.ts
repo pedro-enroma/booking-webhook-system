@@ -2,13 +2,17 @@
  * Invoice Rules Service
  * Handles automatic invoicing based on configured rules
  *
- * Two rule types:
+ * Three rule types:
  * 1. travel_date: Cron job sends to Partner Solution on travel date
  *    - Uses latest activity date if multiple activities
  *    - invoice_start_date filters by travel_date
  *
  * 2. creation_date: Instant send when booking is confirmed
  *    - invoice_start_date filters by creation_date
+ *
+ * 3. stripe_payment: Triggered by Stripe payment_intent.succeeded webhook
+ *    - Applies to ALL sellers (empty sellers array)
+ *    - Uses booking creation_date for year-month resolution
  */
 
 import { supabase } from '../config/supabase';
@@ -16,7 +20,7 @@ import { supabase } from '../config/supabase';
 export interface InvoiceRule {
   id: string;
   name: string;
-  invoice_date_type: 'travel_date' | 'creation_date';
+  invoice_date_type: 'travel_date' | 'creation_date' | 'stripe_payment';
   sellers: string[];
   invoice_start_date: string; // YYYY-MM-DD
   execution_time: string; // HH:MM:SS (only for travel_date)
@@ -112,7 +116,7 @@ export class InvoiceRulesService {
    */
   async createRule(rule: {
     name: string;
-    invoice_date_type: 'travel_date' | 'creation_date';
+    invoice_date_type: 'travel_date' | 'creation_date' | 'stripe_payment';
     sellers: string[];
     invoice_start_date: string;
     execution_time?: string;
@@ -196,6 +200,10 @@ export class InvoiceRulesService {
     const rules = await this.getActiveRules();
 
     for (const rule of rules) {
+      // stripe_payment rules with empty sellers match ANY seller
+      if (rule.invoice_date_type === 'stripe_payment' && (!rule.sellers || rule.sellers.length === 0)) {
+        return rule;
+      }
       if (rule.sellers?.includes(sellerName)) {
         return rule;
       }
@@ -451,7 +459,7 @@ export class InvoiceRulesService {
    */
   async resolveYearMonthForBooking(booking: BookingForInvoicing): Promise<{
     yearMonth: string;
-    ruleType: 'travel_date' | 'creation_date' | 'none';
+    ruleType: 'travel_date' | 'creation_date' | 'stripe_payment' | 'none';
     sourceDate: string;
     ruleName?: string;
   }> {
@@ -489,10 +497,10 @@ export class InvoiceRulesService {
       };
     }
 
-    // creation_date rule - use booking creation date
+    // creation_date or stripe_payment rule - use booking creation date
     return {
       yearMonth: this.formatYearMonth(fallbackDate),
-      ruleType: 'creation_date',
+      ruleType: rule.invoice_date_type === 'stripe_payment' ? 'stripe_payment' : 'creation_date',
       sourceDate: fallbackDate,
       ruleName: rule.name,
     };

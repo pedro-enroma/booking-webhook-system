@@ -28,7 +28,7 @@ import {
 } from '../types/invoice.types';
 
 interface InvoiceRule {
-  invoice_date_type: 'creation' | 'travel' | 'creation_date' | 'travel_date';
+  invoice_date_type: 'creation' | 'travel' | 'creation_date' | 'travel_date' | 'stripe_payment';
   sellers: string[];
   invoice_start_date?: string | null;
   name?: string;
@@ -185,7 +185,7 @@ export class InvoiceService {
       // Check if seller matches a creation_date rule (skip when triggered by Stripe payment)
       if (!skipRuleCheck) {
         const rule = await this.getInvoiceRuleForSeller(sellerName);
-        if (!rule || (rule.invoice_date_type !== 'creation_date' && rule.invoice_date_type !== 'creation')) {
+        if (!rule || !['creation_date', 'creation', 'stripe_payment'].includes(rule.invoice_date_type)) {
           console.log(`[InvoiceService] No creation_date rule for seller ${sellerName}`);
           return { success: false, error: 'No creation_date rule for this seller' };
         }
@@ -1299,8 +1299,9 @@ export class InvoiceService {
     // Handle both old format ('travel'/'creation') and new format ('travel_date'/'creation_date')
     const ruleType = rule.invoice_date_type;
     const isTravel = ruleType === 'travel' || ruleType === 'travel_date';
+    const isStripePayment = ruleType === 'stripe_payment';
 
-    if (isTravel) {
+    if (isTravel && !isStripePayment) {
       // Use latest travel date (newest activity date)
       const travelDate = this.getLatestTravelDate(bookingData) || fallbackDate;
       return {
@@ -1331,6 +1332,10 @@ export class InvoiceService {
     }
 
     for (const rule of rules as InvoiceRule[]) {
+      // stripe_payment rules with empty sellers match ANY seller
+      if (rule.invoice_date_type === 'stripe_payment' && (!rule.sellers || rule.sellers.length === 0)) {
+        return rule;
+      }
       if (rule.sellers?.includes(sellerName)) {
         return rule;
       }
@@ -1924,12 +1929,13 @@ export class InvoiceService {
   async createCreditNotePratica(
     bookingId: number,
     refundAmount: number,
-    triggeredBy: string = 'stripe-refund'
+    triggeredBy: string = 'stripe-refund',
+    fallback?: { customerName?: string | null; sellerName?: string | null; confirmationCode?: string | null }
   ): Promise<{ success: boolean; praticaIri?: string; movimentoIri?: string; invoiceId?: string; error?: string }> {
     try {
       console.log(`[InvoiceService] Creating credit note pratica for booking ${bookingId}, amount: €${refundAmount}...`);
 
-      // Look up original invoice for customer/seller context
+      // Look up original invoice for seller context (optional — proceed without it)
       const { data: originalInvoice } = await supabase
         .from('invoices')
         .select('id, customer_name, seller_name, confirmation_code')
@@ -1937,12 +1943,8 @@ export class InvoiceService {
         .eq('invoice_type', 'INVOICE')
         .single();
 
-      if (!originalInvoice) {
-        return { success: false, error: `No invoice found for booking ${bookingId}` };
-      }
-
-      // Fetch booking for customer details
-      const { data: booking, error: bookingError } = await supabase
+      // Fetch booking for customer details (optional — proceed without it)
+      const { data: booking } = await supabase
         .from('bookings')
         .select(`
           booking_id,
@@ -1954,16 +1956,28 @@ export class InvoiceService {
         .eq('booking_id', bookingId)
         .single();
 
-      if (bookingError || !booking) {
-        return { success: false, error: `Booking ${bookingId} not found` };
+      // Resolve customer name: booking DB > fallback Stripe name > N/A
+      let customerFirstName = 'N/A';
+      let customerLastName = 'N/A';
+      let customerPhone: string | null = null;
+
+      if (booking) {
+        const customer = (booking as any).booking_customers?.[0]?.customers;
+        customerFirstName = customer?.first_name || 'N/A';
+        customerLastName = customer?.last_name || 'N/A';
+        customerPhone = customer?.phone_number || null;
+      } else if (fallback?.customerName) {
+        const parts = fallback.customerName.trim().split(/\s+/);
+        customerFirstName = parts[0] || 'N/A';
+        customerLastName = parts.slice(1).join(' ') || 'N/A';
+        console.log(`[InvoiceService] Using Stripe fallback customer name: ${customerFirstName} ${customerLastName}`);
       }
 
-      const customer = (booking as any).booking_customers?.[0]?.customers;
-      const customerName = {
-        firstName: customer?.first_name || 'N/A',
-        lastName: customer?.last_name || 'N/A',
-      };
-      const customerPhone = customer?.phone_number || null;
+      // Resolve seller: invoice > fallback > default
+      const sellerName = originalInvoice?.seller_name || fallback?.sellerName || 'EnRoma.com';
+      // Resolve confirmation code: booking > fallback
+      const confirmationCode = booking?.confirmation_code || fallback?.confirmationCode || `ENRO-${bookingId}`;
+
       const customerCountry = this.getCountryFromPhone(customerPhone);
 
       // Compute credit note values — prefix with '5','6','7','8' to avoid PS auto-linking
@@ -1989,8 +2003,8 @@ export class InvoiceService {
 
       // Step 1: Create Account
       const accountResponse = await client.post('/accounts', {
-        cognome: customerName.lastName,
-        nome: customerName.firstName,
+        cognome: customerLastName,
+        nome: customerFirstName,
         flagpersonafisica: 1,
         codicefiscale: cnCodiceFiscale,
         codiceagenzia: agencyCode,
@@ -2007,15 +2021,15 @@ export class InvoiceService {
       const praticaPayload = {
         codicecliente: accountId,
         externalid: cnExternalId,
-        cognomecliente: customerName.lastName,
-        nomecliente: customerName.firstName,
+        cognomecliente: customerLastName,
+        nomecliente: customerFirstName,
         codiceagenzia: agencyCode,
         tipocattura: 'PS',
         datacreazione: now,
         datamodifica: now,
         stato: 'WP',
         descrizionepratica: 'Nota di credito - Rimborso',
-        noteinterne: originalInvoice.seller_name ? `Seller: ${originalInvoice.seller_name}` : null,
+        noteinterne: sellerName ? `Seller: ${sellerName}` : null,
         delivering: deliveringValue,
       };
       const praticaResponse = await client.post('/prt_praticas', praticaPayload);
@@ -2024,8 +2038,8 @@ export class InvoiceService {
       // Step 3: Add Passeggero
       const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
         pratica: praticaIri,
-        cognomepax: customerName.lastName,
-        nomepax: customerName.firstName,
+        cognomepax: customerLastName,
+        nomepax: customerFirstName,
         annullata: 0,
         iscontraente: 1,
       });
@@ -2087,7 +2101,7 @@ export class InvoiceService {
         datamovimento: now,
         stato: 'INS',
         codcausale: 'RIMBOK',
-        descrizione: `Nota di credito - Rimborso ${booking.confirmation_code}`,
+        descrizione: `Nota di credito - Rimborso ${confirmationCode}`,
       });
 
       // Step 7: Update Pratica → INS
@@ -2096,14 +2110,14 @@ export class InvoiceService {
       // Store in invoices table as CREDIT_NOTE
       const { data: creditNoteRecord, error: insertError } = await supabase.from('invoices').insert({
         booking_id: bookingId,
-        confirmation_code: booking.confirmation_code,
+        confirmation_code: confirmationCode,
         invoice_type: 'CREDIT_NOTE',
         status: 'sent',
         total_amount: negativeAmount,
         refund_amount: negativeAmount,
         currency: 'EUR',
-        customer_name: `${customerName.firstName} ${customerName.lastName}`,
-        seller_name: originalInvoice.seller_name,
+        customer_name: `${customerFirstName} ${customerLastName}`,
+        seller_name: sellerName,
         booking_creation_date: todayDate,
         sent_at: now,
         ps_pratica_iri: praticaIri,
