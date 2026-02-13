@@ -433,8 +433,9 @@ export class InvoiceService {
       if (data.isPersonaFisica) {
         accountPayload.codicefiscale = data.codiceFiscale || referenceIdPadded;
       } else {
+        accountPayload.cognome = data.ragioneSociale || data.lastName;
+        delete accountPayload.nome;
         accountPayload.partitaiva = data.partitaIva;
-        accountPayload.ragionesociale = data.ragioneSociale;
         accountPayload.codicefiscale = data.partitaIva;
       }
 
@@ -446,8 +447,8 @@ export class InvoiceService {
       const praticaPayload = {
         codicecliente: accountId,
         externalid: referenceIdPadded,
-        cognomecliente: data.lastName,
-        nomecliente: data.firstName,
+        cognomecliente: data.isPersonaFisica ? data.lastName : (data.ragioneSociale || data.lastName),
+        nomecliente: data.isPersonaFisica ? data.firstName : '',
         codiceagenzia: agencyCode,
         tipocattura: 'PS',
         datacreazione: now,
@@ -463,8 +464,8 @@ export class InvoiceService {
       // Step 4: Add Passeggero
       const passeggeroResponse = await client.post('/prt_praticapasseggeros', {
         pratica: praticaIri,
-        cognomepax: data.lastName,
-        nomepax: data.firstName,
+        cognomepax: data.isPersonaFisica ? data.lastName : (data.ragioneSociale || data.lastName),
+        nomepax: data.isPersonaFisica ? data.firstName : '',
         annullata: 0,
         iscontraente: 1,
       });
